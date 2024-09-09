@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Home from './pages/Home';
 import TestPage from './pages/TestPage';
+import SignUp from './pages/SignUp';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 const router = createBrowserRouter([
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
         path: '/test',
         element: <TestPage />
     },
+    {
+        path: '/signup',
+        element: <SignUp />
+    }
 ]);
 
 const queryClient = new QueryClient();
