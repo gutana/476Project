@@ -1,5 +1,4 @@
-export interface RegistrationRequest
-{
+export interface RegistrationRequest {
     FirstName: string,
     LastName: string,
     Email: string,
@@ -9,21 +8,21 @@ export interface RegistrationRequest
 }
 
 export enum Region {
-    Regina, 
+    Regina,
     Saskatoon
 }
 
 export enum UserType {
-    Teacher, 
+    Teacher,
     Requestor,
     Administrator
 }
 
-export async function Signup(regRequest: RegistrationRequest) {
+export async function SignUpQuery(regRequest: RegistrationRequest) {
     const response = await fetch('http://localhost:5075/account/register', {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
             FirstName: regRequest.FirstName,
             LastName: regRequest.LastName,
             Email: regRequest.Email,
@@ -34,6 +33,6 @@ export async function Signup(regRequest: RegistrationRequest) {
     });
     if (response.status == 200)
         return "success";
-    else 
+    else
         return "failure";
 }
