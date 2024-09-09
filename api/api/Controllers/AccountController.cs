@@ -1,8 +1,10 @@
 ﻿using api.DTO;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace api.Controllers;
 
@@ -43,5 +45,29 @@ public class AccountController : ControllerBase
             return Ok();
 
         return BadRequest(result.Errors);
+    }
+
+    [HttpGet("getUser")]
+    [Authorize]
+    public async Task<IActionResult> GetUser()
+    {
+        User? user = await GetCurrentUser();
+
+        if (user == null)
+            return Unauthorized();
+
+        UserDto userDto = UserDto.MapIdentityUserToUserDto(user);
+
+        return Ok(userDto);
+    }
+
+    private async Task<User?> GetCurrentUser()
+    {
+        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+            return null;
+
+        return await _userManager.FindByIdAsync(userId);
     }
 }

@@ -27,9 +27,12 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication()
-    .AddCookie(IdentityConstants.ApplicationScheme)
-    .AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
+    options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
+})
+.AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -50,9 +53,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
-// ???? app.UseAuthorization();
-app.MapControllers();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 app.MapIdentityApi<User>();
 
 app.Run();

@@ -17,6 +17,21 @@ public enum Region
     Saskatoon
 }
 
+public static class Mapper
+{
+    public static Region MapStringToRegion(string str)
+    {
+        switch(str)
+        {
+            case "Regina":
+                return Region.Regina;
+            case "Saskatoon":
+                return Region.Saskatoon;
+        }
+        throw new InvalidDataException("Could not convert string to region: " + str);
+    }
+}
+
 public enum UserType
 {
     Teacher,
