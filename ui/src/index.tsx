@@ -18,7 +18,6 @@ const router = createBrowserRouter([
 ]);
 
 const queryClient = new QueryClient();
-
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
