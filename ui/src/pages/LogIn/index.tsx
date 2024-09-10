@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Spinner from "react-bootstrap/Spinner"
+import { Stack } from "react-bootstrap";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 export default function LogIn() {
     const navigate = useNavigate();
@@ -41,6 +44,9 @@ export default function LogIn() {
         sessionStorage.setItem("tokenExpiry", expiresAt.toString());
         navigate('/');
     })
+
+    if (isLoading)
+        return (<LoadingSpinner />);
 
     return (
         <Form onSubmit={handleSubmit}>
