@@ -4,6 +4,7 @@ namespace api.DTO;
 
 public class RegistrationDto
 {
+    // TODO: Get phone number
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }

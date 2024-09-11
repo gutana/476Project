@@ -1,14 +1,15 @@
-import { createContext, StrictMode } from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import Home from './pages/Home';
-import TestPage from './pages/TestPage';
 import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
 import { UserWrapper } from './components/UserWrapper';
+import { DefaultLayout } from './components/DefaultLayout';
+import { BasicLayout } from './components/BasicLayout';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -16,21 +17,27 @@ const router = createBrowserRouter([
         path: '/',
         element: (
             <UserWrapper>
-                <Home />
+                <DefaultLayout>
+                    <Home />
+                </DefaultLayout>
             </UserWrapper>
         )
     },
     {
-        path: '/test',
-        element: <TestPage />
-    },
-    {
         path: '/signup',
-        element: <SignUp />
+        element: (
+            <BasicLayout>
+                <SignUp />
+            </BasicLayout>
+        )
     },
     {
         path: '/login',
-        element: <LogIn />
+        element: (
+            <BasicLayout>
+                <LogIn />
+            </BasicLayout>
+        )
     }
 ]);
 

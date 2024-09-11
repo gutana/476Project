@@ -9,6 +9,9 @@ public class User : IdentityUser
     public string? LastName { get; set; }
     public Region? Region { get; set; }
     public UserType? UserType { get; set; }
+
+    public List<PrimarySchoolSubject>? preferredPrimarySchoolSubject {  get; set; }
+    public List<SecondarySchoolSubject>? preferredSecondarySchoolSubject {  get; set; }
 }
 
 public enum Region 

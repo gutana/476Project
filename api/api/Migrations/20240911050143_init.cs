@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class Identity : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,10 +36,12 @@ namespace api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    FirstName = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    LastName = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    Region = table.Column<int>(type: "integer", nullable: false),
-                    UserType = table.Column<int>(type: "integer", nullable: false),
+                    FirstName = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    LastName = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    Region = table.Column<int>(type: "integer", nullable: true),
+                    UserType = table.Column<int>(type: "integer", nullable: true),
+                    preferredPrimarySchoolSubject = table.Column<int[]>(type: "integer[]", nullable: true),
+                    preferredSecondarySchoolSubject = table.Column<int[]>(type: "integer[]", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -58,6 +60,25 @@ namespace api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Schools",
+                schema: "identity",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    PosterId = table.Column<string>(type: "text", nullable: true),
+                    SchoolType = table.Column<int>(type: "integer", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    City = table.Column<string>(type: "text", nullable: true),
+                    PostalCode = table.Column<string>(type: "text", nullable: true),
+                    Region = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Schools", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,6 +198,31 @@ namespace api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                schema: "identity",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    PosterId = table.Column<string>(type: "text", nullable: true),
+                    SchoolId = table.Column<string>(type: "text", nullable: true),
+                    SchoolType = table.Column<int>(type: "integer", nullable: true),
+                    PostDescription = table.Column<string>(type: "text", nullable: true),
+                    PrimarySchoolSubjects = table.Column<int[]>(type: "integer[]", nullable: true),
+                    SecondarySchoolSubjects = table.Column<int[]>(type: "integer[]", nullable: true),
+                    Grades = table.Column<int[]>(type: "integer[]", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Schools_SchoolId",
+                        column: x => x.SchoolId,
+                        principalSchema: "identity",
+                        principalTable: "Schools",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 schema: "identity",
@@ -220,6 +266,12 @@ namespace api.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_SchoolId",
+                schema: "identity",
+                table: "Posts",
+                column: "SchoolId");
         }
 
         /// <inheritdoc />
@@ -246,11 +298,19 @@ namespace api.Migrations
                 schema: "identity");
 
             migrationBuilder.DropTable(
+                name: "Posts",
+                schema: "identity");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles",
                 schema: "identity");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers",
+                schema: "identity");
+
+            migrationBuilder.DropTable(
+                name: "Schools",
                 schema: "identity");
         }
     }

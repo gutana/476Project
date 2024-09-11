@@ -12,8 +12,8 @@ using api.Models;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240909004958_Identity")]
-    partial class Identity
+    [Migration("20240911050143_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,6 +158,70 @@ namespace api.Migrations
                     b.ToTable("AspNetUserTokens", "identity");
                 });
 
+            modelBuilder.Entity("api.Models.Post", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int[]>("Grades")
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("PostDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PosterId")
+                        .HasColumnType("text");
+
+                    b.Property<int[]>("PrimarySchoolSubjects")
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("SchoolId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("SchoolType")
+                        .HasColumnType("integer");
+
+                    b.Property<int[]>("SecondarySchoolSubjects")
+                        .HasColumnType("integer[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("Posts", "identity");
+                });
+
+            modelBuilder.Entity("api.Models.School", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PosterId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Region")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SchoolType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Schools", "identity");
+                });
+
             modelBuilder.Entity("api.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -178,12 +242,10 @@ namespace api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
@@ -210,7 +272,7 @@ namespace api.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("Region")
+                    b.Property<int?>("Region")
                         .HasColumnType("integer");
 
                     b.Property<string>("SecurityStamp")
@@ -223,8 +285,14 @@ namespace api.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<int>("UserType")
+                    b.Property<int?>("UserType")
                         .HasColumnType("integer");
+
+                    b.Property<int[]>("preferredPrimarySchoolSubject")
+                        .HasColumnType("integer[]");
+
+                    b.Property<int[]>("preferredSecondarySchoolSubject")
+                        .HasColumnType("integer[]");
 
                     b.HasKey("Id");
 
@@ -287,6 +355,15 @@ namespace api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("api.Models.Post", b =>
+                {
+                    b.HasOne("api.Models.School", "School")
+                        .WithMany()
+                        .HasForeignKey("SchoolId");
+
+                    b.Navigation("School");
                 });
 #pragma warning restore 612, 618
         }

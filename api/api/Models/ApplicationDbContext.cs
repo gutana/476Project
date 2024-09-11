@@ -5,6 +5,9 @@ namespace api.Models;
 
 public class ApplicationDbContext : IdentityDbContext<User>
 {
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<School> Schools { get; set; }
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
