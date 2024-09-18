@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
-import { RegistrationRequest } from "../../api/mutations/userMutations";
-import { Region, UserType } from "../../models/user";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import { RegistrationMutation } from "../../api/mutations/userMutations";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { Alert, Form } from "react-bootstrap";

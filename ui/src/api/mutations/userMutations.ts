@@ -1,4 +1,3 @@
-import { error } from "console";
 import { Region, UserType } from "../../models/user";
 
 // LOG IN MUTATION
