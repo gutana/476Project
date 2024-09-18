@@ -22,6 +22,7 @@ export default function SignUp() {
         },
         onError: (data, variables, context) => {
             setErrorMessage("Unable to sign up. Please try again later.");
+            registrationMutation.reset();
         }
     })
 

@@ -24,6 +24,7 @@ export default function LogIn() {
         },
         onError: (data, variables, context) => {
             setErrorMessage("Unable to log in. Please check your email and password and try again.");
+            loginMutation.reset();
         }
     })
 
