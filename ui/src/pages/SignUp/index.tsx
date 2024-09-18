@@ -21,11 +21,7 @@ export default function SignUp() {
             setShowModal(true);
         },
         onError: (data, variables, context) => {
-            console.log(data);
-            if (data.message === "Failed to fetch")
-                setErrorMessage("Unable to reach registration server. Please try again later.");
-            else
-                setErrorMessage("Unknown error: " + data.message);
+            setErrorMessage("Unable to sign up. Please try again later.");
         }
     })
 

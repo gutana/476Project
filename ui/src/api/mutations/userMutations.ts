@@ -1,3 +1,4 @@
+import { error } from "console";
 import { Region, UserType } from "../../models/user";
 
 // LOG IN MUTATION
@@ -29,7 +30,7 @@ export async function LogInMutation(logInRequest: LogInRequest) {
     else {
         console.log("Error logging in...");
         console.log(response.body);
-        return null;
+        throw new Error();
     }
 }
 
@@ -62,8 +63,8 @@ export async function RegistrationMutation(regRequest: RegistrationRequest) {
         return true;
     }
     else {
-        console.log("Error logging in...");
+        console.log("Error signing up...");
         console.log(response.body);
-        return false;
+        throw new Error();
     }
 }

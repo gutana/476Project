@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { LogInMutation } from "../../api/mutations/userMutations";
+import { Alert } from "react-bootstrap";
 
 export default function LogIn() {
     const navigate = useNavigate();
@@ -22,11 +23,7 @@ export default function LogIn() {
             navigate('/');
         },
         onError: (data, variables, context) => {
-            console.log(data);
-            if (data.message === "Failed to fetch")
-                setErrorMessage("Unable to reach log in server. Please try again later.");
-            else
-                setErrorMessage("Unknown error: " + data.message);
+            setErrorMessage("Unable to log in. Please check your email and password and try again.");
         }
     })
 
@@ -53,7 +50,7 @@ export default function LogIn() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>
-            {errorMessage != null ? <p>{errorMessage}</p> : ""}
+            {errorMessage != null ? <Alert variant="warning">{errorMessage}</Alert> : ""}
             <Button variant="primary" type="submit">
                 Submit
             </Button>
