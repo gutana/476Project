@@ -1,14 +1,4 @@
-import { Region, UserType } from "./signupQuery";
-
-export interface UserResult {
-    firstName: string,
-    lastName: string,
-    region: Region,
-    userType: UserType,
-    id: string,
-    email: string,
-    phoneNumber?: string,
-}
+import { User } from "../../models/user";
 
 export async function userQuery() {
     // TODO: Should have an abstraction for authed query
@@ -21,7 +11,7 @@ export async function userQuery() {
 
     if (response.status == 200) {
         const text = await response.text();
-        return await JSON.parse(text) as UserResult;
+        return await JSON.parse(text) as User;
     }
     else {
         console.log("Error fetching user...");

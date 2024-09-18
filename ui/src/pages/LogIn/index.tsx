@@ -1,49 +1,45 @@
-import { useQuery } from "@tanstack/react-query"
-import { LogInRequest, LogInQuery } from "../../api/logInQuery";
-import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query"
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { LogInMutation } from "../../api/mutations/userMutations";
 
 export default function LogIn() {
     const navigate = useNavigate();
-    const [logInFormData, setLogInFormData] = useState<LogInRequest | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>();
 
-    const { isLoading, error, data } = useQuery({
-        queryKey: ['LogIn1235'],
-        queryFn: () => {
-            if (logInFormData != null) {
-                var result = LogInQuery(logInFormData)
-                setLogInFormData(null)
-                return result
-            }
+    const loginMutation = useMutation({
+        mutationFn: LogInMutation,
+        onSuccess: (data, variables, context) => {
+            if (data === null) return;
+            sessionStorage.setItem("accessToken", data.accessToken);
+            sessionStorage.setItem("refreshToken", data.refreshToken);
+
+            const expiresAt = Date.now() + data.expiresIn * 1000;
+            sessionStorage.setItem("tokenExpiry", expiresAt.toString());
+            navigate('/');
         },
-        enabled: () => logInFormData != null
+        onError: (data, variables, context) => {
+            console.log(data);
+            if (data.message === "Failed to fetch")
+                setErrorMessage("Unable to reach log in server. Please try again later.");
+            else
+                setErrorMessage("Unknown error: " + data.message);
+        }
     })
 
     const handleSubmit = (event: any) => {
-        console.log('Log In Form was submitted');
-        console.log(event);
         event.preventDefault();
 
-        setLogInFormData({
+        loginMutation.mutate({
             Email: event.target[0].value,
             Password: event.target[1].value,
         })
     }
 
-    useEffect(() => {
-        if (data === null || data === undefined) return;
-        sessionStorage.setItem("accessToken", data.accessToken);
-        sessionStorage.setItem("refreshToken", data.refreshToken);
-
-        const expiresAt = Date.now() + data.expiresIn * 1000;
-        sessionStorage.setItem("tokenExpiry", expiresAt.toString());
-        navigate('/');
-    })
-
-    if (isLoading)
+    if (loginMutation.isPending)
         return (<LoadingSpinner />);
 
     return (
@@ -57,6 +53,7 @@ export default function LogIn() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>
+            {errorMessage != null ? <p>{errorMessage}</p> : ""}
             <Button variant="primary" type="submit">
                 Submit
             </Button>

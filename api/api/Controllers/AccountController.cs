@@ -18,13 +18,15 @@ public class AccountController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly ApplicationDbContext _context;
 
-    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher)
+    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
     {
         _logger = logger;
         _userManager = userManager;
         _signInManager = signInManager;
         _passwordHasher = passwordHasher;
+        _context = context;
     }
 
     [HttpPost("register")]
@@ -52,7 +54,6 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> GetUser()
     {
         User? user = await GetCurrentUser();
-
         if (user == null)
             return Unauthorized();
 

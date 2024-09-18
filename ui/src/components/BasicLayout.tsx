@@ -1,8 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { ReactNode, useState, useEffect, createContext } from "react"
-import { useNavigate } from "react-router-dom";
-import { userQuery, UserResult } from "../api/userQuery";
-import { Navbar } from "../pages/SignUp";
+import { ReactNode } from "react"
 import { Card, Container, Row } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 

@@ -1,4 +1,4 @@
-import { Spinner, Stack } from "react-bootstrap"
+import { Spinner } from "react-bootstrap"
 
 export const LoadingSpinner = () => {
     return (
