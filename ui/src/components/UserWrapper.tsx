@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode, useState, useEffect, createContext } from "react"
 import { useNavigate } from "react-router-dom";
-import { userQuery } from "../api/queries/userQuery";
+import { userQuery } from "../api/queries/userQueries";
 import { User } from "../models/user";
 
 interface Props {
