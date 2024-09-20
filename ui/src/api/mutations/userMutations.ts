@@ -22,7 +22,7 @@ export async function LogInMutation(logInRequest: LogInRequest) {
         body: JSON.stringify(logInRequest)
     });
 
-    if (response.status == 200) {
+    if (response.status === 200) {
         const text = await response.text();
         return await JSON.parse(text) as LogInResult;
     }
@@ -45,12 +45,16 @@ export interface RegistrationRequest {
 }
 
 export async function RegistrationMutation(regRequest: RegistrationRequest) {
+
+    const normalizedFirstName = regRequest.FirstName.charAt(0).toUpperCase() + regRequest.FirstName.slice(1);
+    const normalizedLastName = regRequest.LastName.charAt(0).toUpperCase() + regRequest.LastName.slice(1);
+
     const response = await fetch('https://localhost:7287/account/register', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            FirstName: regRequest.FirstName,
-            LastName: regRequest.LastName,
+            FirstName: normalizedFirstName,
+            LastName: normalizedLastName,
             Email: regRequest.Email,
             Password: regRequest.Password,
             Region: regRequest.Region.toString(),
@@ -58,7 +62,7 @@ export async function RegistrationMutation(regRequest: RegistrationRequest) {
         })
     });
 
-    if (response.status == 200) {
+    if (response.status === 200) {
         return true;
     }
     else {

@@ -1,5 +1,7 @@
-import { ReactNode } from "react"
-
+import { ReactNode, useContext } from "react"
+import { Button, Container, Nav, Navbar as NavB } from "react-bootstrap"
+import { UserContext } from "./UserWrapper"
+import { useNavigate } from "react-router-dom"
 interface Props {
     children: ReactNode
 }
@@ -14,43 +16,34 @@ export const DefaultLayout = ({ children }: Props) => {
     )
 }
 
+
+
 export function Navbar() {
+    const user = useContext(UserContext);
+    const navigate = useNavigate();
+
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
-            <div className="container-fluid">
-                <a className="navbar-brand" href="#">Navbar</a>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Link</a>
-                        </li>
-                        <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Action</a></li>
-                                <li><a className="dropdown-item" href="#">Another action</a></li>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><a className="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
-                    </ul>
-                    <form className="d-flex" role="search">
-                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button className="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                </div>
-            </div>
-        </nav>
-    )
+        <NavB className="bg-body-tertiary">
+            <Container>
+                <NavB.Brand href="/">SubOptimal</NavB.Brand>
+                <NavB.Toggle />
+                <Nav.Link href="/postings">My Postings</Nav.Link>
+
+                <NavB.Collapse className="justify-content-end">
+                    <NavB.Text>
+                        Signed in as: <a href="#login">{user?.firstName} {user?.lastName}</a>
+                    </NavB.Text>
+                    <Button
+                        onClick={() => {
+                            sessionStorage.clear();
+                            navigate('/login');
+                        }}
+                        style={{ marginLeft: 10 }}
+                        variant="danger">
+                        Log Out
+                    </Button>{' '}
+                </NavB.Collapse>
+            </Container>
+        </NavB>
+    );
 }
