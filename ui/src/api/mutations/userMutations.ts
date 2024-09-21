@@ -22,7 +22,7 @@ export async function LogInMutation(logInRequest: LogInRequest) {
         body: JSON.stringify(logInRequest)
     });
 
-    if (response.status == 200) {
+    if (response.status === 200) {
         const text = await response.text();
         return await JSON.parse(text) as LogInResult;
     }
@@ -58,12 +58,47 @@ export async function RegistrationMutation(regRequest: RegistrationRequest) {
         })
     });
 
-    if (response.status == 200) {
+    if (response.status === 200) {
         return true;
     }
     else {
         console.log("Error signing up...");
         console.log(response.body);
         throw new Error();
+    }
+}
+
+// EDIT MUTATION
+interface EditInformation {
+    FirstName: string,
+    LastName: string,
+    Email: string,
+    PhoneNumber: string | undefined,
+    Region: Region,
+}
+
+export async function EditInformationMutation(request: EditInformation) {
+    const url = 'https://localhost:7287/account/editInfo';
+    const body = JSON.stringify({
+        FirstName: request.FirstName,
+        LastName: request.LastName,
+        Email: request.Email,
+        PhoneNumber: request.PhoneNumber,
+        Region: request.Region
+    });
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
+        },
+        body: body
+    }
+
+    const response = await fetch(url, options);
+    if (response.status === 200) {
+        return true;
+    } else {
+        throw new Error(JSON.stringify(response.body));
     }
 }

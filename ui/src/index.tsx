@@ -10,6 +10,7 @@ import LogIn from './pages/LogIn';
 import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
+import Edit from './pages/Edit';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -37,6 +38,16 @@ const router = createBrowserRouter([
             <BasicLayout>
                 <LogIn />
             </BasicLayout>
+        )
+    },
+    {
+        path: '/edit',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <Edit />
+                </DefaultLayout>
+            </UserWrapper>
         )
     }
 ]);

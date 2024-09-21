@@ -1,4 +1,5 @@
 import { ReactNode } from "react"
+import { useLocation } from "react-router-dom"
 
 interface Props {
     children: ReactNode
@@ -15,6 +16,7 @@ export const DefaultLayout = ({ children }: Props) => {
 }
 
 export function Navbar() {
+    const location = useLocation();
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary">
             <div className="container-fluid">
@@ -25,10 +27,7 @@ export function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Link</a>
+                            <a className={`nav-link ${location.pathname === '/' ? "active" : ""}`} aria-current="page" href="/">Home</a>
                         </li>
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -42,7 +41,7 @@ export function Navbar() {
                             </ul>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link disabled" aria-disabled="true">Disabled</a>
+                            <a className={`nav-link ${location.pathname === '/edit' ? "active" : ""}`} href="/edit">Edit</a>
                         </li>
                     </ul>
                     <form className="d-flex" role="search">

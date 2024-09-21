@@ -6,6 +6,7 @@ import { RegistrationMutation } from "../../api/mutations/userMutations";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { Alert, Form } from "react-bootstrap";
 import { InformationModal } from "../../components/InformationModal";
+import { Region, UserType } from "../../models/user";
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -26,25 +27,32 @@ export default function SignUp() {
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
-
-        registrationMutation.mutate({
+        let data = {
             FirstName: event.target[0].value,
             LastName: event.target[1].value,
             Email: event.target[2].value,
             Password: event.target[3].value,
-            Region: event.target[4].selectedIndex - 1, // subtract 1 to get enum to line up
-            UserType: event.target[5].selectedIndex - 1
-        })
+            Region: event.target[4].value,
+            UserType: event.target[5].value
+        }
+
+        if (data.Region === "-1" || data.UserType === "-1") {
+            setErrorMessage("Region/Account Type has to be selected!");
+            return;
+        }
+
+        registrationMutation.mutate(data);
     }
 
     const handleClose = () => {
         navigate("/");
     }
 
-    if (registrationMutation.isPending)
+    if (registrationMutation.isPending) {
         return (
             <LoadingSpinner />
         )
+    }
 
     return (
         <>
@@ -77,8 +85,8 @@ export default function SignUp() {
                         <Form.Label>Region</Form.Label>
                         <Form.Select defaultValue="-1" required>
                             <option value="-1" disabled>Select your region</option>
-                            <option value="0">Regina</option>
-                            <option value="1">Saskatoon</option>
+                            <option value={Region.Regina}>Regina</option>
+                            <option value={Region.Saskatoon}>Saskatoon</option>
                         </Form.Select>
                     </Form.Group>
 
@@ -86,9 +94,9 @@ export default function SignUp() {
                         <Form.Label>Account Type</Form.Label>
                         <Form.Select defaultValue="-1" required>
                             <option value="-1" disabled>Select account type</option>
-                            <option value="0">Teacher</option>
-                            <option value="1">Substitute</option>
-                            <option value="2">Administrator</option>
+                            <option value={UserType.Teacher}>Substitute</option>
+                            <option value={UserType.Requestor}>Teacher</option>
+                            <option value={UserType.Administrator}>Administrator</option>
                         </Form.Select>
                     </Form.Group>
 
