@@ -98,6 +98,9 @@ export async function EditInformationMutation(request: EditInformation) {
     const response = await fetch(url, options);
     if (response.status === 200) {
         return true;
+    } else if (response.status === 401) {
+        window.location.href = "/login";
+        return null;
     } else {
         throw new Error(JSON.stringify(response.body));
     }

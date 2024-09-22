@@ -9,9 +9,12 @@ export async function userQuery() {
         },
     });
 
-    if (response.status == 200) {
+    if (response.status === 200) {
         const text = await response.text();
         return await JSON.parse(text) as User;
+    } else if (response.status === 401) {
+        window.location.href = "/login";
+        return null;
     }
     else {
         console.log("Error fetching user...");

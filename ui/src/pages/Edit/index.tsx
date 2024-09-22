@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../components/UserWrapper";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { Region, UserType } from "../../models/user";
+import { Region } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
 import { useMutation } from "@tanstack/react-query";
@@ -15,17 +15,18 @@ export default function Edit() {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
-    const [region, setRegion] = useState<Region | undefined>();
+    const [region, setRegion] = useState<Region | string | undefined>();
     const [last, setLast] = useState("");
+    const [isLoading, setLoading] = useState(false);
 
     const editMutation = useMutation({
         mutationFn: EditInformationMutation,
         onSuccess: (data, variables, context) => {
-            console.log("WORKS!");
-            window.location.reload();
+            setTimeout(() => window.location.reload(), 2000);
         },
         onError: (data, variables, context) => {
-            console.log("FAILED", data);
+            console.error("Data: ", data, "Varaibles: ", variables, "Context: ", context);
+            setLoading(false);
             editMutation.reset();
         }
     })
@@ -43,16 +44,16 @@ export default function Edit() {
         }
 
         let realRegion = stringToRegion(region);
-
         if (realRegion === undefined) {
             realRegion = Region.Regina;
         }
         
+        setLoading(true);
         editMutation.mutate({
             FirstName: firstName,
             LastName: lastName,
             Email: email,
-            PhoneNumber: sanitizeNumber(phoneNumber),
+            PhoneNumber: sanitizedNumber,
             Region: realRegion
         })
     }
@@ -69,9 +70,11 @@ export default function Edit() {
         }
         
         switch (region.toLowerCase()) {
-            case "regina" || "0":
+            case "regina":
+            case "0":
                 return Region.Regina;
-            case "saskatoon" || "1":
+            case "saskatoon":
+            case "1":
                 return Region.Saskatoon;
             default:
                 return Region.Regina;
@@ -119,14 +122,14 @@ export default function Edit() {
                 
                 <Form.Group className="mb-3">
                     <Form.Label>Region</Form.Label>
-                    <Form.Select onChange={(e) => setRegion(stringToRegion(e.target.value))} value={region} required>
+                    <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
                         <option value={Region.Regina}>Regina</option>
                         <option value={Region.Saskatoon}>Saskatoon</option>
                     </Form.Select>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Save Changes
+                <Button variant="primary" disabled={isLoading} type="submit">
+                    {isLoading ? 'Saving...' : 'Save Changes'}
                 </Button>
             </Form>
         </div>

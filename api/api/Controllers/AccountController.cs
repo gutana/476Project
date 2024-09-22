@@ -20,15 +20,6 @@ public class AccountController : ControllerBase
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public class EditInformationRequest
-    {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? PhoneNumber { get; set; }
-        public Region Region { get; set; }
-    }
-
     public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
     {
         _logger = logger;
@@ -73,7 +64,7 @@ public class AccountController : ControllerBase
 
     [HttpPost("editInfo")]
     [Authorize]
-    public async Task<IActionResult> EditInfo([FromBody]EditInformationRequest data)
+    public async Task<IActionResult> EditInfo(User data)
     {
         User? user = await GetCurrentUser();
         if (user == null)
