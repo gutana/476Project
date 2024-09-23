@@ -7,9 +7,12 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { Alert, Form } from "react-bootstrap";
 import { InformationModal } from "../../components/InformationModal";
 import { Region, UserType } from "../../models/user";
+import { formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
 
 export default function SignUp() {
     const navigate = useNavigate();
+    const [phoneNumber, setPhoneNumber] = useState<string>("");
+    const [last, setLast] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,13 +30,19 @@ export default function SignUp() {
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
+        let sanitizedNumber = sanitizeNumber(phoneNumber);
+        if (sanitizedNumber.length !== 10) {
+            setErrorMessage("Invalid Phone Number!")
+            return;
+        }
         let data = {
             FirstName: event.target[0].value,
             LastName: event.target[1].value,
             Email: event.target[2].value,
-            Password: event.target[3].value,
-            Region: event.target[4].value,
-            UserType: event.target[5].value
+            PhoneNumber: sanitizedNumber,
+            Password: event.target[4].value,
+            Region: event.target[5].value,
+            UserType: event.target[6].value
         }
 
         if (data.Region === "-1" || data.UserType === "-1") {
@@ -42,6 +51,12 @@ export default function SignUp() {
         }
 
         registrationMutation.mutate(data);
+    }
+
+    const onNumberChange = (e: any) => {
+        e.target.value = formatPhoneNumberOnChange(e.target.value, phoneNumber, last);
+        setLast(e.target.value.slice(-1) ? e.target.value.slice(-1) : "");
+        setPhoneNumber(e.target.value);
     }
 
     const handleClose = () => {
@@ -74,6 +89,11 @@ export default function SignUp() {
                         <Form.Text id="emailHelp" muted>
                             We'll never share your email with anyone else.
                         </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="phoneNumber">
+                        <Form.Label>Phone Number</Form.Label>
+                        <Form.Control type="text" required value={phoneNumber} onChange={onNumberChange} />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="password">

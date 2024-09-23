@@ -14,8 +14,8 @@ export default function Edit() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
-    const [region, setRegion] = useState<Region | string | undefined>();
+    const [phoneNumber, setPhoneNumber] = useState<string>("");
+    const [region, setRegion] = useState<Region | string>("");
     const [last, setLast] = useState("");
     const [isLoading, setLoading] = useState(false);
 
@@ -25,7 +25,7 @@ export default function Edit() {
             setTimeout(() => window.location.reload(), 2000);
         },
         onError: (data, variables, context) => {
-            console.error("Data: ", data, "Varaibles: ", variables, "Context: ", context);
+            console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
             setLoading(false);
             editMutation.reset();
         }
@@ -34,18 +34,20 @@ export default function Edit() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         let sanitizedNumber = sanitizeNumber(phoneNumber);
-        let newVals = [firstName, lastName, email, sanitizedNumber, region];
-        let oldVals = [user?.firstName, user?.lastName, user?.email, user?.phoneNumber, stringToRegion(user?.region)];
+        let realRegion = stringToRegion(region);
+        
+        if (!user) {
+            window.location.href = "/";
+            return;
+        }
+        
+        let newVals = [firstName, lastName, email, sanitizedNumber, realRegion];
+        let oldVals = [user.firstName, user.lastName, user.email, user.phoneNumber, stringToRegion(user.region)];
         if (newVals.toString() === oldVals.toString()) return;
 
         if (sanitizedNumber && sanitizedNumber.length !== 10) {
             alert("Phone number has to be 10 digits!")
             return;
-        }
-
-        let realRegion = stringToRegion(region);
-        if (realRegion === undefined) {
-            realRegion = Region.Regina;
         }
         
         setLoading(true);
@@ -64,7 +66,7 @@ export default function Edit() {
         setPhoneNumber(e.target.value);
     }
 
-    const stringToRegion = (region: string | Region | undefined) => {
+    const stringToRegion = (region: string | Region) => {
         if (!(typeof region === "string")) {
             return region;
         }

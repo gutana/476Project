@@ -14,7 +14,7 @@ export const BasicLayout = ({ children }: Props) => {
 
     return (
         <>
-            <div style={{ background: "grey", height: "100vh" }} >
+            <div style={{ background: "grey", minHeight: "100vh", height: "100%" }} >
                 <Container >
                     <Row className="justify-content-md-center">
                         <div style={{ "alignContent": "center", justifySelf: "center" }}>

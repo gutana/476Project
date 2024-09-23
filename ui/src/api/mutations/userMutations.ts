@@ -40,6 +40,7 @@ export interface RegistrationRequest {
     LastName: string,
     Email: string,
     Password: string,
+    PhoneNumber: string,
     Region: Region,
     UserType: UserType
 }
@@ -52,6 +53,7 @@ export async function RegistrationMutation(regRequest: RegistrationRequest) {
             FirstName: regRequest.FirstName,
             LastName: regRequest.LastName,
             Email: regRequest.Email,
+            PhoneNumber: regRequest.PhoneNumber,
             Password: regRequest.Password,
             Region: regRequest.Region.toString(),
             UserType: regRequest.UserType.toString()
@@ -73,7 +75,7 @@ interface EditInformation {
     FirstName: string,
     LastName: string,
     Email: string,
-    PhoneNumber: string | undefined,
+    PhoneNumber: string,
     Region: Region,
 }
 

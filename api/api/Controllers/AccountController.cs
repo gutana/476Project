@@ -39,6 +39,7 @@ public class AccountController : ControllerBase
         user.Region = registrationDto.Region;
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;
+        user.PhoneNumber = registrationDto.PhoneNumber;
         user.PasswordHash = _passwordHasher.HashPassword(user, registrationDto.Password);
 
         var result = await _userManager.CreateAsync(user);

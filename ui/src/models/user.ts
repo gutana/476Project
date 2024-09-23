@@ -5,7 +5,7 @@ export interface User {
     userType: UserType,
     id: string,
     email: string,
-    phoneNumber?: string,
+    phoneNumber: string,
 }
 
 export enum Region {
