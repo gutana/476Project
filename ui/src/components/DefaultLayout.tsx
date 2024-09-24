@@ -1,8 +1,10 @@
 import { ReactNode, useContext } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+
 import { UserContext } from "./UserWrapper"
 import { UserType } from "../models/user"
 
+import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap"
 interface Props {
     children: ReactNode
 }
@@ -11,55 +13,46 @@ export const DefaultLayout = ({ children }: Props) => {
 
     return (
         <>
-            <Navbar />
+            <CustomNavbar />
             {children}
         </>
     )
 }
 
-export function Navbar() {
-    const location = useLocation();
+export function CustomNavbar() {
+    const navigate = useNavigate();
     const user = useContext(UserContext);
 
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
-            <div className="container-fluid">
-                <Link className="navbar-brand" to="/">Navbar</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <Link className={`nav-link ${location.pathname === '/' ? "active" : ""}`} aria-current="page" to="/">Home</Link>
-                        </li>
-                        <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="/">Action</a></li>
-                                <li><a className="dropdown-item" href="/">Another action</a></li>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><a className="dropdown-item" href="/">Something else here</a></li>
-                            </ul>
-                        </li>
-                        <li className="nav-item">
-                            <Link className={`nav-link ${location.pathname === '/edit' ? "active" : ""}`} to="/edit">Edit</Link>
-                        </li>
+        <Navbar expand="lg" className="bg-body-tertiary container-fluid w-100 m-auto">
+            <Container className="container-fluid">
+                <Navbar.Brand>
+                    <Nav.Link as={Link} to="/">
+                        SubOptimal
+                    </Nav.Link>
+                </Navbar.Brand>
+
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>
                         {
                             user?.userType === UserType.Administrator &&
-                            <li className="nav-item">
-                                <Link className={`nav-link ${location.pathname === '/edit' ? "active" : ""}`} to="/postnews">Post News</Link>
-                            </li>
+                            <Nav.Link as={Link} to="/postNews">Post News</Nav.Link>
                         }
-                    </ul>
-                    <form className="d-flex" role="search">
-                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button className="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                </div>
-            </div>
-        </nav >
+                    </Nav>
+                    <Button
+                        className="ml-2 mr-5"
+                        variant="danger"
+                        onClick={() => {
+                            sessionStorage.clear();
+                            navigate('/login');
+                        }}>
+                        Log Out
+                    </Button>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     )
 }

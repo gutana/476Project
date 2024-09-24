@@ -11,12 +11,15 @@ export default function PostNews() {
     const navigate = useNavigate();
 
     const [resultMessage, setResultMessage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>();
 
     const postNewsMutation = useMutation({
         mutationFn: PostNewsMutation,
         onSuccess: (data, variables, context) => {
             console.log("Successful post!");
             setResultMessage("Post was successful!");
+            setErrorMessage(null);
+            postNewsMutation.reset();
         },
         onError: (data, variables, context) => {
             console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
@@ -31,6 +34,24 @@ export default function PostNews() {
         event.preventDefault();
         const title = event.target[0].value;
         const content = event.target[1].value;
+
+        let errMsg: string = "";
+
+        let good: boolean = true;
+        if (title === "") {
+            good = false;
+            errMsg = "Title cannot be empty. ";
+        }
+        if (content === "") {
+            good = false;
+            errMsg += " Content cannot be empty."
+        }
+
+        if (!good) {
+            setErrorMessage(errMsg);
+            return;
+        }
+
 
         postNewsMutation.mutate({
             Title: title,
@@ -60,6 +81,10 @@ export default function PostNews() {
             {
                 resultMessage &&
                 <Alert style={{ marginTop: "10px" }} variant="success">{resultMessage}</Alert>
+            }
+            {
+                errorMessage &&
+                <Alert style={{ marginTop: "10px" }} variant="danger">{errorMessage}</Alert>
             }
         </div>
     )
