@@ -7,6 +7,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
+import PostNews from './pages/PostNews';
 import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
@@ -20,6 +21,16 @@ const router = createBrowserRouter([
             <UserWrapper>
                 <DefaultLayout>
                     <Home />
+                </DefaultLayout>
+            </UserWrapper>
+        )
+    },
+    {
+        path: '/postnews',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <PostNews />
                 </DefaultLayout>
             </UserWrapper>
         )
