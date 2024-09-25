@@ -2,17 +2,18 @@ import { Grade, PrimarySchoolSubject, SchoolType, SecondarySchoolSubject } from 
 
 
 export interface Post {
-    Id: string,
-    PosterId: string,
-    SchoolId: string,
+    id: string,
+    posterId: string,
+    schoolId: string,
 
-    SchoolName: string,
-    SchoolType: SchoolType,
+    schoolName: string,
+    schoolType: SchoolType,
 
-    PostDescription: string,
+    postTitle: string,
+    postDescription: string,
 
-    PrimarySchoolSubjects?: PrimarySchoolSubject[],
-    SecondarySchoolSubjec?: SecondarySchoolSubject[],
-    Grades?: Grade[],
+    primarySchoolSubjects?: PrimarySchoolSubject[],
+    secondarySchoolSubjec?: SecondarySchoolSubject[],
+    grades?: Grade[],
 
 }

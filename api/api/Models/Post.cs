@@ -11,6 +11,7 @@ public class Post
     public School? School { get; set; }
     public SchoolType? SchoolType { get; set; }
 
+    public string? PostTitle { get; set; }
     public string? PostDescription { get; set; }
 
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }

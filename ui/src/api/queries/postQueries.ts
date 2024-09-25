@@ -1,42 +1,24 @@
 import { Post } from "../../models/posting";
-import { SchoolType } from "../../models/school";
-import { User } from "../../models/user";
 
 export async function GetUserPostings() {
-    var post1: Post = {
-        Id: '1234',
-        PosterId: '16352',
-        SchoolId: '123',
-        SchoolName: "Thom Collegiate",
-        SchoolType: SchoolType.Secondary,
-        PostDescription: "Science 10, Chemistry 20/20"
-    };
 
-    var post2: Post = {
-        Id: '1234',
-        PosterId: '16352',
-        SchoolId: '123',
-        SchoolName: "Thom Collegiate",
-        SchoolType: SchoolType.Secondary,
-        PostDescription: "Science 10, Chemistry 20/20"
-    };
+    const response = await fetch('https://localhost:7287/posting/getUserPostings', {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
+        }
+    });
 
-    var post3: Post = {
-        Id: '1234',
-        PosterId: '16352',
-        SchoolId: '123',
-        SchoolName: "Thom Collegiate",
-        SchoolType: SchoolType.Secondary,
-        PostDescription: "Science 10, Chemistry 20/20"
-    };
-    var post4: Post = {
-        Id: '1234',
-        PosterId: '16352',
-        SchoolId: '123',
-        SchoolName: "Thom Collegiate",
-        SchoolType: SchoolType.Secondary,
-        PostDescription: "Science 10, Chemistry 20/20"
-    };
+    if (response.status === 200) {
+        const text = await response.text();
+        return await JSON.parse(text) as Post[];
+    } else if (response.status === 401) {
+        return null;
+    }
+    else {
+        console.log("Error fetching posts...");
+        console.log(response.body);
+        return null;
+    }
 
-    return [post1, post2, post3, post4];
 }

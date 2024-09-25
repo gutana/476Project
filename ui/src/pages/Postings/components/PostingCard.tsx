@@ -8,9 +8,9 @@ interface Props {
 export const PostingCard = ({ post }: Props) => {
     return (
         <Card style={{ margin: '2vw' }}>
-            <Card.Header as="h5">{post.SchoolName}</Card.Header>
+            <Card.Header as="h5">{post.postTitle}</Card.Header>
             <Card.Body>
-                <Card.Title>{post.PostDescription}</Card.Title>
+                <Card.Title>{post.postDescription}</Card.Title>
                 <Card.Text>
                     Detailed description here!
                 </Card.Text>

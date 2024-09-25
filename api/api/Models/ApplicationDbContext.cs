@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using api.DTO;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Dynamic;
 
 namespace api.Models;
 
@@ -22,5 +24,31 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.Entity<User>().Property(u => u.LastName).HasMaxLength(32);
 
         builder.HasDefaultSchema("identity");
+    }
+
+    public bool CreatePosting(CreatePostingDto dto, User user)
+    {
+        try
+        {
+            Post post = new();
+            post.PosterId = user.Id;
+            post.Id = Guid.NewGuid().ToString();
+            post.PostTitle = dto.Title;
+            post.PostDescription = dto.Description;
+            Posts.Add(post);
+            SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<List<Post>> GetUserPosts(User user)
+    {
+        return await Posts
+            .Where(post => post.PosterId == user.Id)
+            .ToListAsync();
     }
 }
