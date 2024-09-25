@@ -51,7 +51,7 @@ export default function LogIn() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>
-            {errorMessage != null ? <Alert variant="warning">{errorMessage}</Alert> : ""}
+            {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
             <Button variant="primary" type="submit">
                 Submit
             </Button>
