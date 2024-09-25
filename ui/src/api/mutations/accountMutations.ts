@@ -1,10 +1,10 @@
-export interface PostNewsData {
-    Title: string,
-    Content: string
+export interface ApprovalResponse {
+    Approved: boolean
+    Id: string
 }
 
-export async function PostNewsMutation(data: PostNewsData) {
-    const response = await fetch('https://localhost:7287/news/create', {
+export async function AccountApprovalMutation(data: ApprovalResponse) {
+    const response = await fetch('https://localhost:7287/admin/approveUser', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -15,11 +15,8 @@ export async function PostNewsMutation(data: PostNewsData) {
 
     if (response.status === 200) {
         return true;
-    } else if (response.status === 500) {
-        const text = await response.text();
-        const reason = JSON.parse(text).detail;
-        throw reason;
-    } else {
+    }
+    else {
         console.log("Error posting news...");
         console.log(response.body);
         throw new Error();

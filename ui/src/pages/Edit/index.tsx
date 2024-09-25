@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../components/UserWrapper";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import { Region } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
@@ -18,6 +19,7 @@ export default function Edit() {
     const [region, setRegion] = useState<Region | string>("");
     const [last, setLast] = useState("");
     const [isLoading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const editMutation = useMutation({
         mutationFn: EditInformationMutation,
@@ -25,6 +27,9 @@ export default function Edit() {
             setTimeout(() => window.location.reload(), 2000);
         },
         onError: (data, variables, context) => {
+            if (`${data}` === "Account has to be verified by an administrator.") {
+                setErrorMessage(`${data}`);
+            }
             console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
             setLoading(false);
             editMutation.reset();
@@ -46,7 +51,7 @@ export default function Edit() {
         if (newVals.toString() === oldVals.toString()) return;
 
         if (sanitizedNumber && sanitizedNumber.length !== 10) {
-            alert("Phone number has to be 10 digits!")
+            setErrorMessage("Phone number has to be 10 digits!")
             return;
         }
         
@@ -129,6 +134,8 @@ export default function Edit() {
                         <option value={Region.Saskatoon}>Saskatoon</option>
                     </Form.Select>
                 </Form.Group>
+
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
                 <Button variant="primary" disabled={isLoading} type="submit">
                     {isLoading ? 'Saving...' : 'Save Changes'}

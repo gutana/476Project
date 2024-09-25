@@ -38,6 +38,8 @@ public class NewsController : Controller
 
         if (user == null || user.UserType != UserType.Administrator)
             return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Problem("Account has to be verified by an administrator.", statusCode: 500);
 
         if (_context.CreateNewsPost(dto))
             return Ok();

@@ -39,7 +39,11 @@ export function CustomNavbar() {
                         <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>
                         {
                             user?.userType === UserType.Administrator &&
-                            <Nav.Link as={Link} to="/postNews">Post News</Nav.Link>
+                            <>
+                                <Nav.Link as={Link} to="/postNews">Post News</Nav.Link>
+                                <Nav.Link as={Link} to="/requestedAccounts">Requested Accounts</Nav.Link>
+                            </>
+                            
                         }
                     </Nav>
                     <Button

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
@@ -51,6 +51,7 @@ export default function LogIn() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>
+            <div className="mb-3">Don't have an account? <Link to="/signup">Sign up!</Link></div>
             {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
             <Button variant="primary" type="submit">
                 Submit

@@ -22,6 +22,9 @@ export default function PostNews() {
             postNewsMutation.reset();
         },
         onError: (data, variables, context) => {
+            if (`${data}` === "Account has to be verified by an administrator.") {
+                setErrorMessage(`${data}`);
+            }
             console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
             postNewsMutation.reset();
         }
@@ -52,14 +55,10 @@ export default function PostNews() {
             return;
         }
 
-
         postNewsMutation.mutate({
             Title: title,
             Content: content
         })
-
-        event.target[0].value = "";
-        event.target[1].value = "";
     }
 
     return (

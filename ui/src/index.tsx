@@ -12,6 +12,7 @@ import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
 import Edit from './pages/Edit';
+import Approve from './pages/Approve';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -57,6 +58,16 @@ const router = createBrowserRouter([
             <UserWrapper>
                 <DefaultLayout>
                     <Edit />
+                </DefaultLayout>
+            </UserWrapper>
+        )
+    },
+    {
+        path: '/requestedAccounts',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <Approve />
                 </DefaultLayout>
             </UserWrapper>
         )

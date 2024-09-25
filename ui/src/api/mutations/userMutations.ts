@@ -103,7 +103,12 @@ export async function EditInformationMutation(request: EditInformation) {
     } else if (response.status === 401) {
         window.location.href = "/login";
         return null;
+    } else if (response.status === 500) {
+        const text = await response.text();
+        const reason = JSON.parse(text).detail;
+        throw reason;
     } else {
-        throw new Error(JSON.stringify(response.body));
+        console.error(response.body)
+        throw new Error();
     }
 }
