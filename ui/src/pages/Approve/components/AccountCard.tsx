@@ -8,11 +8,24 @@ interface Props {
     ApproveUser: Function
 }
 
-const capitalizeFirst = (value: string) => {
-    return value.slice(0, 1).toUpperCase() + value.slice(1);
-}
-
 export default function AccountCard({ Account, ApproveUser }: Props) {
+    const capitalizeFirst = (value: string) => {
+        return value.slice(0, 1).toUpperCase() + value.slice(1);
+    }
+    
+    const userTypeToPosition = (userType: UserType) => {
+        switch (userType) {
+            case UserType.Administrator:
+                return "Administrator"
+            case UserType.Requestor:
+                return "Teacher"            
+            case UserType.Teacher:
+                return "Substitute"
+            default:
+                return "";
+        }
+    }
+    
     return (
         <Card className="w-75 m-auto my-3 bg-light">
             <Card.Body>
@@ -21,7 +34,7 @@ export default function AccountCard({ Account, ApproveUser }: Props) {
                         <div>Email: {Account.email}</div>
                         <div>Phone Number: {formatPhoneNumber(Account.phoneNumber)}</div>
                         <div>Region: {Account.region}</div>
-                        <div>Occupation: {Account.userType === UserType.Requestor ? "Substitute" : Account.userType}</div>
+                        <div>Occupation: {userTypeToPosition(Account.userType)}</div>
                     </Card.Text>
                 <Button className='float-end' onClick={() => ApproveUser(Account.id, false)} variant="danger">Deny</Button>
                 <Button className='me-2 float-end' onClick={() => ApproveUser(Account.id, true)} variant="primary">Approve</Button>

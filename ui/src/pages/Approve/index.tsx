@@ -18,7 +18,6 @@ export default function Approve() {
     
     const { data, error, isLoading, isError } = useQuery({
         queryFn: () => accountQuery(),
-        retry: false,
         queryKey: ['accountquery']
     })
 
@@ -72,9 +71,9 @@ export default function Approve() {
             {user?.userType === UserType.Administrator && 
                 <div>
                     <h1 className="m-3">Requested Account(s)</h1>
-                    {accounts && accounts.length > 0 ? accounts.map((val, ind) => {
+                    {accounts && accounts.length > 0 ? accounts.map((val, _) => {
                         return (
-                            <AccountCard key={ind} Account={val} ApproveUser={handleApproval} />
+                            <AccountCard key={val.id} Account={val} ApproveUser={handleApproval} />
                         )
                     }) : <h3 className="m-3"><small className="text-muted">{isError ? `${error}` : "There are no pending account requests."}</small></h3>}
                 </div>
