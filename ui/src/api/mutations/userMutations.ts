@@ -1,10 +1,16 @@
 import { Region, UserType } from "../../models/user";
+import { getRefresh } from "../../components/UserWrapper";
+import { baseServerURL } from "../../components/consts";
 
 // LOG IN MUTATION
 
 export interface LogInRequest {
     Email: string,
     Password: string,
+}
+
+export interface RefreshRequest {
+    refreshToken: string
 }
 
 export interface LogInResult {
@@ -16,7 +22,7 @@ export interface LogInResult {
 
 export async function LogInMutation(logInRequest: LogInRequest) {
 
-    const response = await fetch('https://localhost:7287/login', {
+    const response = await fetch(baseServerURL + '/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(logInRequest)
@@ -33,6 +39,23 @@ export async function LogInMutation(logInRequest: LogInRequest) {
     }
 }
 
+export async function RefreshMutation(body: RefreshRequest) {
+    const url = baseServerURL + '/refresh';
+    const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    }
+
+    const response = await fetch(url, options);
+    if (response.status === 200) {
+        const text = await response.text();
+        return await JSON.parse(text) as LogInResult;
+    } else {
+        return null;
+    }
+}
+
 // REGISTRATION MUTATION
 
 export interface RegistrationRequest {
@@ -46,18 +69,10 @@ export interface RegistrationRequest {
 }
 
 export async function RegistrationMutation(regRequest: RegistrationRequest) {
-    const response = await fetch('https://localhost:7287/account/register', {
+    const response = await fetch(baseServerURL + '/account/register', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            FirstName: regRequest.FirstName,
-            LastName: regRequest.LastName,
-            Email: regRequest.Email,
-            PhoneNumber: regRequest.PhoneNumber,
-            Password: regRequest.Password,
-            Region: regRequest.Region.toString(),
-            UserType: regRequest.UserType.toString()
-        })
+        body: JSON.stringify(regRequest)
     });
 
     if (response.status === 200) {
@@ -71,7 +86,7 @@ export async function RegistrationMutation(regRequest: RegistrationRequest) {
 }
 
 // EDIT MUTATION
-interface EditInformation {
+export interface EditInformation {
     FirstName: string,
     LastName: string,
     Email: string,
@@ -79,30 +94,24 @@ interface EditInformation {
     Region: Region,
 }
 
-export async function EditInformationMutation(request: EditInformation) {
-    const url = 'https://localhost:7287/account/editInfo';
-    const body = JSON.stringify({
-        FirstName: request.FirstName,
-        LastName: request.LastName,
-        Email: request.Email,
-        PhoneNumber: request.PhoneNumber,
-        Region: request.Region
-    });
+export async function EditInformationMutation(request: EditInformation, retries=0) {
+    const url = baseServerURL + '/account/editInfo';
     const options = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
         },
-        body: body
+        body: JSON.stringify(request)
     }
 
     const response = await fetch(url, options);
     if (response.status === 200) {
         return true;
     } else if (response.status === 401) {
-        window.location.href = "/login";
-        return null;
+        const res = retries < 3 ? await getRefresh() : false;
+        if (res) await EditInformationMutation(request, retries + 1);
+        return res;
     } else if (response.status === 500) {
         const text = await response.text();
         const reason = JSON.parse(text).detail;

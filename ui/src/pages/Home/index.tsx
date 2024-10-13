@@ -22,7 +22,7 @@ export default function Home() {
                 {isLoading && <LoadingSpinner />}
 
                 {data && data.map(news => {
-                    return <NewsCard Title={news.title} Content={news.content} Date={news.postDate} />
+                    return <NewsCard key={news.id} Title={news.title} Content={news.content} Date={news.postDate} />
                 })}
             </div>
         </div>

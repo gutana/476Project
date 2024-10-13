@@ -72,7 +72,8 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetUnapprovedUsers()
     {        
         User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Administrator) return Unauthorized();
+        if (user == null || user.UserType != UserType.Administrator) 
+            return Unauthorized();
         if (user.EmailConfirmed == false)
             return Problem("Account has to be verified by an administrator.", statusCode: 500);
 

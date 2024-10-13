@@ -1,10 +1,13 @@
+import { getRefresh } from "../../components/UserWrapper";
+import { baseServerURL } from "../../components/consts";
+
 export interface PostNewsData {
     Title: string,
     Content: string
 }
 
-export async function PostNewsMutation(data: PostNewsData) {
-    const response = await fetch('https://localhost:7287/news/create', {
+export async function PostNewsMutation(data: PostNewsData, retries=0) {
+    const response = await fetch(baseServerURL + '/news/create', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -15,6 +18,10 @@ export async function PostNewsMutation(data: PostNewsData) {
 
     if (response.status === 200) {
         return true;
+    } else if (response.status === 401) {
+        const res = retries < 3 ? await getRefresh() : false;
+        if (res) await PostNewsMutation(data, retries + 1);
+        return res;
     } else if (response.status === 500) {
         const text = await response.text();
         const reason = JSON.parse(text).detail;

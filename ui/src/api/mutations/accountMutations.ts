@@ -1,10 +1,13 @@
+import { getRefresh } from "../../components/UserWrapper";
+import { baseServerURL } from "../../components/consts";
+
 export interface ApprovalResponse {
     Approved: boolean
     Id: string
 }
 
-export async function AccountApprovalMutation(data: ApprovalResponse) {
-    const response = await fetch('https://localhost:7287/admin/approveUser', {
+export async function AccountApprovalMutation(data: ApprovalResponse, retries=0) {
+    const response = await fetch(baseServerURL + '/admin/approveUser', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -15,8 +18,12 @@ export async function AccountApprovalMutation(data: ApprovalResponse) {
 
     if (response.status === 200) {
         return true;
-    }
-    else {
+    } else if (response.status === 401) {
+        const res = retries < 3 ? await getRefresh() : false;
+        if (res) await AccountApprovalMutation(data, retries + 1);
+        return res;
+    } else {
+        console.log(response.status);
         console.log("Error posting news...");
         console.log(response.body);
         throw new Error();

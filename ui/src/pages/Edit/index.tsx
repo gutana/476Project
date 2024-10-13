@@ -7,10 +7,11 @@ import { Region } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
 import { useMutation } from "@tanstack/react-query";
-import { EditInformationMutation } from "../../api/mutations/userMutations";
+import { EditInformation, EditInformationMutation } from "../../api/mutations/userMutations";
+import Toasts from "../../components/Toasts";
 
 export default function Edit() {
-    const user = useContext(UserContext);
+    let user = useContext(UserContext);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -20,11 +21,14 @@ export default function Edit() {
     const [last, setLast] = useState("");
     const [isLoading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [show, setShow] = useState<boolean>(false);
 
     const editMutation = useMutation({
         mutationFn: EditInformationMutation,
         onSuccess: (data, variables, context) => {
-            setTimeout(() => window.location.reload(), 2000);
+            setShow(true);
+            setLoading(false);
+            updateUser(variables);
         },
         onError: (data, variables, context) => {
             if (`${data}` === "Account has to be verified by an administrator.") {
@@ -35,6 +39,15 @@ export default function Edit() {
             editMutation.reset();
         }
     })
+
+    const updateUser = (vars: EditInformation) => {
+        if (!user) return;
+        user.firstName = vars.FirstName;
+        user.lastName = vars.LastName;
+        user.email = vars.Email;
+        user.phoneNumber = vars.PhoneNumber;
+        user.region = vars.Region;
+    }
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
@@ -104,43 +117,46 @@ export default function Edit() {
     }
 
     return (
-        <div className="p-3">
-            <h3 className="pb-2">Edit User Information</h3>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="firstName">
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                </Form.Group>
+        <>
+            <Toasts show={show} setShow={setShow} variant="success" title="Success!" message="Account Info has been updated!" />
+            <div className="p-3">
+                <h3 className="pb-2">Edit User Information</h3>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="firstName">
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="lastName">
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="lastName">
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="email">
-                    <Form.Label>Email Address</Form.Label>
-                    <Form.Control type="email" aria-describedby="emailHelp" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="email">
+                        <Form.Label>Email Address</Form.Label>
+                        <Form.Control type="email" aria-describedby="emailHelp" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="phoneNumber">
-                    <Form.Label>Phone Number</Form.Label>
-                    <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
-                </Form.Group>
-                
-                <Form.Group className="mb-3">
-                    <Form.Label>Region</Form.Label>
-                    <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
-                        <option value={Region.Regina}>Regina</option>
-                        <option value={Region.Saskatoon}>Saskatoon</option>
-                    </Form.Select>
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="phoneNumber">
+                        <Form.Label>Phone Number</Form.Label>
+                        <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
+                    </Form.Group>
+                    
+                    <Form.Group className="mb-3">
+                        <Form.Label>Region</Form.Label>
+                        <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
+                            <option value={Region.Regina}>Regina</option>
+                            <option value={Region.Saskatoon}>Saskatoon</option>
+                        </Form.Select>
+                    </Form.Group>
 
-                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
-                <Button variant="primary" disabled={isLoading} type="submit">
-                    {isLoading ? 'Saving...' : 'Save Changes'}
-                </Button>
-            </Form>
-        </div>
+                    <Button variant="primary" disabled={isLoading} type="submit">
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </Form>
+            </div>
+        </>
     )
 }

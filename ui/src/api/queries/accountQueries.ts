@@ -1,7 +1,9 @@
 import { User } from "../../models/user";
+import { getRefresh } from "../../components/UserWrapper";
+import { baseServerURL, repititionError } from "../../components/consts";
 
-export async function accountQuery() {
-    const response = await fetch("https://localhost:7287/admin/getUnapprovedUsers", {
+export async function accountQuery(retries=0) : Promise<User[] | undefined> {
+    const response = await fetch(baseServerURL + '/admin/getUnapprovedUsers', {
         method: "GET",
         headers: {
             "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
@@ -12,8 +14,9 @@ export async function accountQuery() {
         const text = await response.text();
         return JSON.parse(text) as User[];
     } else if (response.status === 401) {
-        window.location.href = "/login";
-        return;
+        const res = retries < 3 ? await getRefresh() : false;
+        if (res) return await accountQuery(retries + 1);
+        throw repititionError;
     } else {
         const text = await response.text();
         throw new Error(JSON.parse(text).detail);

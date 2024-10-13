@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import { RegistrationMutation } from "../../api/mutations/userMutations";
@@ -8,6 +8,7 @@ import { Alert, Form } from "react-bootstrap";
 import { InformationModal } from "../../components/InformationModal";
 import { Region, UserType } from "../../models/user";
 import { formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
+import { userQuery } from "../../api/queries/userQueries";
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function SignUp() {
     const [last, setLast] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const registrationMutation = useMutation({
         mutationFn: RegistrationMutation,
@@ -63,7 +65,14 @@ export default function SignUp() {
         navigate("/");
     }
 
-    if (registrationMutation.isPending) {
+    useEffect(() => {
+        userQuery(3).then(res => {
+            if (res) navigate("/");
+            setLoading(false);
+        })
+    }, [navigate])
+
+    if (registrationMutation.isPending || loading) {
         return (
             <LoadingSpinner />
         )

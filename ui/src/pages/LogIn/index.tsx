@@ -1,15 +1,17 @@
 import { useMutation } from "@tanstack/react-query"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { LogInMutation } from "../../api/mutations/userMutations";
 import { Alert } from "react-bootstrap";
+import { userQuery } from "../../api/queries/userQueries";
 
 export default function LogIn() {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState<string | null>();
+    const [loading, setLoading] = useState(true);
 
     const loginMutation = useMutation({
         mutationFn: LogInMutation,
@@ -37,7 +39,14 @@ export default function LogIn() {
         })
     }
 
-    if (loginMutation.isPending)
+    useEffect(() => {
+        userQuery(3).then(res => {
+            if (res) navigate("/");
+            setLoading(false);
+        })
+    }, [navigate])
+
+    if (loginMutation.isPending || loading)
         return (<LoadingSpinner />);
 
     return (

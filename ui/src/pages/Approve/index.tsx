@@ -44,7 +44,7 @@ export default function Approve() {
         )
     }
 
-    if (user && user.userType !== UserType.Administrator) {
+    if ((!isLoading && !user) || (user && user.userType !== UserType.Administrator)) {
         window.location.href = "/";
     }
 

@@ -1,8 +1,10 @@
 import { User } from "../../models/user";
+import { getRefresh } from "../../components/UserWrapper";
+import { baseServerURL, repititionError } from "../../components/consts";
 
-export async function userQuery() {
+export async function userQuery(retries=0) : Promise<User | null> {
     // TODO: Should have an abstraction for authed query
-    const response = await fetch('https://localhost:7287/account/getUser', {
+    const response = await fetch(baseServerURL + '/account/getUser', {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
@@ -13,8 +15,9 @@ export async function userQuery() {
         const text = await response.text();
         return await JSON.parse(text) as User;
     } else if (response.status === 401) {
-        window.location.href = "/login";
-        return null;
+        const res = retries < 3 ? await getRefresh() : false;
+        if (res) return await userQuery(retries + 1);
+        throw repititionError;
     }
     else {
         console.log("Error fetching user...");

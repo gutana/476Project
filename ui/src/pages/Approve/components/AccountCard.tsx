@@ -34,7 +34,7 @@ export default function AccountCard({ Account, ApproveUser }: Props) {
                         <div>Email: {Account.email}</div>
                         <div>Phone Number: {formatPhoneNumber(Account.phoneNumber)}</div>
                         <div>Region: {Account.region}</div>
-                        <div>Occupation: {userTypeToPosition(Account.userType)}</div>
+                        <div>Position: {userTypeToPosition(Account.userType)}</div>
                     </Card.Text>
                 <Button className='float-end' onClick={() => ApproveUser(Account.id, false)} variant="danger">Deny</Button>
                 <Button className='me-2 float-end' onClick={() => ApproveUser(Account.id, true)} variant="primary">Approve</Button>
