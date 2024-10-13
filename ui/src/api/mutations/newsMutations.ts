@@ -6,7 +6,7 @@ export interface PostNewsData {
     Content: string
 }
 
-export async function PostNewsMutation(data: PostNewsData, retries=0) {
+export async function PostNewsMutation(data: PostNewsData, retries=0): Promise<boolean> {
     const response = await fetch(baseServerURL + '/news/create', {
         method: "POST",
         headers: {
@@ -20,7 +20,7 @@ export async function PostNewsMutation(data: PostNewsData, retries=0) {
         return true;
     } else if (response.status === 401) {
         const res = retries < 3 ? await getRefresh() : false;
-        if (res) await PostNewsMutation(data, retries + 1);
+        if (res) return await PostNewsMutation(data, retries + 1);
         return res;
     } else if (response.status === 500) {
         const text = await response.text();

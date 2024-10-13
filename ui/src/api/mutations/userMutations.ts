@@ -94,7 +94,7 @@ export interface EditInformation {
     Region: Region,
 }
 
-export async function EditInformationMutation(request: EditInformation, retries=0) {
+export async function EditInformationMutation(request: EditInformation, retries=0) : Promise<boolean> {
     const url = baseServerURL + '/account/editInfo';
     const options = {
         method: "POST",
@@ -110,7 +110,7 @@ export async function EditInformationMutation(request: EditInformation, retries=
         return true;
     } else if (response.status === 401) {
         const res = retries < 3 ? await getRefresh() : false;
-        if (res) await EditInformationMutation(request, retries + 1);
+        if (res) return await EditInformationMutation(request, retries + 1);
         return res;
     } else if (response.status === 500) {
         const text = await response.text();
