@@ -1,10 +1,10 @@
 import { ReactNode, useContext } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { UserContext } from "./UserWrapper"
 import { UserType } from "../models/user"
 
-import { Button, Container, Nav, Navbar, NavDropdown } from "react-bootstrap"
+import { Button, Container, Nav, Navbar } from "react-bootstrap"
 interface Props {
     children: ReactNode
 }
@@ -42,6 +42,7 @@ export function CustomNavbar() {
                             <>
                                 <Nav.Link as={Link} to="/postNews">Post News</Nav.Link>
                                 <Nav.Link as={Link} to="/requestedAccounts">Requested Accounts</Nav.Link>
+                                <Nav.Link as={Link} to="/addSchool">Add School</Nav.Link>
                             </>
                             
                         }

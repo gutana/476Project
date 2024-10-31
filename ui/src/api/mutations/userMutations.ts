@@ -1,6 +1,6 @@
 import { Region, UserType } from "../../models/user";
 import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL } from "../../components/consts";
+import { baseServerURL, repititionError } from "../../components/consts";
 
 // LOG IN MUTATION
 
@@ -111,7 +111,7 @@ export async function EditInformationMutation(request: EditInformation, retries=
     } else if (response.status === 401) {
         const res = retries < 3 ? await getRefresh() : false;
         if (res) return await EditInformationMutation(request, retries + 1);
-        return res;
+        throw repititionError;
     } else if (response.status === 500) {
         const text = await response.text();
         const reason = JSON.parse(text).detail;

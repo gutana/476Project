@@ -1,5 +1,5 @@
 import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL } from "../../components/consts";
+import { baseServerURL, repititionError } from "../../components/consts";
 
 export interface ApprovalResponse {
     Approved: boolean
@@ -21,7 +21,7 @@ export async function AccountApprovalMutation(data: ApprovalResponse, retries=0)
     } else if (response.status === 401) {
         const res = retries < 3 ? await getRefresh() : false;
         if (res) return await AccountApprovalMutation(data, retries + 1);
-        return res;
+        throw repititionError;
     } else {
         console.log(response.status);
         console.log("Error posting news...");

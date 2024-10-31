@@ -1,5 +1,5 @@
 import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL } from "../../components/consts";
+import { baseServerURL, repititionError } from "../../components/consts";
 
 export interface PostNewsData {
     Title: string,
@@ -21,7 +21,7 @@ export async function PostNewsMutation(data: PostNewsData, retries=0): Promise<b
     } else if (response.status === 401) {
         const res = retries < 3 ? await getRefresh() : false;
         if (res) return await PostNewsMutation(data, retries + 1);
-        return res;
+        throw repititionError;
     } else if (response.status === 500) {
         const text = await response.text();
         const reason = JSON.parse(text).detail;

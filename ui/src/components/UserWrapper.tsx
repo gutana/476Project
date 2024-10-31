@@ -38,7 +38,6 @@ export const getRefresh = async () => {
 
 export const UserContext = createContext<User | null>(null);
 
-// TODO: refresh token stuff
 export const UserWrapper = ({ children }: Props) => {
     const [expiresAt, setExpiresAt] = useState(sessionStorage.getItem("tokenExpiry"))
     const [userQueryEnabled, setUserQueryEnabled] = useState(false);

@@ -45,6 +45,37 @@ public class ApplicationDbContext : IdentityDbContext<User>
         }
     }
 
+    public bool SchoolExists(SchoolDto resp)
+    {
+        var school = Schools.FirstOrDefault(u => u.SchoolName == resp.SchoolName
+        && u.Region == resp.Region && u.SchoolType == resp.SchoolType);
+        return school != default;
+    }
+
+    public bool CreateSchool(SchoolDto resp, string posterId)
+    {
+        try
+        {
+            School school = new();
+            school.Id = Guid.NewGuid().ToString();
+            school.SchoolName = resp.SchoolName;
+            school.Address = resp.Address;
+            school.City = resp.City;
+            school.Region = resp.Region;
+            school.PhoneNumber = resp.PhoneNumber;
+            school.SchoolType = resp.SchoolType;
+            school.PostalCode = resp.PostalCode;
+            school.PosterId = posterId;
+            Schools.Add(school);
+            SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<List<NewsPost>> GetLatestNews(int take)
     {
         return await NewsPosts
