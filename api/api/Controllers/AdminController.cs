@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace api.Controllers;
@@ -101,20 +100,6 @@ public class AdminController : ControllerBase
             return Ok("School has been created!");
         else
             return Problem("Unexpected error occurred.", statusCode: 500);
-    }
-
-    [HttpGet("getSchools")]
-    [Authorize]
-    public async Task<IActionResult> GetSchools()
-    {
-        User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Administrator)
-            return Unauthorized();
-        if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
-
-        var schools = _context.Schools.ToList();
-        return Ok(schools);
     }
 
     private async Task<User?> GetCurrentUser()

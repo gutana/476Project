@@ -14,6 +14,7 @@ import { BasicLayout } from './components/BasicLayout';
 import Edit from './pages/Edit';
 import Approve from './pages/Approve';
 import AddSchool from './pages/Schools';
+import Post from './pages/Posting';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -79,6 +80,16 @@ const router = createBrowserRouter([
             <UserWrapper>
                 <DefaultLayout>
                     <AddSchool />
+                </DefaultLayout>
+            </UserWrapper>
+        )
+    },
+    {
+        path: '/addPost',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <Post />
                 </DefaultLayout>
             </UserWrapper>
         )

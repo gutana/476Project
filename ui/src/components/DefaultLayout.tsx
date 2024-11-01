@@ -36,6 +36,12 @@ export function CustomNavbar() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        {
+                            user?.userType !== UserType.Teacher && 
+                            <>
+                                <Nav.Link as={Link} to="/addPost">Add Post</Nav.Link>
+                            </>
+                        }
                         <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>
                         {
                             user?.userType === UserType.Administrator &&

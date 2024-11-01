@@ -8,6 +8,12 @@ export interface User {
     phoneNumber: string,
 }
 
+export interface Substitute {
+    id: string,
+    name: string,
+    region: Region
+}
+
 export enum Region {
     Regina,
     Saskatoon

@@ -9,6 +9,7 @@ import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "..
 import { useMutation } from "@tanstack/react-query";
 import { EditInformation, EditInformationMutation } from "../../api/mutations/userMutations";
 import Toasts from "../../components/Toasts";
+import { stringToRegion } from "../../components/stringToDataType";
 
 export default function Edit() {
     let user = useContext(UserContext);
@@ -82,23 +83,6 @@ export default function Edit() {
         e.target.value = formatPhoneNumberOnChange(e.target.value, phoneNumber, last);
         setLast(e.target.value.slice(-1) ? e.target.value.slice(-1) : "");
         setPhoneNumber(e.target.value);
-    }
-
-    const stringToRegion = (region: string | Region) => {
-        if (!(typeof region === "string")) {
-            return region;
-        }
-        
-        switch (region.toLowerCase()) {
-            case "regina":
-            case "0":
-                return Region.Regina;
-            case "saskatoon":
-            case "1":
-                return Region.Saskatoon;
-            default:
-                return Region.Regina;
-        }
     }
 
     useEffect(() => {

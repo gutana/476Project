@@ -1,18 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace api.Models;
+﻿namespace api.Models;
 
 public class Post
 {
     public string? Id { get; set; }
     public string? PosterId { get; set; }
     public string? SchoolId { get; set; }
-
-    public School? School { get; set; }
     public SchoolType? SchoolType { get; set; }
-
     public string? PostDescription { get; set; }
-
+    public string? RequestedSub { get; set; }
+    public bool? Private { get; set; }
+    public DateOnly? PostDate { get; set; }
+    public TimeOnly? PostTime {  get; set; }
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
@@ -37,8 +35,6 @@ public enum Grade
     Eleven,
     Twelve
 }
-
-
 
 public enum PrimarySchoolSubject
 {

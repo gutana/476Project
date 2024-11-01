@@ -45,11 +45,84 @@ public class ApplicationDbContext : IdentityDbContext<User>
         }
     }
 
+    public bool CreateNewPosting(PostDTO dto, string userId)
+    {
+        try
+        {
+            Post post = new();
+            DateTime now = DateTime.Now;
+            
+            var school = Schools.Where(s => s.Id == dto.SchoolId).FirstOrDefault();
+            if (school == null || school == default)
+                return false;
+            
+            post.Id = Guid.NewGuid().ToString();
+            post.PosterId = userId;
+            post.SchoolId = school.Id;
+            post.SchoolType = school.SchoolType;
+            post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
+            post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
+            post.Grades = dto.Grades;
+            post.PostDescription = dto.PostDescription;
+            post.RequestedSub = dto.RequestedSub;
+            post.Private = dto.Private;
+            post.PostDate = DateOnly.FromDateTime(now);
+            post.PostTime = TimeOnly.FromDateTime(now);
+
+            Posts.Add(post);
+            SaveChanges();
+            return true;
+        } catch
+        {
+            return false;
+        }
+    }
+
     public bool SchoolExists(SchoolDto resp)
     {
         var school = Schools.FirstOrDefault(u => u.SchoolName == resp.SchoolName
         && u.Region == resp.Region && u.SchoolType == resp.SchoolType);
         return school != default;
+    }
+    public async Task<List<Post>> GetPostings(string userId)
+    {
+        var currentPostings = await Posts.Where(post => post.Private == false).OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToListAsync();
+        var newPostings = await GetNewPostings();
+        var privatePostings = await GetPrivatePostings(userId);
+        var publicPostings = currentPostings.Union(newPostings).OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList();
+        var postings = privatePostings.Concat(publicPostings).ToList() ?? [];
+        return postings;
+    }
+
+    public async Task<List<Post>> GetPrivatePostings(string userId)
+    {
+        var privatePostings = await Posts.Where(post => post.Private == true && post.RequestedSub == userId).ToListAsync();
+        return privatePostings.OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList() ?? [];
+    }
+
+    public async Task<List<Post>> GetNewPostings()
+    {
+        var privatePostings = await Posts.Where(post => post.Private == true).ToListAsync();
+        var newPosts = new List<Post>();
+
+        foreach (var posting in privatePostings)
+        {
+            if (posting.PostDate == null || posting.PostTime == null)
+                continue;
+
+            var timeOnly = posting.PostTime.Value;
+            var cutoffTime = posting.PostDate.Value.ToDateTime(timeOnly).AddMinutes(5);
+            if (DateTime.Now > cutoffTime)
+            {
+                posting.Private = false;
+                posting.RequestedSub = null;
+                newPosts.Add(posting);
+                Posts.Update(posting);
+            }
+        }
+
+        SaveChanges();
+        return newPosts.OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList() ?? [];
     }
 
     public bool CreateSchool(SchoolDto resp, string posterId)

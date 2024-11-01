@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import Toasts from "../../components/Toasts";
 import { SchoolType } from "../../models/schools";
 import { AddSchoolMutation } from "../../api/mutations/schoolMutations";
+import { stringToRegion, stringToSchoolType } from "../../components/stringToDataType";
 
 export default function AddSchool() {
     let user = useContext(UserContext);
@@ -91,38 +92,6 @@ export default function AddSchool() {
         e.target.value = formatPhoneNumberOnChange(e.target.value, phoneNumber, last);
         setLast(e.target.value.slice(-1) ? e.target.value.slice(-1) : "");
         setPhoneNumber(e.target.value);
-    }
-
-    const stringToRegion = (region: string | Region) => {
-        if (!(typeof region === "string")) {
-            return region;
-        }
-        switch (region.toLowerCase()) {
-            case "regina":
-            case "0":
-                return Region.Regina;
-            case "saskatoon":
-            case "1":
-                return Region.Saskatoon;
-            default:
-                return Region.Regina;
-        }
-    }
-
-    const stringToSchoolType = (schoolType: string | SchoolType) => {
-        if (!(typeof schoolType === "string")) {
-            return schoolType;
-        }
-        switch (schoolType.toLowerCase()) {
-            case "primary":
-            case "0":
-                return SchoolType.Primary;
-            case "secondary":
-            case "1":
-                return SchoolType.Secondary;
-            default:
-                return SchoolType.Primary;
-        }
     }
 
     if (!user) {

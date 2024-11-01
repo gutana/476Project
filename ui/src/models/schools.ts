@@ -1,15 +1,15 @@
 import { Region } from "./user";
 
 export interface School {
-    Id: string,
-    PosterId: string,
-    SchoolType: SchoolType,
-    SchoolName: string,
-    PhoneNumber: string,
-    Address: string,
-    City: string,
-    PostalCode: string,
-    Region: Region
+    id: string,
+    posterId: string,
+    schoolType: SchoolType,
+    schoolName: string,
+    phoneNumber: string,
+    address: string,
+    city: string,
+    postalCode: string,
+    region: Region
 }
 
 export enum SchoolType {
