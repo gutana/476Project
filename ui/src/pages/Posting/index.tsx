@@ -61,6 +61,10 @@ export default function Post() {
     const [primary, setPrimary] = useState<TypeaheadValue[]>([]);
     const [secondary, setSecondary] = useState<TypeaheadValue[]>([]);
     
+    const [variant, setVariant] = useState("success");
+    const [title, setTitle] = useState("Success!");
+    const [message, setMessage] = useState("");
+    
     const [schools, setSchools] = useState<School[]>([]);
     const [subs, setSubs] = useState<Substitute[]>([]);
 
@@ -100,17 +104,19 @@ export default function Post() {
         setSubs(translateToSub(result[1].data ?? []));
     }, [result[0].isLoading, result[1].isLoading])
 
+    useEffect(() => {
+        if (!result[0].isError || !result[1].isError) return;
+        handleQueryErrors(result);
+    }, [result[0].isError, result[1].isError])
+
     const postMutation = useMutation({
         mutationFn: AddPostingMutation,
         onSuccess: (data, variables, context) => {
-            setShow(true);
             setLoading(false);
-            notifyUser(data);
+            notifyUser(data, true);
         },
         onError: (data, variables, context) => {
-            if (`${data}` === "Account has to be verified by an administrator.") {
-                setErrorMessage(`${data}`);
-            }
+            notifyUser(data.toString(), false);
             console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
             setLoading(false);
             postMutation.reset();
@@ -172,8 +178,29 @@ export default function Post() {
         return translatedSecondary;
     }
 
-    const notifyUser = (data: string) => {
-        console.log(data);
+    const notifyUser = (data: string, success: boolean) => {
+        if (success) {
+            setVariant("success");
+            setTitle("Success!")
+        } else {
+            setVariant("danger");
+            setTitle("Error");
+        }
+
+        setMessage(data);
+        setShow(true);
+    }
+
+    const handleQueryErrors = (res: any[]) => {
+        let reason = "Unknown Error Occured!";
+        for (let i = 0; i < res.length; i++) {
+            if (res[i].isError) {
+                reason = result[i].failureReason?.message ?? "Unknown Error Occured!";
+                break;
+            }
+        }
+
+        notifyUser(reason, false);
     }
 
     const handleSubmit = (e: any) => {
@@ -280,7 +307,7 @@ export default function Post() {
 
     return (
         <>
-            <Toasts show={show} setShow={setShow} variant="success" title="Success!" message="Account Info has been updated!" />
+            <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />
             <div className="p-3">
                 <h3 className="pb-2">Add New Posting</h3>
                 <Form onSubmit={handleSubmit}>
@@ -289,7 +316,7 @@ export default function Post() {
                         <Typeahead labelKey="schoolName" selected={schoolId} options={schools} id="1" placeholder="Search school..." onChange={changeSchool} />
                     </Form.Group>
 
-                    <MultipleSelection values={schoolId.length ===0 ? allGrades : schoolId[0].schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />
+                    {schoolId.length !== 0 && <MultipleSelection values={schoolId[0].schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}
                     {schoolId.length !== 0 && schoolId[0].schoolType.toString() === "Primary" &&
                     <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Select primary subject..." selection={primary} setSelection={setPrimary} />}
                     {schoolId.length !== 0 && schoolId[0].schoolType.toString() === "Secondary" && 
@@ -308,7 +335,7 @@ export default function Post() {
                     {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
                     <Button variant="primary" disabled={isLoading} type="submit">
-                        {isLoading ? 'Saving...' : 'Save Changes'}
+                        {isLoading ? 'Adding...' : 'Add Posting'}
                     </Button>
                 </Form>
             </div>
