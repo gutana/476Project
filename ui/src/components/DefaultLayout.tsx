@@ -28,7 +28,7 @@ export function CustomNavbar() {
             <Container className="container-fluid">
                 <Navbar.Brand>
                     <Nav.Link as={Link} to="/">
-                        SubOptimal
+                        SubSystem
                     </Nav.Link>
                 </Navbar.Brand>
 
@@ -37,14 +37,14 @@ export function CustomNavbar() {
                     <Nav className="me-auto">
                         <Nav.Link as={Link} to="/">Home</Nav.Link>
                         {
-                            user?.userType !== UserType.Teacher && 
+                            user?.userType !== UserType.Teacher &&
                             <>
                                 <Nav.Link as={Link} to="/addPost">Add Post</Nav.Link>
                             </>
                         }
                         <Nav.Link as={Link} to="/viewPostings">View Postings</Nav.Link>
-                
-                
+
+
                         <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>
                         {
                             user?.userType === UserType.Administrator &&
@@ -53,7 +53,7 @@ export function CustomNavbar() {
                                 <Nav.Link as={Link} to="/requestedAccounts">Requested Accounts</Nav.Link>
                                 <Nav.Link as={Link} to="/addSchool">Add School</Nav.Link>
                             </>
-                            
+
                         }
                     </Nav>
                     <Button
