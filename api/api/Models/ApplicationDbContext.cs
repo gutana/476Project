@@ -57,17 +57,16 @@ public class ApplicationDbContext : IdentityDbContext<User>
                 return false;
             
             post.Id = Guid.NewGuid().ToString();
-            post.PosterId = userId;
-            post.SchoolId = school.Id;
+            post.Poster = Users.First(poster => poster.Id == userId);
+            post.School = school;
             post.SchoolType = school.SchoolType;
             post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
             post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
             post.Grades = dto.Grades;
             post.PostDescription = dto.PostDescription;
-            post.RequestedSub = dto.RequestedSub;
+            post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
             post.Private = dto.Private;
-            post.PostDate = DateOnly.FromDateTime(now);
-            post.PostTime = TimeOnly.FromDateTime(now);
+            post.PostDateTime = DateTime.Now;    // need to change to accept date of absence rather than current date/time
 
             Posts.Add(post);
             SaveChanges();
@@ -84,46 +83,48 @@ public class ApplicationDbContext : IdentityDbContext<User>
         && u.Region == resp.Region && u.SchoolType == resp.SchoolType);
         return school != default;
     }
-    public async Task<List<Post>> GetPostings(string userId)
+
+    public async Task<List<School>> GetSchools(Region region)
     {
-        var currentPostings = await Posts.Where(post => post.Private == false).OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToListAsync();
-        var newPostings = await GetNewPostings();
-        var privatePostings = await GetPrivatePostings(userId);
-        var publicPostings = currentPostings.Union(newPostings).OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList();
-        var postings = privatePostings.Concat(publicPostings).ToList() ?? [];
-        return postings;
+        return await Schools
+            .Where(school => school.Region == region)
+            .ToListAsync();  
     }
 
-    public async Task<List<Post>> GetPrivatePostings(string userId)
+    public async Task<List<Post>> GetPostingsByUser(string userId)
     {
-        var privatePostings = await Posts.Where(post => post.Private == true && post.RequestedSub == userId).ToListAsync();
-        return privatePostings.OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList() ?? [];
+        return await Posts
+            .Where(post => post.Poster.Id == userId)
+            .ToListAsync();
+    }
+    
+    public async Task<List<Post>> GetAvailablePostings(User user)
+    {
+        return await Posts
+            .Where(post => post.AcceptedByUser != null &&
+                    post.Poster.Id != user.Id &&
+                    post.School.Region == user.Region &&
+                    /* deal with dates whenever thats done */
+                    post.Private != true || (post.RequestedSub != null && post.RequestedSub.Id == user.Id) || post.PostDateTime < DateTime.Now.AddMinutes(-5))
+            .OrderByDescending(post => post.PostDateTime)
+            .ToListAsync();
+    }
+    
+    public async Task<List<Post>> GetTakenPostings(User user)
+    {
+        return await Posts
+            .Where(post => (post.AcceptedByUser != null && post.AcceptedByUser.Id == user.Id))
+            .OrderByDescending(post => post.PostDateTime)
+            .ToListAsync();
     }
 
-    public async Task<List<Post>> GetNewPostings()
+    public async Task<List<Post>> GetAllPostings()
     {
-        var privatePostings = await Posts.Where(post => post.Private == true).ToListAsync();
-        var newPosts = new List<Post>();
-
-        foreach (var posting in privatePostings)
-        {
-            if (posting.PostDate == null || posting.PostTime == null)
-                continue;
-
-            var timeOnly = posting.PostTime.Value;
-            var cutoffTime = posting.PostDate.Value.ToDateTime(timeOnly).AddMinutes(5);
-            if (DateTime.Now > cutoffTime)
-            {
-                posting.Private = false;
-                posting.RequestedSub = null;
-                newPosts.Add(posting);
-                Posts.Update(posting);
-            }
-        }
-
-        SaveChanges();
-        return newPosts.OrderByDescending(post => post.PostDate.Value.ToDateTime(post.PostTime.Value)).ToList() ?? [];
+        return await Posts
+            .OrderByDescending(post => post.PostDateTime)
+            .ToListAsync();
     }
+
 
     public bool CreateSchool(SchoolDto resp, string posterId)
     {

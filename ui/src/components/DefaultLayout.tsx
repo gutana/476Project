@@ -42,6 +42,9 @@ export function CustomNavbar() {
                                 <Nav.Link as={Link} to="/addPost">Add Post</Nav.Link>
                             </>
                         }
+                        <Nav.Link as={Link} to="/viewPostings">View Postings</Nav.Link>
+                
+                
                         <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>
                         {
                             user?.userType === UserType.Administrator &&

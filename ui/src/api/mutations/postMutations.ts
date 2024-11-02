@@ -1,8 +1,8 @@
 import { baseServerURL, repititionError } from "../../components/consts";
 import { getRefresh } from "../../components/UserWrapper";
-import { PostResp } from "../../models/postings";
+import { CreatePostData } from "../../models/postings";
 
-export async function AddPostingMutation(request: PostResp, retries=0) : Promise<string> {
+export async function AddPostingMutation(request: CreatePostData, retries=0) : Promise<string> {
     const url = baseServerURL + '/post/addPosting';
     const options = {
         method: "POST",

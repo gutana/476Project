@@ -3,14 +3,14 @@
 public class Post
 {
     public string? Id { get; set; }
-    public string? PosterId { get; set; }
-    public string? SchoolId { get; set; }
+    public User Poster { get; set; }
+    public User? AcceptedByUser { get; set; }
+    public School School { get; set; }
     public SchoolType? SchoolType { get; set; }
     public string? PostDescription { get; set; }
-    public string? RequestedSub { get; set; }
+    public User? RequestedSub { get; set; }
     public bool? Private { get; set; }
-    public DateOnly? PostDate { get; set; }
-    public TimeOnly? PostTime {  get; set; }
+    public DateTime PostDateTime { get; set; }
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }

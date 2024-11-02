@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
 import { Substitute, User, UserType } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Toasts from "../../components/Toasts";
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../../models/postings";
 import { schoolQuery } from "../../api/queries/schoolQueries";
@@ -68,15 +68,12 @@ export default function Post() {
     const [schools, setSchools] = useState<School[]>([]);
     const [subs, setSubs] = useState<Substitute[]>([]);
 
-    const [isLoading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [show, setShow] = useState<boolean>(false);
 
-    const result = useQueries({
-        queries: [
-            {queryKey: ["schoolQuery"], queryFn: () => schoolQuery()},
-            {queryKey: ["usersQuery"], queryFn: () => subQuery()}
-        ]
+    const { data, isLoading, isError, error } = useQuery({
+        queryFn: () => subQuery(),
+        queryKey: ["getSubQuery"]
     })
 
     const capitalizeFirst = (value: string) => {
@@ -99,26 +96,25 @@ export default function Post() {
     }
 
     useEffect(() => {
-        if (result[0].isLoading || result[1].isLoading) return;
-        setSchools(result[0].data ?? []);
-        setSubs(translateToSub(result[1].data ?? []));
-    }, [result[0].isLoading, result[1].isLoading])
+        if (data == undefined) 
+            return;
+
+        setSubs(translateToSub(data ?? []));
+    }, [data])
 
     useEffect(() => {
-        if (!result[0].isError || !result[1].isError) return;
-        handleQueryErrors(result);
-    }, [result[0].isError, result[1].isError])
+        if (error != null)
+            handleQueryErrors(error);
+    }, [error])
 
     const postMutation = useMutation({
         mutationFn: AddPostingMutation,
         onSuccess: (data, variables, context) => {
-            setLoading(false);
             notifyUser(data, true);
         },
         onError: (data, variables, context) => {
             notifyUser(data.toString(), false);
             console.error("Data: ", data, "Variables: ", variables, "Context: ", context);
-            setLoading(false);
             postMutation.reset();
         }
     })
@@ -191,15 +187,9 @@ export default function Post() {
         setShow(true);
     }
 
-    const handleQueryErrors = (res: any[]) => {
+    const handleQueryErrors = (e: Error) => {
         let reason = "Unknown Error Occured!";
-        for (let i = 0; i < res.length; i++) {
-            if (res[i].isError) {
-                reason = result[i].failureReason?.message ?? "Unknown Error Occured!";
-                break;
-            }
-        }
-
+        reason = e.message ?? "Unknown Error Occured!";
         notifyUser(reason, false);
     }
 
@@ -262,8 +252,10 @@ export default function Post() {
             return;
         }
 
-        if (sType === "Primary") realSecondary = null;
-        else realPrimary = null;
+        if (sType === "Primary") 
+            realSecondary = null;
+        else 
+            realPrimary = null;
 
         console.log({
             schoolId: school.id,
@@ -275,7 +267,6 @@ export default function Post() {
             secondarySchoolSubjects: realSecondary
         });
 
-        setLoading(true);
         postMutation.mutate({
             schoolId: school.id,
             requestedSub: reqSub ? reqSub.id : "",
@@ -295,7 +286,7 @@ export default function Post() {
         setRequestedSub(e);
     }
 
-    if (!user || (result[0].isLoading || result[1].isLoading)) {
+    if (!user || isLoading || postMutation.isPending) {
         return (
             <LoadingSpinner />
         )

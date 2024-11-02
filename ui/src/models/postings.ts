@@ -1,6 +1,7 @@
-import { SchoolType } from "./schools";
+import { School, SchoolType } from "./schools";
+import { User } from "./user";
 
-export interface PostResp
+export interface CreatePostData
 {
     schoolId: string,
     postDescription: string,
@@ -14,17 +15,17 @@ export interface PostResp
 export interface Post
 {
     id: string,
-    posterId: string,
-    schoolId: string,
+    poster: User,
+    acceptedByUser: User | null,
+    school: School,
     schoolType: SchoolType,
     postDescription: string,
-    requestedSub: string,
+    requestedSub: User,
     private: boolean,
-    postDate: string,
-    postTime: string,
-    primarySchoolSubjects: PrimarySchoolSubject | null,
-    secondarySchoolSubjects: SecondarySchoolSubject | null,
-    grades: Grade    
+    postDateTime: Date,
+    primarySchoolSubjects: PrimarySchoolSubject[] | null,
+    secondarySchoolSubjects: SecondarySchoolSubject[] | null,
+    grades: Grade[]    
 }
 
 export enum Grade {

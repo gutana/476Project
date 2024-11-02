@@ -44,32 +44,61 @@ public class PostController: ControllerBase
         return Ok(subs);
     }
 
-    [HttpGet("getPostings")]
+    [HttpGet("getByUser")]
     [Authorize]
-    public async Task<IActionResult> GetPositings()
+    public async Task<IActionResult> GetByUser(string userId)
     {
         User? user = await GetCurrentUser();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator.");
 
-        var postings = await _context.GetPostings(user.Id);
+        var postings = await _context.GetPostingsByUser(userId);
+
         return Ok(postings);
     }
 
-    [HttpGet("getSchools")]
+    [HttpGet("getAvailable")]
     [Authorize]
-    public async Task<IActionResult> GetSchools()
+    public async Task<IActionResult> GetAvailable()
     {
         User? user = await GetCurrentUser();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator.");
 
-        var schools = _context.Schools.ToList();
-        return Ok(schools);
+        var postings = await _context.GetAvailablePostings(user);
+        return Ok(postings);
+    }
+
+    [HttpGet("getTakenByUser")]
+    [Authorize]
+    public async Task<IActionResult> GetTakenByUser()
+    {
+        User? user = await GetCurrentUser();
+        if (user == null)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized("Account has to be verified by an administrator.");
+
+        var postings = await _context.GetTakenPostings(user);
+        return Ok(postings);
+    }
+
+    [HttpGet("getAll")]
+    [Authorize]
+    public async Task<IActionResult> GetAll()
+    {
+        User? user = await GetCurrentUser();
+        if (user == null || user.UserType != UserType.Administrator)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized("Account has to be verified by an administrator.");
+
+        var postings = await _context.GetAllPostings();
+        return Ok(postings);
     }
 
     [HttpPost("addPosting")]

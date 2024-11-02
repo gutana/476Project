@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
 import PostNews from './pages/PostNews';
+import ViewPostings from './pages/ViewPostings'
 import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
@@ -90,6 +91,16 @@ const router = createBrowserRouter([
             <UserWrapper>
                 <DefaultLayout>
                     <Post />
+                </DefaultLayout>
+            </UserWrapper>
+        )
+    },
+    {
+        path: '/viewPostings',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <ViewPostings />
                 </DefaultLayout>
             </UserWrapper>
         )

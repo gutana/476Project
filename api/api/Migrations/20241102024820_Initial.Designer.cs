@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.Models;
@@ -11,9 +12,11 @@ using api.Models;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241102024820_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,17 +182,17 @@ namespace api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AcceptedByUserId")
-                        .HasColumnType("text");
-
                     b.Property<int[]>("Grades")
                         .HasColumnType("integer[]");
 
-                    b.Property<DateTime>("PostDateTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("PostDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("PostDescription")
                         .HasColumnType("text");
+
+                    b.Property<TimeOnly?>("PostTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<string>("PosterId")
                         .HasColumnType("text");
@@ -200,7 +203,7 @@ namespace api.Migrations
                     b.Property<bool?>("Private")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("RequestedSubId")
+                    b.Property<string>("RequestedSub")
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolId")
@@ -213,14 +216,6 @@ namespace api.Migrations
                         .HasColumnType("integer[]");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AcceptedByUserId");
-
-                    b.HasIndex("PosterId");
-
-                    b.HasIndex("RequestedSubId");
-
-                    b.HasIndex("SchoolId");
 
                     b.ToTable("Posts", "identity");
                 });
@@ -392,33 +387,6 @@ namespace api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("api.Models.Post", b =>
-                {
-                    b.HasOne("api.Models.User", "AcceptedByUser")
-                        .WithMany()
-                        .HasForeignKey("AcceptedByUserId");
-
-                    b.HasOne("api.Models.User", "Poster")
-                        .WithMany()
-                        .HasForeignKey("PosterId");
-
-                    b.HasOne("api.Models.User", "RequestedSub")
-                        .WithMany()
-                        .HasForeignKey("RequestedSubId");
-
-                    b.HasOne("api.Models.School", "School")
-                        .WithMany()
-                        .HasForeignKey("SchoolId");
-
-                    b.Navigation("AcceptedByUser");
-
-                    b.Navigation("Poster");
-
-                    b.Navigation("RequestedSub");
-
-                    b.Navigation("School");
                 });
 #pragma warning restore 612, 618
         }
