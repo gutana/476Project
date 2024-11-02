@@ -10,14 +10,13 @@ namespace api.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-
-public class PostingController : ControllerBase
+public class SchoolController : ControllerBase
 {
-    private readonly ILogger<PostingController> _logger;
+    private readonly ILogger<SchoolController> _logger;
     private readonly UserManager<User> _userManager;
     private readonly ApplicationDbContext _context;
 
-    public PostingController(UserManager<User> userManager, ILogger<PostingController> logger, ApplicationDbContext context)
+    public SchoolController(UserManager<User> userManager, ILogger<SchoolController> logger, ApplicationDbContext context)
     {
         _logger = logger;
         _userManager = userManager;
@@ -26,30 +25,24 @@ public class PostingController : ControllerBase
 
     [Authorize]
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreatePostingDto postingDto)
+    public async Task<IActionResult> CreateSchool(CreateSchoolDto schoolDto)
     {
         User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Teacher) 
+        if (user == null || user.UserType == UserType.Requestor) // change 
             return Unauthorized();
 
-        bool result = _context.CreatePosting(postingDto, user);
+        bool result = _context.CreateSchool(schoolDto);
 
         if (result == true)
             return Ok();
 
-        return Problem("Something went wrong with posting", statusCode: 500);
+        return Problem("Something went wrong with creating school", statusCode: 500);
     }
 
-    [Authorize]
-    [HttpGet("getUserPostings")]
-    public async Task<IActionResult> GetUserPostings()
+    [HttpGet("getSchools")]
+    public async Task<IActionResult> GetSchools(Region region)
     {
-        User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Teacher)
-            return Unauthorized();
-
-        //return Ok(await _context.GetUserPosts(user));
-        return Ok(await _context.GetAllPosts(user));
+        return Ok(await _context.GetSchools(region));
     }
 
     private async Task<User?> GetCurrentUser()

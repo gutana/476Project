@@ -6,13 +6,15 @@ public class Post
 {
     public string? Id { get; set; }
     public string? PosterId { get; set; }
+    public string? PosterName { get; set; }
     public string? SchoolId { get; set; }
 
     public School? School { get; set; }
     public SchoolType? SchoolType { get; set; }
 
-    public string? PostTitle { get; set; }
-    public string? PostDescription { get; set; }
+    public DateOnly PostDateOfAbsence { get; set; }
+    public string PostSchoolName { get; set; }
+    public string PostSubjects { get; set; }
 
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }

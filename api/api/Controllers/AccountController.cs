@@ -36,6 +36,7 @@ public class AccountController : ControllerBase
         user.Email = registrationDto.Email;
         user.FirstName = registrationDto.FirstName;
         user.LastName = registrationDto.LastName;
+        user.School = await _context.GetSchoolById(registrationDto.School);
         user.Region = registrationDto.Region;
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;

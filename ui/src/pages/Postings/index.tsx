@@ -3,9 +3,9 @@ import { UserContext} from "../../components/UserWrapper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { GetUserPostings } from "../../api/queries/postQueries";
 import { PostingMutation } from "../../api/mutations/postingMutations"
-import { PostingCard } from "./components/PostingCard";
+import { PostingCard, PostingCardType } from "./components/PostingCard";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { Alert, Button, Form, Modal } from "react-bootstrap";
+import { Alert, Button, Form, Modal, Stack } from "react-bootstrap";
 
 export default function Postings() {
   const user = useContext(UserContext);
@@ -35,8 +35,7 @@ export default function Postings() {
     event.preventDefault();
 
     createPostingMutation.mutate({
-        Title: event.target[0].value, 
-        Description: event.target[1].value
+        DateOfAbsence: event.target[2].value
     })
   };
 
@@ -62,6 +61,24 @@ export default function Postings() {
               <Form.Control as="textarea" rows={ 5 } placeholder="Enter description" />
             </Form.Group>
 
+            <Form.Group className="mb-3">
+              <Form.Label>Date</Form.Label>
+              <Form.Control type="date" />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Stack direction="horizontal">
+                <div>
+                  <Form.Label>Start Time</Form.Label>
+                  <Form.Control type="time" />
+                </div>
+                <div className="mx-auto">
+                  <Form.Label>End Time</Form.Label>
+                  <Form.Control type="time" />
+                </div>
+              </Stack>
+            </Form.Group>
+
             <Button variant="primary" type="submit">
               Submit
             </Button>
@@ -70,7 +87,7 @@ export default function Postings() {
       </Modal>
       { isLoading && <LoadingSpinner />}
       {data?.map((post) => {
-        return <PostingCard post={post} />;
+        return <PostingCard post={post} type={PostingCardType.PostedAccepted}/>;
       })}
     </>
   );

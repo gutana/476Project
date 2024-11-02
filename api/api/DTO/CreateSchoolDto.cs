@@ -1,8 +1,9 @@
-﻿namespace api.Models;
+﻿using api.Models;
 
-public class School 
+namespace api.DTO;
+
+public class CreateSchoolDto
 {
-    public string? Id { get; set; }
     public string? Name { get; set; }
     public SchoolType SchoolType { get; set; }
     public string? PhoneNumber { get; set; }
@@ -10,10 +11,4 @@ public class School
     public string? City { get; set; }
     public string? PostalCode { get; set; }
     public Region Region { get; set; }
-}
-
-public enum SchoolType
-{
-    Primary,
-    Secondary
 }
