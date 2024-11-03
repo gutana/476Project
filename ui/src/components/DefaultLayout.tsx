@@ -14,7 +14,10 @@ export const DefaultLayout = ({ children }: Props) => {
     return (
         <>
             <CustomNavbar />
-            {children}
+
+            <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
+                {children}
+            </div>
         </>
     )
 }
@@ -43,7 +46,7 @@ export function CustomNavbar() {
                             </>
                         }
                         <Nav.Link as={Link} to="/viewPostings">Available Postings</Nav.Link>
-                        
+
                         <Nav.Link as={Link} to='/viewMyPostings'>My Postings</Nav.Link>
 
                         <Nav.Link as={Link} to="/edit">Edit Profile</Nav.Link>

@@ -14,7 +14,7 @@ export default function Home() {
     })
 
     return (
-        <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
+        <>
             <h3>{user && "Welcome, " + user?.firstName}</h3>
 
             <div style={{ marginTop: "10px", padding: '10px', border: '1px solid lightgrey', borderRadius: '10px' }}>
@@ -25,6 +25,6 @@ export default function Home() {
                     return <NewsCard key={news.id} Title={news.title} Content={news.content} Date={news.postDate} />
                 })}
             </div>
-        </div>
+        </>
     )
 }
