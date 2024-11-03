@@ -124,7 +124,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         return await Posts
             .Include(post => post.School)
-            .Where(post => post.AcceptedByUser != null &&
+            .Where(post => 
+                    post.AcceptedByUser == null &&
                     post.Poster.Id != user.Id &&
                     post.School.Region == user.Region &&
                     /* deal with dates whenever thats done */
