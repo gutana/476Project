@@ -3,13 +3,15 @@ import { UserContext } from "../../components/UserWrapper";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
-import { Region } from "../../models/user";
+import { Region, UserType } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
-import { useMutation } from "@tanstack/react-query";
-import { EditInformation, EditInformationMutation } from "../../api/mutations/userMutations";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { EditInformationMutation } from "../../api/mutations/userMutations";
 import Toasts from "../../components/Toasts";
 import { stringToRegion } from "../../components/stringToDataType";
+import { School } from "../../models/schools";
+import { GetAllSchools } from "../../api/queries/schoolQueries";
 
 export default function Edit() {
     let user = useContext(UserContext);
@@ -19,17 +21,29 @@ export default function Edit() {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState<string>("");
     const [region, setRegion] = useState<Region | string>("");
+    const [school, setSchool] = useState<string>("");
+    const [allSchools, setAllSchools] = useState<School[]>([]);
+
     const [last, setLast] = useState("");
     const [isLoading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [show, setShow] = useState<boolean>(false);
+
+    const result = useQuery({
+        queryKey: ["getAllSchools"], queryFn: () => GetAllSchools()
+    })
+
+    useEffect(() => {
+        if (result.data === undefined) return;
+        setAllSchools(result.data);
+    }, [result.data])
 
     const editMutation = useMutation({
         mutationFn: EditInformationMutation,
         onSuccess: (data, variables, context) => {
             setShow(true);
             setLoading(false);
-            updateUser(variables);
+            updateUser();
         },
         onError: (data, variables, context) => {
             if (`${data}` === "Account has to be verified by an administrator.") {
@@ -41,13 +55,8 @@ export default function Edit() {
         }
     })
 
-    const updateUser = (vars: EditInformation) => {
-        if (!user) return;
-        user.firstName = vars.FirstName;
-        user.lastName = vars.LastName;
-        user.email = vars.Email;
-        user.phoneNumber = vars.PhoneNumber;
-        user.region = vars.Region;
+    const updateUser = () => {
+        window.location.reload();
     }
 
     const handleSubmit = (e: any) => {
@@ -60,12 +69,17 @@ export default function Edit() {
             return;
         }
         
-        let newVals = [firstName, lastName, email, sanitizedNumber, realRegion];
-        let oldVals = [user.firstName, user.lastName, user.email, user.phoneNumber, stringToRegion(user.region)];
+        let newVals = [firstName, lastName, email, sanitizedNumber, realRegion, school];
+        let oldVals = [user.firstName, user.lastName, user.email, user.phoneNumber, stringToRegion(user.region), user?.school ? user.school.id : ""];
         if (newVals.toString() === oldVals.toString()) return;
 
         if (sanitizedNumber && sanitizedNumber.length !== 10) {
             setErrorMessage("Phone number has to be 10 digits!")
+            return;
+        }
+
+        if (user.userType !== UserType.Teacher && (!school || school.length === 0)) {
+            setErrorMessage("School has to be selected!");
             return;
         }
         
@@ -75,7 +89,8 @@ export default function Edit() {
             LastName: lastName,
             Email: email,
             PhoneNumber: sanitizedNumber,
-            Region: realRegion
+            Region: realRegion,
+            SchoolId: school
         })
     }
 
@@ -92,9 +107,10 @@ export default function Edit() {
         setEmail(user.email);
         setPhoneNumber(formatPhoneNumber(user.phoneNumber));
         setRegion(stringToRegion(user.region));
+        setSchool(user?.school ? user.school.id : "");
     }, [user])
 
-    if (!user) {
+    if (!user || result.isLoading) {
         return (
             <LoadingSpinner />
         )
@@ -133,6 +149,16 @@ export default function Edit() {
                             <option value={Region.Saskatoon}>Saskatoon</option>
                         </Form.Select>
                     </Form.Group>
+
+                    {user && user.userType !== UserType.Teacher && <Form.Group className="mb-3">
+                        <Form.Label>School</Form.Label>
+                        <Form.Select onChange={(e) => setSchool(e.target.value)} value={school} required>
+                            {allSchools.map((school) => {
+                                if (stringToRegion(school.region) !== stringToRegion(region)) return;
+                                return <option key={school.id} value={school.id}>{school.schoolName}</option>
+                            })}
+                        </Form.Select>
+                    </Form.Group>}
 
                     {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 

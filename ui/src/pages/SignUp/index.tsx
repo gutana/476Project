@@ -12,7 +12,9 @@ import {
   sanitizeNumber,
 } from "../../components/PhoneNumberFormat";
 import { userQuery } from "../../api/queries/userQueries";
-import { GetSchoolsByRegion } from "../../api/queries/schoolQueries";
+import { GetAllSchools, GetSchoolsByRegion } from "../../api/queries/schoolQueries";
+import { School } from "../../models/schools";
+import { stringToRegion, stringToUserType } from "../../components/stringToDataType";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -21,15 +23,17 @@ export default function SignUp() {
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
+  // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
   const [region, setRegion] = useState<Region | null>(null);
 
-  const queryClient = useQueryClient();
+  const [allSchools, setAllSchools] = useState<School[]>([]);
+  const [userType, setUserType] = useState<UserType | null>(null);
+
+  // const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
-    queryFn: () => GetSchoolsByRegion(region as Region),
-    queryKey: ["getSchoolsByRegion"],
-    enabled: schoolsQueryEnabled,
+    queryFn: () => GetAllSchools(),
+    queryKey: ["getAllSchools"],
   });
 
   const registrationMutation = useMutation({
@@ -45,11 +49,14 @@ export default function SignUp() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
+    setErrorMessage("");
+
     let sanitizedNumber = sanitizeNumber(phoneNumber);
     if (sanitizedNumber.length !== 10) {
       setErrorMessage("Invalid Phone Number!");
       return;
     }
+    
     let data = {
       FirstName: event.target[0].value,
       LastName: event.target[1].value,
@@ -57,12 +64,17 @@ export default function SignUp() {
       PhoneNumber: sanitizedNumber,
       Password: event.target[4].value,
       Region: event.target[5].value,
-      SchoolId: event.target[6].value,
-      UserType: event.target[7].value
+      UserType: event.target[6].value,
+      SchoolId: event.target[7].value
     };
 
     if (data.Region === "-1" || data.UserType === "-1") {
       setErrorMessage("Region/Account Type has to be selected!");
+      return;
+    }
+
+    if (data.SchoolId === "-1") {
+      setErrorMessage("School has to be selected!");
       return;
     }
 
@@ -79,17 +91,27 @@ export default function SignUp() {
     setPhoneNumber(e.target.value);
   };
 
+  // useEffect(() => {
+  //     queryClient.resetQueries({
+  //         queryKey: ["getSchoolsByRegion"],
+  //         exact: true,
+  //     });
+  // }, [region])
+
   useEffect(() => {
-      queryClient.resetQueries({
-          queryKey: ["getSchoolsByRegion"],
-          exact: true,
-      });
-  }, [region])
+    if (data === undefined) return;
+    setAllSchools(data);
+  }, [data])
+
+  // const onRegionChange = (event: any) => {
+  //     setRegion(event.target.value as Region);
+  //     updateSchools(stringToRegion(event.target.value));
+  //     setSchoolsQueryEnabled(true);
+  // };
 
   const onRegionChange = (event: any) => {
-      setRegion(event.target.value as Region);
-      setSchoolsQueryEnabled(true);
-  };
+    setRegion(event.target.value as Region);
+  }
 
   const handleClose = () => {
     navigate("/");
@@ -154,23 +176,9 @@ export default function SignUp() {
             </Form.Select>
           </Form.Group>
 
-          {data && (
-            <Form.Group className="mb-3">
-              <Form.Label>School</Form.Label>
-              <Form.Select defaultValue="-1" required>
-                <option value="-1" disabled>
-                  Select a school
-                </option>
-                {data?.map((school) => {
-                  return <option value={school.id}>{school.schoolName}</option>;
-                })}
-              </Form.Select>
-            </Form.Group>
-          )}
-
           <Form.Group className="mb-3">
             <Form.Label>Account Type</Form.Label>
-            <Form.Select defaultValue="-1" required>
+            <Form.Select onChange={(e) => setUserType(stringToUserType(e.target.value))} defaultValue="-1" required>
               <option value="-1" disabled>
                 Select account type
               </option>
@@ -179,6 +187,21 @@ export default function SignUp() {
               <option value={UserType.Administrator}>Administrator</option>
             </Form.Select>
           </Form.Group>
+
+          {!isLoading && region && userType && userType !== UserType.Teacher && (
+            <Form.Group className="mb-3">
+              <Form.Label>School</Form.Label>
+              <Form.Select defaultValue="-1" required>
+                <option value="-1" disabled>
+                  Select a school
+                </option>
+                {allSchools.map((school) => {
+                  if (stringToRegion(school.region) !== stringToRegion(region)) return;
+                  return <option key={school.id} value={school.id}>{school.schoolName}</option>;
+                })}
+              </Form.Select>
+            </Form.Group>
+          )}
 
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 

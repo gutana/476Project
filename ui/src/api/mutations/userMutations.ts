@@ -93,6 +93,7 @@ export interface EditInformation {
     Email: string,
     PhoneNumber: string,
     Region: Region,
+    SchoolId: string
 }
 
 export async function EditInformationMutation(request: EditInformation, retries=0) : Promise<boolean> {

@@ -29,6 +29,16 @@ public class AccountController : ControllerBase
         _context = context;
     }
 
+    public class EditInfoDto
+    {
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
+        public required string Email { get; set; }
+        public required string PhoneNumber { get; set; }
+        public required Region Region { get; set; }
+        public required string SchoolId { get; set; }
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegistrationDto registrationDto)
     {
@@ -37,7 +47,7 @@ public class AccountController : ControllerBase
         user.FirstName = registrationDto.FirstName;
         user.LastName = registrationDto.LastName;
         user.Region = registrationDto.Region;
-        user.School = _context.GetSchoolById(registrationDto.SchoolId.ToString());
+        user.School = registrationDto.SchoolId.Length != 0 ? _context.GetSchoolById(registrationDto.SchoolId) : null;
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;
         user.PhoneNumber = registrationDto.PhoneNumber;
@@ -66,7 +76,7 @@ public class AccountController : ControllerBase
 
     [HttpPost("editInfo")]
     [Authorize]
-    public async Task<IActionResult> EditInfo(User data)
+    public async Task<IActionResult> EditInfo(EditInfoDto data)
     {
         User? user = await GetCurrentUser();
         
@@ -80,6 +90,7 @@ public class AccountController : ControllerBase
         user.Email = data.Email;
         user.PhoneNumber = data.PhoneNumber;
         user.Region = data.Region;
+        user.School = data.SchoolId.Length != 0 ? _context.GetSchoolById(data.SchoolId) : null;
 
         var result = await _userManager.UpdateAsync(user);
         

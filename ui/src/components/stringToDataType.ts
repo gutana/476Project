@@ -1,6 +1,6 @@
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../models/postings";
 import { SchoolType } from "../models/schools";
-import { Region } from "../models/user";
+import { Region, UserType } from "../models/user";
 
 export const stringToRegion = (region: string | Region) => {
     if (!(typeof region === "string")) {
@@ -15,6 +15,23 @@ export const stringToRegion = (region: string | Region) => {
             return Region.Saskatoon;
         default:
             return Region.Regina;
+    }
+}
+
+export const stringToUserType = (userType: string | UserType) => {
+    if (!(typeof userType === "string")) {
+        return userType;
+    }
+
+    switch (userType.toLowerCase()) {
+        case "administrator":
+            return UserType.Administrator;
+        case "requestor":
+            return UserType.Requestor;
+        case "teacher":
+            return UserType.Teacher;
+        default:
+            return null;
     }
 }
 

@@ -47,16 +47,9 @@ public class SchoolController : Controller
         return Ok(await _context.GetSchools(region));
     }
 
-    [HttpGet("getAll")]
-    [Authorize]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("getAllSchools")]
+    public async Task<IActionResult> GetAllSchools()
     {
-        User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Administrator)
-            return Unauthorized();
-        if (user.EmailConfirmed == false)
-            return Unauthorized("Account has to be verified by an administrator");
-
         return Ok(await _context.GetSchools());
     }
 

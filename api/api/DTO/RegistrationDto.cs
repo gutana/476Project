@@ -10,6 +10,6 @@ public class RegistrationDto
     public string PhoneNumber { get; set; }
     public string Password { get; set; }
     public Region Region { get; set; }
-    public Guid SchoolId {  get; set; }
+    public string SchoolId {  get; set; }
     public UserType UserType { get; set; }
 }
