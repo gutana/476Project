@@ -1,9 +1,10 @@
 import { getRefresh } from "../../components/UserWrapper";
 import { baseServerURL, repititionError } from "../../components/consts";
 import { School } from "../../models/schools";
+import { Region } from "../../models/user";
 
-export async function schoolQuery(retries=0) : Promise<School[] | undefined> {
-    const response = await fetch(baseServerURL + '/post/getSchools', {
+export async function GetSchoolsByRegion(region: Region) {
+    const response = await fetch(baseServerURL + `/school/getByRegion?region=${region}`, {
         method: "GET",
         headers: {
             "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
@@ -13,10 +14,6 @@ export async function schoolQuery(retries=0) : Promise<School[] | undefined> {
     if (response.status === 200) {
         const text = await response.text();
         return JSON.parse(text) as School[];
-    } else if (response.status === 401) {
-        const res = retries < 3 ? await getRefresh() : false;
-        if (res) return await schoolQuery(retries + 1);
-        throw repititionError;
     } else {
         const text = await response.text();
         throw new Error(JSON.parse(text).detail);

@@ -1,4 +1,5 @@
 ﻿using api.DTO;
+using api.Migrations;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -13,13 +14,13 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class PostController: ControllerBase
 {
-    private readonly ILogger<AccountController> _logger;
+    private readonly ILogger<PostController> _logger;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public PostController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
+    public PostController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<PostController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
     {
         _logger = logger;
         _userManager = userManager;
@@ -46,17 +47,21 @@ public class PostController: ControllerBase
 
     [HttpGet("getByUser")]
     [Authorize]
-    public async Task<IActionResult> GetByUser(string userId)
+    public async Task<IActionResult> GetByUser(string? userId)
     {
+        List<Post> postings;
         User? user = await GetCurrentUser();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator.");
 
-        var postings = await _context.GetPostingsByUser(userId);
+        if (userId != null && user.UserType == UserType.Administrator)
+            postings = await _context.GetPostingsByUser(userId);
+        else
+            postings = await _context.GetPostingsByUser(user.Id);
 
-        return Ok(postings);
+        return Ok(ConvertToPostDtoList(postings));
     }
 
     [HttpGet("getAvailable")]
@@ -70,7 +75,7 @@ public class PostController: ControllerBase
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetAvailablePostings(user);
-        return Ok(postings);
+        return Ok(ConvertToPostDtoList(postings));
     }
 
     [HttpGet("getTakenByUser")]
@@ -84,7 +89,7 @@ public class PostController: ControllerBase
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetTakenPostings(user);
-        return Ok(postings);
+        return Ok(ConvertToPostDtoList(postings));
     }
 
     [HttpGet("getAll")]
@@ -98,18 +103,18 @@ public class PostController: ControllerBase
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetAllPostings();
-        return Ok(postings);
+        return Ok(ConvertToPostDtoList(postings));
     }
 
     [HttpPost("addPosting")]
     [Authorize]
-    public async Task<IActionResult> AddPosting(PostDTO resp)
+    public async Task<IActionResult> AddPosting(PostDtos resp)
     {
         User? user = await GetCurrentUser();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator");
 
         if (_context.CreateNewPosting(resp, user.Id))
             return Ok("Post has been created!");
@@ -125,5 +130,14 @@ public class PostController: ControllerBase
             return null;
 
         return await _userManager.FindByIdAsync(userId);
+    }
+
+    private List<PostDto> ConvertToPostDtoList(List<Post> posts)
+    {
+        List<PostDto> postDtos = new List<PostDto>();
+        foreach (var post in posts)
+            postDtos.Add(PostDto.MapPostToPostDto(post));
+
+        return postDtos;
     }
 }

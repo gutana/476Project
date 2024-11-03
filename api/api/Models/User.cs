@@ -10,6 +10,7 @@ public class User : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public Region? Region { get; set; }
+    public School? School { get; set; }
     public UserType? UserType { get; set; }
 
     public List<PrimarySchoolSubject>? preferredPrimarySchoolSubject {  get; set; }

@@ -37,6 +37,7 @@ public class AccountController : ControllerBase
         user.FirstName = registrationDto.FirstName;
         user.LastName = registrationDto.LastName;
         user.Region = registrationDto.Region;
+        user.School = _context.GetSchoolById(registrationDto.SchoolId.ToString());
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;
         user.PhoneNumber = registrationDto.PhoneNumber;
@@ -95,6 +96,6 @@ public class AccountController : ControllerBase
         if (userId == null)
             return null;
 
-        return await _userManager.FindByIdAsync(userId);
+        return await _context.FindUserById(userId);
     }
 }

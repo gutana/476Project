@@ -1,4 +1,5 @@
 ﻿using api.DTO;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.HasDefaultSchema("identity");
     }
 
+    public async Task<User> FindUserById(string id)
+    {
+        return await Users
+            .Include(user => user.School)
+            .FirstAsync(user => user.Id == id);
+    }
+
     public bool CreateNewsPost(CreateNewsPostDto dto)
     {
         try
@@ -45,12 +53,11 @@ public class ApplicationDbContext : IdentityDbContext<User>
         }
     }
 
-    public bool CreateNewPosting(PostDTO dto, string userId)
+    public bool CreateNewPosting(PostDtos dto, string userId)
     {
         try
         {
             Post post = new();
-            DateTime now = DateTime.Now;
             
             var school = Schools.Where(s => s.Id == dto.SchoolId).FirstOrDefault();
             if (school == null || school == default)
@@ -64,9 +71,10 @@ public class ApplicationDbContext : IdentityDbContext<User>
             post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
             post.Grades = dto.Grades;
             post.PostDescription = dto.PostDescription;
-            post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
+            if (post.RequestedSub != null)
+                post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
             post.Private = dto.Private;
-            post.PostDateTime = DateTime.Now;    // need to change to accept date of absence rather than current date/time
+            post.PostDateTime = DateTime.UtcNow;    // need to change to accept date of absence rather than current date/time
 
             Posts.Add(post);
             SaveChanges();
@@ -88,12 +96,26 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         return await Schools
             .Where(school => school.Region == region)
+            .OrderBy(school => school.SchoolName)
             .ToListAsync();  
+    }
+
+    public async Task<List<School>> GetSchools()
+    {
+        return await Schools
+            .ToListAsync();
+    }
+
+    public School? GetSchoolById(string schoolId)
+    {
+        return Schools
+            .First(school => school.Id == schoolId);
     }
 
     public async Task<List<Post>> GetPostingsByUser(string userId)
     {
         return await Posts
+            .Include(post => post.School)
             .Where(post => post.Poster.Id == userId)
             .ToListAsync();
     }
@@ -101,11 +123,12 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public async Task<List<Post>> GetAvailablePostings(User user)
     {
         return await Posts
+            .Include(post => post.School)
             .Where(post => post.AcceptedByUser != null &&
                     post.Poster.Id != user.Id &&
                     post.School.Region == user.Region &&
                     /* deal with dates whenever thats done */
-                    post.Private != true || (post.RequestedSub != null && post.RequestedSub.Id == user.Id) || post.PostDateTime < DateTime.Now.AddMinutes(-5))
+                    (post.Private != true || (post.RequestedSub != null && post.RequestedSub.Id == user.Id) || post.PostDateTime < DateTime.UtcNow.AddMinutes(-5)))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
     }
@@ -113,6 +136,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public async Task<List<Post>> GetTakenPostings(User user)
     {
         return await Posts
+            .Include(post => post.School)
             .Where(post => (post.AcceptedByUser != null && post.AcceptedByUser.Id == user.Id))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
@@ -121,6 +145,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public async Task<List<Post>> GetAllPostings()
     {
         return await Posts
+            .Include(post => post.School)
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
     }

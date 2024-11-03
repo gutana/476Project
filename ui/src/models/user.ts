@@ -1,7 +1,10 @@
+import { School } from "./schools"
+
 export interface User {
     firstName: string,
     lastName: string,
     region: Region,
+    school: School,
     userType: UserType,
     id: string,
     email: string,

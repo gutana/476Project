@@ -65,6 +65,7 @@ export interface RegistrationRequest {
     Password: string,
     PhoneNumber: string,
     Region: Region,
+    SchoolId: string,
     UserType: UserType
 }
 

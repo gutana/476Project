@@ -83,25 +83,6 @@ public class AdminController : ControllerBase
         return Ok(unapprovedUsers);
     }
 
-    [HttpPost("addSchool")]
-    [Authorize]
-    public async Task<IActionResult> AddSchool(SchoolDto resp)
-    {
-        User? user = await GetCurrentUser();
-        if (user == null || user.UserType != UserType.Administrator)
-            return Unauthorized();
-        if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
-
-        if (_context.SchoolExists(resp))
-            return Ok("This school already exists.");
-        
-        if (_context.CreateSchool(resp, user.Id))
-            return Ok("School has been created!");
-        else
-            return Problem("Unexpected error occurred.", statusCode: 500);
-    }
-
     private async Task<User?> GetCurrentUser()
     {
         var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;

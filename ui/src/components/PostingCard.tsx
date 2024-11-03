@@ -7,10 +7,10 @@ import {
   Row,
   Stack,
 } from "react-bootstrap";
-import { Post } from "../../../models/postings";
-import { UserContext } from "../../../components/UserWrapper";
+import { Post } from "../models/postings";
+import { UserContext } from "./UserWrapper";
 import { useContext } from "react";
-import { UserType } from "../../../models/user";
+import { UserType } from "../models/user";
 
 interface Props {
   post: Post;
@@ -19,12 +19,12 @@ interface Props {
 export const PostingCard = ({ post }: Props) => {
   const user = useContext(UserContext);
 
-  const showAcceptbutton: boolean = post.acceptedByUser == null && post.poster.id != user?.id;
-  const showCancelbutton: boolean = user?.userType === UserType.Administrator || post.poster.id === user?.id;
-  const showTakenByText: boolean = post.acceptedByUser != null;
+  const showAcceptbutton: boolean = post.acceptedByUserId == null && post.posterId != user?.id;
+  const showCancelbutton: boolean = user?.userType === UserType.Administrator || post.posterId === user?.id;
+  const showTakenByText: boolean = post.acceptedByUserFirstName != null;
 
   return (
-    <Card style={{ margin: "2vw" }}>
+    <Card style={{ margin: "2vw" }} key={post.id}>
       <Card.Header as="div">
         <Stack direction="horizontal">
           <h5>{post.school.schoolName} - {post.grades.toString()}</h5>
@@ -40,7 +40,7 @@ export const PostingCard = ({ post }: Props) => {
           <div>
             <div>
               <Stack direction="horizontal" gap={2}>
-                <div className="p-2">{post.poster.firstName + " " + post.poster.lastName}</div>
+                <div className="p-2">{post.posterFirstName + " " + post.posterLastName}</div>
                 <div className="p-2">DateOfAbsence</div>
               </Stack>
             </div>
@@ -57,7 +57,7 @@ export const PostingCard = ({ post }: Props) => {
             <div>
               { showAcceptbutton && <Button variant="success">Accept</Button> }
               { showCancelbutton && <Button variant="outline-danger">Cancel</Button> }
-              { showTakenByText && <div className="p-2">Taken by: {post.acceptedByUser?.firstName + " " + post.acceptedByUser?.lastName}</div> }
+              { showTakenByText && <div className="p-2">Taken by: {post.acceptedByUserFirstName + " " + post.acceptedByUserLastName}</div> }
             </div>
           </div>
         </Stack>

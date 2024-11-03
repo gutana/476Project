@@ -9,6 +9,7 @@ import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
 import PostNews from './pages/PostNews';
 import ViewPostings from './pages/ViewPostings'
+import MyPostings from './pages/ViewMyPostings'
 import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
@@ -101,6 +102,16 @@ const router = createBrowserRouter([
             <UserWrapper>
                 <DefaultLayout>
                     <ViewPostings />
+                </DefaultLayout>
+            </UserWrapper>
+        )
+    },
+    {
+        path: '/viewMyPostings',
+        element: (
+            <UserWrapper>
+                <DefaultLayout>
+                    <MyPostings />
                 </DefaultLayout>
             </UserWrapper>
         )

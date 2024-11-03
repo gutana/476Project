@@ -8,7 +8,6 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Toasts from "../../components/Toasts";
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../../models/postings";
-import { schoolQuery } from "../../api/queries/schoolQueries";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
 import { School } from "../../models/schools";
@@ -54,7 +53,6 @@ function MultipleSelection({ values, title, placeholder, selection, setSelection
 export default function Post() {
     let user = useContext(UserContext);
 
-    const [schoolId, setSchoolId] = useState<any>([]);
     const [desc, setDesc] = useState("");
     const [requestedSub, setRequestedSub] = useState<any>([]);
     const [grades, setGrades] = useState<TypeaheadValue[]>([]);
@@ -202,7 +200,7 @@ export default function Post() {
             return;
         }
 
-        let school: School = schoolId[0];
+        let school: School = user?.school;
         let reqSub: Substitute | undefined = requestedSub[0];
         
         if (school) {
@@ -268,18 +266,14 @@ export default function Post() {
         });
 
         postMutation.mutate({
-            schoolId: school.id,
             requestedSub: reqSub ? reqSub.id : "",
+            schoolId: school.id,
             postDescription: desc,
             private: requestedSub.length !== 0,
             grades: grade,
             primarySchoolSubjects: realPrimary,
             secondarySchoolSubjects: realSecondary
         })
-    }
-
-    const changeSchool = (e: any) => {
-        setSchoolId(e);
     }
 
     const changeSub = (e: any) => {
@@ -300,17 +294,13 @@ export default function Post() {
         <>
             <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />
             <div className="p-3">
-                <h3 className="pb-2">Add New Posting</h3>
+                <h3 className="pb-2">Add New Posting for {user?.school.schoolName}</h3>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3" controlId="schoolName">
-                        <Form.Label>School Name</Form.Label>
-                        <Typeahead labelKey="schoolName" selected={schoolId} options={schools} id="1" placeholder="Search school..." onChange={changeSchool} />
-                    </Form.Group>
-
-                    {schoolId.length !== 0 && <MultipleSelection values={schoolId[0].schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}
-                    {schoolId.length !== 0 && schoolId[0].schoolType.toString() === "Primary" &&
+            
+                    {user?.school && <MultipleSelection values={user.school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}
+                    {user?.school && user.school.schoolType.toString() === "Primary" &&
                     <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Select primary subject..." selection={primary} setSelection={setPrimary} />}
-                    {schoolId.length !== 0 && schoolId[0].schoolType.toString() === "Secondary" && 
+                    {user?.school && user.school.schoolType.toString() === "Secondary" && 
                     <MultipleSelection values={secondarySubjects} title="Secondary School Subject(s)" placeholder="Select secondary subject..." selection={secondary} setSelection={setSecondary} />}
 
                     <Form.Group className="mb-3" controlId="substitute">
