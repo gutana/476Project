@@ -149,6 +149,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         return await Posts
             .Include(post => post.School)
+            .Include(post => post.Poster)
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
     }
