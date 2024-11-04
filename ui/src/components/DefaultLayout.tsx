@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { UserContext } from "./UserWrapper"
 import { UserType } from "../models/user"
 
-import { Button, Container, Nav, Navbar } from "react-bootstrap"
+import { Button, Container, Image, Nav, Navbar } from "react-bootstrap"
 interface Props {
     children: ReactNode
 }
@@ -14,7 +14,6 @@ export const DefaultLayout = ({ children }: Props) => {
     return (
         <>
             <CustomNavbar />
-
             <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
                 {children}
             </div>
@@ -31,6 +30,7 @@ export function CustomNavbar() {
             <Container className="container-fluid">
                 <Navbar.Brand>
                     <Nav.Link as={Link} to="/">
+                        <Image style={{ marginTop: "-4px" }} height={"35px"} src="/images/icon.png" />
                         SubSystem
                     </Nav.Link>
                 </Navbar.Brand>
