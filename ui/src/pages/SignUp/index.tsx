@@ -15,6 +15,7 @@ import { userQuery } from "../../api/queries/userQueries";
 import { GetAllSchools, GetSchoolsByRegion } from "../../api/queries/schoolQueries";
 import { School } from "../../models/schools";
 import { stringToRegion, stringToUserType } from "../../components/stringToDataType";
+import validator from "validator";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function SignUp() {
   const [last, setLast] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessagePass, setErrorMessagePass] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
   const [region, setRegion] = useState<Region | null>(null);
@@ -46,6 +48,24 @@ export default function SignUp() {
       registrationMutation.reset();
     },
   });
+
+  const handlePassword = (event: any) => {
+      let item = event.target.value;
+      //console.log(item);
+      if (item === "") {
+          setErrorMessagePass("Please enter a password");
+      }
+      if (validator.isStrongPassword(event.target.value, {
+          minLength: 8, minLowercase: 1,
+          minUppercase: 1, minNumbers: 1, minSymbols: 0
+      })) {
+          setErrorMessagePass("")
+      }
+      else {
+          setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.")
+      }
+
+  }
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -134,7 +154,7 @@ export default function SignUp() {
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="firstName">
             <Form.Label>First Name</Form.Label>
-            <Form.Control type="text" required />
+            <Form.Control type="text"  required/>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="lastName">
@@ -162,8 +182,13 @@ export default function SignUp() {
 
           <Form.Group className="mb-3" controlId="password">
             <Form.Label>Password</Form.Label>
-            <Form.Control type="password" required />
+                      <Form.Control
+                          type="password"
+                          required
+                          onChange={handlePassword}
+                                                />
           </Form.Group>
+          {errorMessagePass && <Alert variant="danger">{errorMessagePass}</Alert>}
 
           <Form.Group className="mb-3">
             <Form.Label>Region</Form.Label>
