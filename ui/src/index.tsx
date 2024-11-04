@@ -7,16 +7,16 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
-import PostNews from './pages/PostNews';
-import ViewPostings from './pages/ViewPostings'
-import MyPostings from './pages/ViewMyPostings'
+import AddNewsPage from './pages/AddNews';
+import ViewPostings from './pages/ViewAvailablePostings'
+import ViewMyPostingsPage from './pages/ViewMyPostings'
 import { UserWrapper } from './components/UserWrapper';
 import { DefaultLayout } from './components/DefaultLayout';
 import { BasicLayout } from './components/BasicLayout';
-import Edit from './pages/Edit';
-import Approve from './pages/Approve';
-import AddSchool from './pages/Schools';
-import Post from './pages/Posting';
+import EditProfilePage from './pages/EditProfile';
+import ApproveAccountPage from './pages/ApproveAccount';
+import AddSchoolPage from './pages/AddSchool';
+import AddPostPage from './pages/AddPost';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <PostNews />
+                    <AddNewsPage />
                 </DefaultLayout>
             </UserWrapper>
         )
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <Edit />
+                    <EditProfilePage />
                 </DefaultLayout>
             </UserWrapper>
         )
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <Approve />
+                    <ApproveAccountPage />
                 </DefaultLayout>
             </UserWrapper>
         )
@@ -81,7 +81,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <AddSchool />
+                    <AddSchoolPage />
                 </DefaultLayout>
             </UserWrapper>
         )
@@ -91,7 +91,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <Post />
+                    <AddPostPage />
                 </DefaultLayout>
             </UserWrapper>
         )
@@ -111,7 +111,7 @@ const router = createBrowserRouter([
         element: (
             <UserWrapper>
                 <DefaultLayout>
-                    <MyPostings />
+                    <ViewMyPostingsPage />
                 </DefaultLayout>
             </UserWrapper>
         )

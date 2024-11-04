@@ -12,7 +12,7 @@ import { SchoolType } from "../../models/schools";
 import { AddSchoolMutation } from "../../api/mutations/schoolMutations";
 import { stringToRegion, stringToSchoolType } from "../../components/stringToDataType";
 
-export default function AddSchool() {
+export default function AddSchoolPage() {
     let user = useContext(UserContext);
 
     const [schoolName, setSchoolName] = useState("");
@@ -65,7 +65,7 @@ export default function AddSchool() {
         let sanitizedNumber = sanitizeNumber(phoneNumber);
         let realRegion = stringToRegion(region);
         let realSchoolType = stringToSchoolType(schoolType);
-        
+
         if (!user || user.userType !== UserType.Administrator) {
             window.location.href = "/";
             return;
@@ -114,7 +114,7 @@ export default function AddSchool() {
                         <Form.Label>School Name</Form.Label>
                         <Form.Control type="text" required value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
                     </Form.Group>
-                    
+
                     <Form.Group className="mb-3" controlId="address">
                         <Form.Label>Address</Form.Label>
                         <Form.Control type="text" required value={address} onChange={(e) => setAddress(e.target.value)} />
@@ -134,7 +134,7 @@ export default function AddSchool() {
                         <Form.Label>Phone Number</Form.Label>
                         <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
                     </Form.Group>
-                    
+
                     <Form.Group className="mb-3">
                         <Form.Label>Region</Form.Label>
                         <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>

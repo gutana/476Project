@@ -1,27 +1,15 @@
 import { NewsPost } from "../../models/news";
-import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL, repititionError } from "../../components/consts";
+import { Endpoints } from "../../utils/ApiURLs";
+import { AuthedFetch } from "../../utils/AuthedFetch";
 
-export async function LatestNewsQuery(retries=0): Promise<NewsPost[] | null> {
-    // TODO: Should have an abstraction for authed query
-    const response = await fetch(baseServerURL + '/news/getLatest', {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
-        },
-    });
+export async function LatestNewsQuery() {
+    const response = await AuthedFetch('GET', Endpoints.NEWS.GET_LATEST);
 
     if (response.status === 200) {
         const text = await response.text();
         return await JSON.parse(text) as NewsPost[];
-    } else if (response.status === 401) {
-        const res = retries < 3 ? await getRefresh() : false;
-        if (res) return await LatestNewsQuery(retries + 1);
-        throw repititionError;
-    }
-    else {
-        console.log("Error fetching news...");
-        console.log(response.body);
-        return null;
+    } else {
+        const text = await response.text();
+        throw new Error(JSON.parse(text).detail);
     }
 }

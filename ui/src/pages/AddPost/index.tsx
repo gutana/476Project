@@ -12,7 +12,7 @@ import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
 import { School } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
-import { allGrades, primarySubjects, secondarySubjects } from "../../components/consts";
+import { allGrades, primarySubjects, secondarySubjects } from "../../utils/consts";
 import { stringToGrades, stringToPrimary, stringToSecondary } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
@@ -30,27 +30,27 @@ interface Props {
 }
 
 function MultipleSelection({ values, title, placeholder, selection, setSelection }: Props) {
-  const setSelections = (vals: any) => {
-    setSelection(vals);
-  }
-  
-  return (
-    <Form.Group className="mb-3">
-        <Form.Label>{title}</Form.Label>
-        <Typeahead
-          id={placeholder}
-          labelKey="name"
-          multiple
-          onChange={setSelections}
-          options={values}
-          placeholder={placeholder}
-          selected={selection}
-        />
-      </Form.Group>
-  );
+    const setSelections = (vals: any) => {
+        setSelection(vals);
+    }
+
+    return (
+        <Form.Group className="mb-3">
+            <Form.Label>{title}</Form.Label>
+            <Typeahead
+                id={placeholder}
+                labelKey="name"
+                multiple
+                onChange={setSelections}
+                options={values}
+                placeholder={placeholder}
+                selected={selection}
+            />
+        </Form.Group>
+    );
 }
 
-export default function Post() {
+export default function AddPostPage() {
     let user = useContext(UserContext);
 
     const [desc, setDesc] = useState("");
@@ -58,11 +58,11 @@ export default function Post() {
     const [grades, setGrades] = useState<TypeaheadValue[]>([]);
     const [primary, setPrimary] = useState<TypeaheadValue[]>([]);
     const [secondary, setSecondary] = useState<TypeaheadValue[]>([]);
-    
+
     const [variant, setVariant] = useState("success");
     const [title, setTitle] = useState("Success!");
     const [message, setMessage] = useState("");
-    
+
     const [schools, setSchools] = useState<School[]>([]);
     const [subs, setSubs] = useState<Substitute[]>([]);
 
@@ -94,7 +94,7 @@ export default function Post() {
     }
 
     useEffect(() => {
-        if (data == undefined) 
+        if (data == undefined)
             return;
 
         setSubs(translateToSub(data ?? []));
@@ -121,11 +121,11 @@ export default function Post() {
         if (grades.length === 0) return -1;
         let translatedGrade: Grade[] = [];
         let gradesValue: string[] = [];
-        
+
         grades.forEach(grade => {
             gradesValue.push(grade.value);
         })
-        
+
         for (let i = 0; i < gradesValue.length; i++) {
             let grade = gradesValue[i];
             let translated = stringToGrades(grade);
@@ -202,7 +202,7 @@ export default function Post() {
 
         let school: School = user?.school;
         let reqSub: Substitute | undefined = requestedSub[0];
-        
+
         if (school) {
             let sType = school.schoolType.toString();
             if (sType === "Primary" && primary.length === 0) {
@@ -217,7 +217,7 @@ export default function Post() {
             setErrorMessage("Choose a school.");
             return;
         }
-        
+
         let sType = school.schoolType.toString();
         let grade: Grade[] | number = translateGrade(sType === "Primary");
 
@@ -250,9 +250,9 @@ export default function Post() {
             return;
         }
 
-        if (sType === "Primary") 
+        if (sType === "Primary")
             realSecondary = null;
-        else 
+        else
             realPrimary = null;
 
         console.log({
@@ -296,12 +296,12 @@ export default function Post() {
             <div className="p-3">
                 <h3 className="pb-2">Add New Posting for {user?.school.schoolName}</h3>
                 <Form onSubmit={handleSubmit}>
-            
+
                     {user?.school && <MultipleSelection values={user.school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}
                     {user?.school && user.school.schoolType.toString() === "Primary" &&
-                    <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Select primary subject..." selection={primary} setSelection={setPrimary} />}
-                    {user?.school && user.school.schoolType.toString() === "Secondary" && 
-                    <MultipleSelection values={secondarySubjects} title="Secondary School Subject(s)" placeholder="Select secondary subject..." selection={secondary} setSelection={setSecondary} />}
+                        <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Select primary subject..." selection={primary} setSelection={setPrimary} />}
+                    {user?.school && user.school.schoolType.toString() === "Secondary" &&
+                        <MultipleSelection values={secondarySubjects} title="Secondary School Subject(s)" placeholder="Select secondary subject..." selection={secondary} setSelection={setSecondary} />}
 
                     <Form.Group className="mb-3" controlId="substitute">
                         <Form.Label>Request Substitute</Form.Label>

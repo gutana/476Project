@@ -13,7 +13,7 @@ import { stringToRegion } from "../../components/stringToDataType";
 import { School } from "../../models/schools";
 import { GetAllSchools } from "../../api/queries/schoolQueries";
 
-export default function Edit() {
+export default function EditProfilePage() {
     let user = useContext(UserContext);
 
     const [firstName, setFirstName] = useState("");
@@ -63,12 +63,12 @@ export default function Edit() {
         e.preventDefault();
         let sanitizedNumber = sanitizeNumber(phoneNumber);
         let realRegion = stringToRegion(region);
-        
+
         if (!user) {
             window.location.href = "/";
             return;
         }
-        
+
         let newVals = [firstName, lastName, email, sanitizedNumber, realRegion, school];
         let oldVals = [user.firstName, user.lastName, user.email, user.phoneNumber, stringToRegion(user.region), user?.school ? user.school.id : ""];
         if (newVals.toString() === oldVals.toString()) return;
@@ -82,7 +82,7 @@ export default function Edit() {
             setErrorMessage("School has to be selected!");
             return;
         }
-        
+
         setLoading(true);
         editMutation.mutate({
             FirstName: firstName,
@@ -141,7 +141,7 @@ export default function Edit() {
                         <Form.Label>Phone Number</Form.Label>
                         <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
                     </Form.Group>
-                    
+
                     <Form.Group className="mb-3">
                         <Form.Label>Region</Form.Label>
                         <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>

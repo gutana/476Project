@@ -4,7 +4,7 @@ import { ReactNode, useState, createContext } from "react"
 import { userQuery } from "../api/queries/userQueries";
 import { User } from "../models/user";
 import { RefreshMutation } from "../api/mutations/userMutations";
-import { baseWebsiteURL } from "./consts";
+import { baseWebsiteURL } from "../utils/ApiURLs";
 
 interface Props {
     children: ReactNode
@@ -12,7 +12,10 @@ interface Props {
 
 export const getRefresh = async () => {
     const token = sessionStorage.getItem("refreshToken");
-    const privatePath = window.location.href !== baseWebsiteURL + "/login" && window.location.href !== baseWebsiteURL + "/signup";
+    const privatePath =
+        window.location.href !== baseWebsiteURL + "/login" &&
+        window.location.href !== baseWebsiteURL + "/signup";
+
     sessionStorage.clear();
 
     if (!token) {
@@ -23,13 +26,13 @@ export const getRefresh = async () => {
     const response = await RefreshMutation({
         refreshToken: token
     });
-    
+
     if (!response) {
         if (privatePath) window.location.href = "/login";
         return false;
     }
-    
-    const expiresAt = Date.now() + response.expiresIn * 1000;    
+
+    const expiresAt = Date.now() + response.expiresIn * 1000;
     sessionStorage.setItem("accessToken", response.accessToken);
     sessionStorage.setItem("refreshToken", response.refreshToken);
     sessionStorage.setItem("tokenExpiry", expiresAt.toString());

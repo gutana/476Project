@@ -8,14 +8,14 @@ import { AccountApprovalMutation } from "../../api/mutations/accountMutations";
 import AccountCard from "./components/AccountCard";
 import Toasts from "../../components/Toasts";
 
-export default function Approve() {
+export default function ApproveAccountPage() {
     const user = useContext(UserContext);
     const [accounts, setAccounts] = useState<User[] | undefined>([]);
     const [show, setShow] = useState<boolean>(false);
     const [title, setTitle] = useState<string>("Success");
     const [variant, setVariant] = useState<string>("success");
     const [message, setMessage] = useState<string>("Testing");
-    
+
     const { data, error, isLoading, isError } = useQuery({
         queryFn: () => accountQuery(),
         queryKey: ['accountquery']
@@ -63,12 +63,12 @@ export default function Approve() {
         }
 
         approvalMutation.mutate(req);
-    } 
+    }
 
     return (
         <>
             <Toasts title={title} show={show} setShow={setShow} variant={variant} message={message} />
-            {user?.userType === UserType.Administrator && 
+            {user?.userType === UserType.Administrator &&
                 <div>
                     <h1 className="m-3">Requested Account(s)</h1>
                     {accounts && accounts.length > 0 ? accounts.map((val, _) => {

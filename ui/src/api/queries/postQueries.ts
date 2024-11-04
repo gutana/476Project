@@ -1,14 +1,9 @@
-import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL, repititionError } from "../../components/consts";
 import { Post } from "../../models/postings";
+import { Endpoints } from "../../utils/ApiURLs";
+import { AuthedFetch } from "../../utils/AuthedFetch";
 
 export async function GetPostsByUser() {
-    const response = await fetch(baseServerURL + '/post/getByUser', {
-        method: "GET",
-        headers: {
-            "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
+    const response = await AuthedFetch('GET', Endpoints.POST.GET_BY_USER);
 
     if (response.status === 200) {
         const text = await response.text();
@@ -20,12 +15,7 @@ export async function GetPostsByUser() {
 }
 
 export async function GetAvailablePosts() {
-    const response = await fetch(baseServerURL + '/post/getAvailable', {
-        method: "GET",
-        headers: {
-            "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
+    const response = await AuthedFetch('GET', Endpoints.POST.GET_AVAILABLE);
 
     if (response.status === 200) {
         const text = await response.text();
@@ -37,12 +27,7 @@ export async function GetAvailablePosts() {
 }
 
 export async function GetTakenPosts() {
-    const response = await fetch(baseServerURL + '/post/getTakenByUser', {
-        method: "GET",
-        headers: {
-            "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
+    const response = await AuthedFetch('GET', Endpoints.POST.GET_TAKEN_BY_USER);
 
     if (response.status === 200) {
         const text = await response.text();
@@ -54,12 +39,7 @@ export async function GetTakenPosts() {
 }
 
 export async function GetAllPosts() {
-    const response = await fetch(baseServerURL + '/post/getAll', {
-        method: "GET",
-        headers: {
-            "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
+    const response = await AuthedFetch('GET', Endpoints.POST.GET_ALL)
 
     if (response.status === 200) {
         const text = await response.text();

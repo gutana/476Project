@@ -1,7 +1,7 @@
-import { baseServerURL, repititionError } from "../../components/consts";
-import { getRefresh } from "../../components/UserWrapper";
 import { SchoolType } from "../../models/schools";
 import { Region } from "../../models/user";
+import { Endpoints } from "../../utils/ApiURLs";
+import { AuthedFetch } from "../../utils/AuthedFetch";
 
 export interface SchoolInformation {
     SchoolType: SchoolType,
@@ -13,31 +13,14 @@ export interface SchoolInformation {
     Region: Region
 }
 
-export async function AddSchoolMutation(request: SchoolInformation, retries=0) : Promise<string> {
-    const url = baseServerURL + '/admin/addSchool';
-    const options = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(request)
-    }
+export async function AddSchoolMutation(request: SchoolInformation): Promise<string> {
+    const response = await AuthedFetch('POST', Endpoints.SCHOOL.ADD_SCHOOL, JSON.stringify(request));
 
-    const response = await fetch(url, options);
     if (response.status === 200) {
         const text = await response.text();
         return text;
-    } else if (response.status === 401) {
-        const res = retries < 3 ? await getRefresh() : false;
-        if (res) return await AddSchoolMutation(request, retries + 1);
-        throw repititionError;
-    } else if (response.status === 500) {
-        const text = await response.text();
-        const reason = JSON.parse(text).detail;
-        throw reason;
     } else {
-        console.error(response.body)
-        throw new Error();
+        const text = await response.text();
+        throw new Error(JSON.parse(text).detail);
     }
 }

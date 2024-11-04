@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../components/UserWrapper";
 import { useNavigate } from "react-router-dom";
 import { UserType } from "../../models/user";
@@ -6,7 +6,7 @@ import { Alert, Button, Form } from "react-bootstrap";
 import { useMutation } from "@tanstack/react-query";
 import { PostNewsMutation } from "../../api/mutations/newsMutations";
 
-export default function PostNews() {
+export default function AddNewsPage() {
     const user = useContext(UserContext);
     const navigate = useNavigate();
 

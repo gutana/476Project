@@ -45,7 +45,13 @@ export function CustomNavbar() {
                     <Nav className="me-auto">
                         <CustomNavLink linkTo="/" text="Home" />
                         <CustomNavLink linkTo="/addPost" text="Add Post" allowedUsers={[UserType.Teacher]} />
-                        <CustomNavLink linkTo="/viewPostings" text="Available Postings" />
+
+                        {user?.userType === UserType.Administrator ?
+                            <CustomNavLink linkTo="/viewPostings" text="All Postings" />
+                            :
+                            <CustomNavLink linkTo="/viewPostings" text="Available Postings" />
+                        }
+
                         <CustomNavLink linkTo="/viewMyPostings" text="My Postings" />
                         <CustomNavLink linkTo="/edit" text="Edit Profile" />
                         <CustomNavLink linkTo="/postNews" text="Post News" allowedUsers={[UserType.Administrator]} />

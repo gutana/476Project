@@ -1,15 +1,10 @@
-import { getRefresh } from "../../components/UserWrapper";
-import { baseServerURL, repititionError } from "../../components/consts";
+import { baseServerURL } from "../../utils/ApiURLs";
 import { School } from "../../models/schools";
 import { Region } from "../../models/user";
+import { AuthedFetch } from "../../utils/AuthedFetch";
 
 export async function GetSchoolsByRegion(region: Region) {
-    const response = await fetch(baseServerURL + `/school/getByRegion?region=${region}`, {
-        method: "GET",
-        headers: {
-            "Authorization":  `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-    })
+    const response = await AuthedFetch('GET', `/school/getByRegion?region=${region}`);
 
     if (response.status === 200) {
         const text = await response.text();
@@ -22,6 +17,7 @@ export async function GetSchoolsByRegion(region: Region) {
 
 export async function GetAllSchools() {
     const response = await fetch(baseServerURL + '/school/getAllSchools');
+
     if (response.status === 200) {
         const text = await response.text();
         return JSON.parse(text) as School[];
