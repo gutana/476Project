@@ -76,7 +76,7 @@ public class AdminController : BaseController
 
         var unapprovedUsers = _context.Users.Where(u => u.EmailConfirmed == false && u.Region == user.Region).ToList()
                               .ConvertAll(u => UserDto.MapIdentityUserToUserDto(u));
-        
+
         return Ok(unapprovedUsers);
     }
 }

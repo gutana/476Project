@@ -1,6 +1,7 @@
 ﻿using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Security.Claims;
 
@@ -23,7 +24,7 @@ public abstract class BaseController : Controller
         if (userId == null)
             return null;
 
-        return await _userManager.FindByIdAsync(userId);
+        return await _userManager.Users.Include(user => user.School).FirstAsync(user => user.Id == userId);
     }
 
     protected async Task<User?> GetCurrentUserCached()
@@ -42,7 +43,7 @@ public abstract class BaseController : Controller
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetSlidingExpiration(TimeSpan.FromSeconds(60));
 
-            User? user = await _userManager.FindByIdAsync(userId);
+            User? user = await _userManager.Users.Include(user => user.School).FirstAsync(user => user.Id == userId);
             _cache.Set(userId, user, cacheEntryOptions);
             return user;
         }

@@ -200,7 +200,7 @@ export default function AddPostPage() {
             return;
         }
 
-        let school: School = user?.school;
+        let school: School | undefined = user?.school;
         let reqSub: Substitute | undefined = requestedSub[0];
 
         if (school) {
@@ -294,7 +294,7 @@ export default function AddPostPage() {
         <>
             <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />
             <div className="p-3">
-                <h3 className="pb-2">Add New Posting for {user?.school.schoolName}</h3>
+                <h3 className="pb-2">Add New Posting for {user?.school?.schoolName}</h3>
                 <Form onSubmit={handleSubmit}>
 
                     {user?.school && <MultipleSelection values={user.school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}

@@ -7,7 +7,7 @@ import { Region, UserType } from "../../models/user";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { formatPhoneNumber, formatPhoneNumberOnChange, sanitizeNumber } from "../../components/PhoneNumberFormat";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { EditInformationMutation } from "../../api/mutations/userMutations";
+import { EditInformation, EditInformationMutation } from "../../api/mutations/userMutations";
 import Toasts from "../../components/Toasts";
 import { stringToRegion } from "../../components/stringToDataType";
 import { School } from "../../models/schools";
@@ -43,7 +43,7 @@ export default function EditProfilePage() {
         onSuccess: (data, variables, context) => {
             setShow(true);
             setLoading(false);
-            updateUser();
+            updateUser(variables);
         },
         onError: (data, variables, context) => {
             if (`${data}` === "Account has to be verified by an administrator.") {
@@ -55,8 +55,17 @@ export default function EditProfilePage() {
         }
     })
 
-    const updateUser = () => {
-        window.location.reload();
+    const updateUser = (vars: EditInformation) => {
+        if (!user) {
+            window.location.reload();
+            return;
+        }
+        user.firstName = vars.FirstName;
+        user.lastName = vars.LastName;
+        user.email = vars.Email;
+        user.phoneNumber = vars.PhoneNumber;
+        user.region = vars.Region;
+        user.school = allSchools.find(school => school.id == vars.SchoolId);
     }
 
     const handleSubmit = (e: any) => {

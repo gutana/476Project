@@ -116,6 +116,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         return await Posts
             .Include(post => post.School)
+            .Include(post => post.Poster)
+            .Include(post => post.AcceptedByUser)
             .Where(post => post.Poster.Id == userId)
             .ToListAsync();
     }
@@ -140,6 +142,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         return await Posts
             .Include(post => post.School)
+            .Include(post => post.Poster)
+            .Include (post => post.AcceptedByUser)
             .Where(post => (post.AcceptedByUser != null && post.AcceptedByUser.Id == user.Id))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
@@ -150,6 +154,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
         return await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
+            .Include(post => post.AcceptedByUser)
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
     }

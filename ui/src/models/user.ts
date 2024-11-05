@@ -4,7 +4,7 @@ export interface User {
     firstName: string,
     lastName: string,
     region: Region,
-    school: School,
+    school?: School,
     userType: UserType,
     id: string,
     email: string,

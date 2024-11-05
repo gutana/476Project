@@ -46,7 +46,7 @@ public class AccountController : BaseController
         user.FirstName = registrationDto.FirstName;
         user.LastName = registrationDto.LastName;
         user.Region = registrationDto.Region;
-        user.School = registrationDto.SchoolId.Length != 0 ? _context.GetSchoolById(registrationDto.SchoolId) : null;
+        user.School = _context.GetSchoolById(registrationDto.SchoolId);
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;
         user.PhoneNumber = registrationDto.PhoneNumber;
@@ -77,7 +77,7 @@ public class AccountController : BaseController
     [Authorize]
     public async Task<IActionResult> EditInfo(EditInfoDto data)
     {
-        User? user = await GetCurrentUser();
+        var user = await GetCurrentUserCached();
 
         if (user != null)
             CacheInvalidate(user.Id);
@@ -95,7 +95,7 @@ public class AccountController : BaseController
         user.School = data.SchoolId.Length != 0 ? _context.GetSchoolById(data.SchoolId) : null;
 
         var result = await _userManager.UpdateAsync(user);
-        
+
         if (result.Succeeded)
             return Ok("User information has been updated!");
 

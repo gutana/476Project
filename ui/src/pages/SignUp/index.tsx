@@ -23,7 +23,6 @@ export default function SignUp() {
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [errorMessagePass, setErrorMessagePass] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
     // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
     const [region, setRegion] = useState<Region | null>(null);
 
@@ -123,7 +122,7 @@ export default function SignUp() {
         navigate("/");
     };
 
-    if (registrationMutation.isPending || loading) {
+    if (registrationMutation.isPending) {
         return <LoadingSpinner />;
     }
 
@@ -192,7 +191,7 @@ export default function SignUp() {
                         </Form.Select>
                     </Form.Group>
 
-                    {!isLoading && region && userType && userType !== UserType.Teacher && (
+                    {!isLoading && region && userType && userType === UserType.Requestor && (
                         <Form.Group className="mb-3">
                             <Form.Label>School</Form.Label>
                             <Form.Select defaultValue="-1" required>
