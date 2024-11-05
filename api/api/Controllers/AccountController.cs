@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
 
@@ -12,18 +12,17 @@ namespace api.Controllers;
 [EnableCors("AllowAll")]
 [Route("[controller]")]
 
-public class AccountController : ControllerBase
+public class AccountController : BaseController
 {
     private readonly ILogger<AccountController> _logger;
-    private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
+    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context, IMemoryCache cache)
+        :base(userManager, cache)
     {
         _logger = logger;
-        _userManager = userManager;
         _signInManager = signInManager;
         _passwordHasher = passwordHasher;
         _context = context;
@@ -65,7 +64,7 @@ public class AccountController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUser()
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
 
@@ -79,7 +78,10 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> EditInfo(EditInfoDto data)
     {
         User? user = await GetCurrentUser();
-        
+
+        if (user != null)
+            CacheInvalidate(user.Id);
+
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -98,15 +100,5 @@ public class AccountController : ControllerBase
             return Ok("User information has been updated!");
 
         return BadRequest(result.Errors);
-    }
-
-    private async Task<User?> GetCurrentUser()
-    {
-        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
-            return null;
-
-        return await _context.FindUserById(userId);
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
 
@@ -12,20 +12,15 @@ namespace api.Controllers;
 [EnableCors("AllowAll")]
 [Route("[controller]")]
 
-public class AdminController : ControllerBase
+public class AdminController : BaseController
 {
     private readonly ILogger<AccountController> _logger;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public AdminController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
+    public AdminController(UserManager<User> userManager, ILogger<AccountController> logger, ApplicationDbContext context, IMemoryCache cache)
+        : base(userManager, cache)
     {
         _logger = logger;
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _passwordHasher = passwordHasher;
         _context = context;
     }
 
@@ -39,7 +34,9 @@ public class AdminController : ControllerBase
     [Authorize]
     public async Task<IActionResult> ApproveUser(AdminApprovalResponse resp)
     {
-        User? user = await GetCurrentUser();
+        CacheInvalidate(resp.Id);
+
+        User? user = await GetCurrentUserCached();
         if (user == null || user.UserType != UserType.Administrator)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -71,7 +68,7 @@ public class AdminController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUnapprovedUsers()
     {        
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null || user.UserType != UserType.Administrator) 
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -81,15 +78,5 @@ public class AdminController : ControllerBase
                               .ConvertAll(u => UserDto.MapIdentityUserToUserDto(u));
         
         return Ok(unapprovedUsers);
-    }
-
-    private async Task<User?> GetCurrentUser()
-    {
-        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
-            return null;
-
-        return await _userManager.FindByIdAsync(userId);
     }
 }

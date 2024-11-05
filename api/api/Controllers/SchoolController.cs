@@ -3,22 +3,23 @@ using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SchoolController : Controller
+public class SchoolController : BaseController
 {
     private readonly ILogger<SchoolController> _logger;
-    private readonly UserManager<User> _userManager;
     private readonly ApplicationDbContext _context;
 
-    public SchoolController(UserManager<User> userManager, ILogger<SchoolController> logger, ApplicationDbContext context)
+    private readonly string allSchoolsCacheKey = "AllSchoolsCacheKey";
+
+    public SchoolController(UserManager<User> userManager, ILogger<SchoolController> logger, ApplicationDbContext context, IMemoryCache cache)
+        : base(userManager, cache)
     {
         _logger = logger;
-        _userManager = userManager;
         _context = context;
     }
 
@@ -33,12 +34,17 @@ public class SchoolController : Controller
             return Unauthorized("Account has to be verified by an administrator");
 
         if (_context.SchoolExists(resp))
-            return Ok("This school already exists.");
+            return BadRequest("This school already exists.");
 
         if (_context.CreateSchool(resp, user.Id))
+        {
+            _cache.Remove(allSchoolsCacheKey);
             return Ok("School has been created!");
+        }
         else
+        {
             return Problem("Unexpected error occurred.", statusCode: 500);
+        }
     }
 
     [HttpGet("getByRegion")]
@@ -50,18 +56,20 @@ public class SchoolController : Controller
     [HttpGet("getAllSchools")]
     public async Task<IActionResult> GetAllSchools()
     {
-        return Ok(await _context.GetSchools());
+        if (_cache.TryGetValue(allSchoolsCacheKey, out List<School>? cachedSchools))
+        {
+            return Ok(cachedSchools);
+        }
+        else
+        {
+            List<School> schools = await _context.GetSchools();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(3600));
+            
+            _cache.Set(allSchoolsCacheKey, schools, cacheEntryOptions);
+            return Ok(schools);
+        }
     }
-
-    private async Task<User?> GetCurrentUser()
-    {
-        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
-            return null;
-
-        return await _userManager.FindByIdAsync(userId);
-    }
-
 }
 

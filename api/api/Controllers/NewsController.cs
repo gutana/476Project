@@ -1,31 +1,25 @@
 ﻿using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using api.DTO;
-using System.Web.Http.Results;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
 
-
 [ApiController]
 [Route("[controller]")]
-public class NewsController : Controller
+public class NewsController : BaseController
 {
-
     private readonly ILogger<AccountController> _logger;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public NewsController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
+    private readonly string latestNewsCacheKey = "LatestNewsCacheKey";
+
+    public NewsController(UserManager<User> userManager, ILogger<AccountController> logger, ApplicationDbContext context, IMemoryCache cache)
+        : base(userManager, cache)
     {
         _logger = logger;
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _passwordHasher = passwordHasher;
         _context = context;
     }
    
@@ -34,7 +28,7 @@ public class NewsController : Controller
     [HttpPost("create")]
     public async Task<IActionResult> Create(CreateNewsPostDto dto)
     {
-        var user = await GetCurrentUser();
+        var user = await GetCurrentUserCached();
 
         if (user == null || user.UserType != UserType.Administrator)
             return Unauthorized();
@@ -42,7 +36,10 @@ public class NewsController : Controller
             return Problem("Account has to be verified by an administrator.", statusCode: 500);
 
         if (_context.CreateNewsPost(dto))
+        {
+            _cache.Remove(latestNewsCacheKey);
             return Ok();
+        }
         else 
             return Problem("Unexpected error occurred.", statusCode: 500);
     }
@@ -51,17 +48,20 @@ public class NewsController : Controller
     [HttpGet("getLatest")]
     public async Task<IActionResult> GetLatest()
     {
-        return Ok(await _context.GetLatestNews(10));
+        if (_cache.TryGetValue(latestNewsCacheKey, out List<NewsPost>? cachedNews))
+        {
+            return Ok(cachedNews);
+        }
+        else
+        {
+            var news = await _context.GetLatestNews(10);
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(3600));
+            
+            _cache.Set(latestNewsCacheKey, news, cacheEntryOptions);
+            return Ok(news);
+
+        }
     }
-
-    private async Task<User?> GetCurrentUser()
-    {
-        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
-            return null;
-
-        return await _userManager.FindByIdAsync(userId);
-    }
-
 }

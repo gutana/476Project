@@ -1,31 +1,25 @@
 ﻿using api.DTO;
-using api.Migrations;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
 
 [ApiController]
 [EnableCors("AllowAll")]
 [Route("[controller]")]
-public class PostController: ControllerBase
+public class PostController: BaseController
 {
     private readonly ILogger<PostController> _logger;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ApplicationDbContext _context;
 
-    public PostController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<PostController> logger, IPasswordHasher<User> passwordHasher, ApplicationDbContext context)
+    public PostController(UserManager<User> userManager, ILogger<PostController> logger, ApplicationDbContext context, IMemoryCache cache)
+        : base(userManager, cache)
     {
         _logger = logger;
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _passwordHasher = passwordHasher;
         _context = context;
     }
 
@@ -33,7 +27,7 @@ public class PostController: ControllerBase
     [Authorize]
     public async Task<IActionResult> GetApprovedSubs()
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -50,7 +44,7 @@ public class PostController: ControllerBase
     public async Task<IActionResult> GetByUser(string? userId)
     {
         List<Post> postings;
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -68,7 +62,7 @@ public class PostController: ControllerBase
     [Authorize]
     public async Task<IActionResult> GetAvailable()
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -82,7 +76,7 @@ public class PostController: ControllerBase
     [Authorize]
     public async Task<IActionResult> GetTakenByUser()
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -96,7 +90,7 @@ public class PostController: ControllerBase
     [Authorize]
     public async Task<IActionResult> GetAll()
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null || user.UserType != UserType.Administrator)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -110,7 +104,7 @@ public class PostController: ControllerBase
     [Authorize]
     public async Task<IActionResult> AddPosting(PostDtos resp)
     {
-        User? user = await GetCurrentUser();
+        User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
@@ -120,16 +114,6 @@ public class PostController: ControllerBase
             return Ok("Post has been created!");
         else
             return Problem("Unexpected error occurred.", statusCode: 500);
-    }
-
-    private async Task<User?> GetCurrentUser()
-    {
-        var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
-            return null;
-
-        return await _userManager.FindByIdAsync(userId);
     }
 
     private List<PostDto> ConvertToPostDtoList(List<Post> posts)
