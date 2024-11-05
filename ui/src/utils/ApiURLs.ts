@@ -8,6 +8,7 @@ export const Endpoints = {
 
     ACCOUNT: {
         EDIT_INFO: '/account/editInfo',
+        GET_USER: '/account/getUser',
         REGISTER: '/account/register'
     },
     ADMIN: {
@@ -21,11 +22,14 @@ export const Endpoints = {
     POST: {
         ADD_POSTING: '/post/addPosting',
         GET_ALL: '/post/getAll',
+        GET_APPROVED_SUBS: '/post/getApprovedSubs',
         GET_AVAILABLE: '/post/getAvailable',
         GET_BY_USER: '/post/getByUser',
         GET_TAKEN_BY_USER: '/post/getTakenByUser',
     },
     SCHOOL: {
-        ADD_SCHOOL: '/school/add'
+        ADD_SCHOOL: '/school/add',
+        GET_ALL: '/school/getAllSchools',
+        GET_BY_REGION: '/school/getByRegion'
     }
 }
