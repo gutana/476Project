@@ -62,10 +62,7 @@ export default function AddNewsPage() {
     }
 
     return (
-        <div style={{
-            maxWidth: '800px',
-            margin: 'auto'
-        }}>
+        <div>
             <Form onSubmit={onSubmit}>
                 <Form.Group>
                     <Form.Label>Title</Form.Label>

@@ -1,18 +1,31 @@
-import { ReactNode, useContext } from "react"
+import { ReactNode, useContext, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-
 import { UserContext } from "./UserWrapper"
 import { UserType } from "../models/user"
-
 import { Button, Card, Container, Image, Nav, Navbar } from "react-bootstrap"
 import { CustomNavLink } from "./CustomNavLink"
 import { ThemeContext } from "./ThemeProvider"
 import { ThemeToggler } from "./ThemeToggler"
+
 interface Props {
     children: ReactNode
 }
 
 export const DefaultLayout = ({ children }: Props) => {
+
+    const [mobile, setMobile] = useState(window.innerWidth < 800);
+
+    const setMobileState = () => {
+        setMobile(window.innerWidth < 800);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', () => setMobileState())
+
+        return (() => {
+            window.removeEventListener('resize', setMobileState);
+        })
+    }, [])
 
     const theme = useContext(ThemeContext);
 
@@ -20,7 +33,10 @@ export const DefaultLayout = ({ children }: Props) => {
         <>
             <CustomNavbar />
             <Card style={{ borderRadius: 0, minHeight: '94vh' }} data-bs-theme={theme?.value}>
-                <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
+                <div style={mobile ?
+                    { maxWidth: '1000px', margin: '10px' } :
+                    { maxWidth: '1000px', minWidth: '800px', margin: 'auto', marginTop: '10px' }
+                }>
                     {children}
                 </div>
             </Card>
