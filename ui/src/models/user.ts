@@ -24,6 +24,6 @@ export enum Region {
 
 export enum UserType {
     Teacher = "Teacher",
-    Requestor = "Requestor",
+    Substitute = "Substitute",
     Administrator = "Administrator"
 }

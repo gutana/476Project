@@ -2,7 +2,7 @@
 
 public class Post
 {
-    public string? Id { get; set; }
+    public string Id { get; set; }
     public User Poster { get; set; }
     public User? AcceptedByUser { get; set; }
     public School School { get; set; }

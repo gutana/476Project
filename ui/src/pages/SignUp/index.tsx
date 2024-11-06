@@ -86,6 +86,8 @@ export default function SignUp() {
             SchoolId: event.target[7].value
         };
 
+        console.log(event);
+
         if (data.Region === "-1" || data.UserType === "-1") {
             setErrorMessage("Region/Account Type has to be selected!");
             return;
@@ -185,13 +187,13 @@ export default function SignUp() {
                             <option value="-1" disabled>
                                 Select account type
                             </option>
-                            <option value={UserType.Teacher}>Substitute</option>
-                            <option value={UserType.Requestor}>Teacher</option>
+                            <option value={UserType.Teacher}>Teacher</option>
+                            <option value={UserType.Substitute}>Substitute</option>
                             <option value={UserType.Administrator}>Administrator</option>
                         </Form.Select>
                     </Form.Group>
 
-                    {!isLoading && region && userType && userType === UserType.Requestor && (
+                    {!isLoading && region && userType && userType === UserType.Teacher && (
                         <Form.Group className="mb-3">
                             <Form.Label>School</Form.Label>
                             <Form.Select defaultValue="-1" required>

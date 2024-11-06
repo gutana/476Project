@@ -26,8 +26,8 @@ export const stringToUserType = (userType: string | UserType) => {
     switch (userType.toLowerCase()) {
         case "administrator":
             return UserType.Administrator;
-        case "requestor":
-            return UserType.Requestor;
+        case "substitute":
+            return UserType.Substitute;
         case "teacher":
             return UserType.Teacher;
         default:

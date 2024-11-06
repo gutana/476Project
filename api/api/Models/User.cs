@@ -41,6 +41,6 @@ public static class Mapper
 public enum UserType
 {
     Teacher,
-    Requestor,
+    Substitute,
     Administrator
 }

@@ -87,7 +87,7 @@ export default function EditProfilePage() {
             return;
         }
 
-        if (user.userType !== UserType.Teacher && (!school || school.length === 0)) {
+        if (user.userType === UserType.Teacher && (!school || school.length === 0)) {
             setErrorMessage("School has to be selected!");
             return;
         }
@@ -159,7 +159,7 @@ export default function EditProfilePage() {
                         </Form.Select>
                     </Form.Group>
 
-                    {user && user.userType !== UserType.Teacher && <Form.Group className="mb-3">
+                    {user && user.userType === UserType.Teacher && <Form.Group className="mb-3">
                         <Form.Label>School</Form.Label>
                         <Form.Select onChange={(e) => setSchool(e.target.value)} value={school} required>
                             {allSchools.map((school) => {

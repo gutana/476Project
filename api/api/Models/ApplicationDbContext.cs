@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
+class PostingTakenException : Exception { }
+
 public class ApplicationDbContext : IdentityDbContext<User>
 {
     public DbSet<Post> Posts { get; set; }
@@ -81,6 +83,27 @@ public class ApplicationDbContext : IdentityDbContext<User>
             return true;
         } catch
         {
+            return false;
+        }
+    }
+
+   
+    public bool AcceptPosting(string postId, string userId)
+    {
+
+        try
+        {
+            Post? post = Posts.Where(p => p.Id == postId).FirstOrDefault();
+            if (post == null) return false;
+            if (post.AcceptedByUser != null) throw new PostingTakenException();
+            User? user = Users.Where(u => u.Id == userId).FirstOrDefault();
+
+            post.AcceptedByUser = user;
+            SaveChanges();
+            return true;
+        } catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
             return false;
         }
     }

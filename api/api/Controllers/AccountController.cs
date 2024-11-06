@@ -46,7 +46,8 @@ public class AccountController : BaseController
         user.FirstName = registrationDto.FirstName;
         user.LastName = registrationDto.LastName;
         user.Region = registrationDto.Region;
-        user.School = _context.GetSchoolById(registrationDto.SchoolId);
+        if (registrationDto.UserType == UserType.Teacher)
+            user.School = _context.GetSchoolById(registrationDto.SchoolId);
         user.UserType = registrationDto.UserType;
         user.UserName = registrationDto.Email;
         user.PhoneNumber = registrationDto.PhoneNumber;
@@ -77,7 +78,7 @@ public class AccountController : BaseController
     [Authorize]
     public async Task<IActionResult> EditInfo(EditInfoDto data)
     {
-        var user = await GetCurrentUserCached();
+        var user = await GetCurrentUser();
 
         if (user != null)
             CacheInvalidate(user.Id);

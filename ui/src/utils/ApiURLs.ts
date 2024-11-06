@@ -20,6 +20,7 @@ export const Endpoints = {
         GET_LATEST: '/news/getLatest'
     },
     POST: {
+        ACCEPT_POSTING: '/post/accept',        
         ADD_POSTING: '/post/addPosting',
         GET_ALL: '/post/getAll',
         GET_APPROVED_SUBS: '/post/getApprovedSubs',

@@ -44,7 +44,7 @@ export function CustomNavbar() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <CustomNavLink linkTo="/" text="Home" />
-                        <CustomNavLink linkTo="/addPost" text="Add Post" allowedUsers={[UserType.Requestor]} />
+                        <CustomNavLink linkTo="/addPost" text="Add Post" allowedUsers={[UserType.Teacher]} />
 
                         {user?.userType === UserType.Administrator ?
                             <CustomNavLink linkTo="/viewPostings" text="All Postings" />

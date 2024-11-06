@@ -116,6 +116,33 @@ public class PostController: BaseController
             return Problem("Unexpected error occurred.", statusCode: 500);
     }
 
+    [HttpPost("accept")]
+    [Authorize]
+    public async Task<IActionResult> Accept(string postId)
+    {
+        User? user = await GetCurrentUserCached();
+        if(user == null || user.UserType == UserType.Administrator)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized("Account has to be verified by an administrator");
+
+        try
+        {
+        if (_context.AcceptPosting(postId, user.Id))
+            return Ok();
+        else
+            return Problem("Unexpected error occurred.", statusCode: 500);
+        }
+        catch (PostingTakenException)
+        {
+            return Problem(statusCode: 420);
+        } catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return Problem("Unexpected error occurred", statusCode: 500);
+        }
+    }
+
     private List<PostDto> ConvertToPostDtoList(List<Post> posts)
     {
         List<PostDto> postDtos = new List<PostDto>();

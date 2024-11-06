@@ -17,7 +17,7 @@ export default function AccountCard({ Account, ApproveUser }: Props) {
         switch (userType) {
             case UserType.Administrator:
                 return "Administrator"
-            case UserType.Requestor:
+            case UserType.Substitute:
                 return "Teacher"            
             case UserType.Teacher:
                 return "Substitute"
