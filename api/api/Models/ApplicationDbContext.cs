@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
-class PostingTakenException : Exception { }
+class PostingTakenException : Exception { public string getMessage() { return "Post has been taken."; } }
 
 public class ApplicationDbContext : IdentityDbContext<User>
 {
@@ -91,21 +91,24 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public bool AcceptPosting(string postId, string userId)
     {
 
-        try
-        {
-            Post? post = Posts.Where(p => p.Id == postId).FirstOrDefault();
-            if (post == null) return false;
-            if (post.AcceptedByUser != null) throw new PostingTakenException();
-            User? user = Users.Where(u => u.Id == userId).FirstOrDefault();
-
-            post.AcceptedByUser = user;
-            SaveChanges();
-            return true;
-        } catch(Exception e)
-        {
-            Console.WriteLine(e.Message);
+        Post? post = Posts
+            .Where(p => p.Id == postId)
+            .Include(p => p.AcceptedByUser)
+            .FirstOrDefault();
+        
+        if (post == null) 
             return false;
-        }
+        if (post.AcceptedByUser != null) 
+            throw new PostingTakenException();
+        
+        User? user = Users
+            .Where(u => u.Id == userId)
+            .FirstOrDefault();
+
+        post.AcceptedByUser = user;
+        SaveChanges();
+
+        return true;
     }
 
     public bool SchoolExists(SchoolDto resp)

@@ -128,18 +128,14 @@ public class PostController: BaseController
 
         try
         {
-        if (_context.AcceptPosting(postId, user.Id))
-            return Ok();
-        else
-            return Problem("Unexpected error occurred.", statusCode: 500);
+            if (_context.AcceptPosting(postId, user.Id))
+                return Ok();
+            else
+                return Problem("Unexpected error occurred.", statusCode: 500);
         }
-        catch (PostingTakenException)
+        catch (PostingTakenException e)
         {
-            return Problem(statusCode: 420);
-        } catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return Problem("Unexpected error occurred", statusCode: 500);
+            return Problem(e.getMessage(), statusCode: 420);
         }
     }
 
