@@ -62,6 +62,11 @@ export const UserWrapper = ({ children }: Props) => {
         return <></>
     }
 
+    if (isError) {
+        window.location.href = '/';
+        sessionStorage.clear();
+    }
+
     // If we get down here, then token is probably valid, so lets fetch user
     if (userQueryEnabled === false)
         setUserQueryEnabled(true);

@@ -56,7 +56,7 @@ export function CustomNavbar() {
                 {/* Main Icon */}
                 <Navbar.Brand>
                     <Nav.Link as={Link} to="/">
-                        <Image style={{ marginTop: "-4px" }} height={"35px"} src="/images/icon.png" />
+                        <Image style={{ marginTop: "-5px", marginRight: "5px" }} height={"35px"} src="/images/icon.png" />
                         SubSystem
                     </Nav.Link>
                 </Navbar.Brand>

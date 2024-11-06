@@ -195,11 +195,6 @@ export default function AddPostPage() {
         e.preventDefault();
         setErrorMessage("");
 
-        if (!user) {
-            window.location.href = "/";
-            return;
-        }
-
         let school: School | undefined = user?.school;
         let reqSub: Substitute | undefined = requestedSub[0];
 
@@ -286,7 +281,7 @@ export default function AddPostPage() {
         )
     }
 
-    if ((!isLoading && !user) || (user && user.userType === UserType.Teacher)) {
+    if ((!isLoading && !user) || (user && user.userType !== UserType.Teacher)) {
         window.location.href = "/";
     }
 
