@@ -17,6 +17,7 @@ import EditProfilePage from './pages/EditProfile';
 import ApproveAccountPage from './pages/ApproveAccount';
 import AddSchoolPage from './pages/AddSchool';
 import AddPostPage from './pages/AddPost';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // Wrap authed pages in UserWrapper
 const router = createBrowserRouter([
@@ -127,7 +128,9 @@ const root = ReactDOM.createRoot(
 root.render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <ThemeProvider>
+                <RouterProvider router={router} />
+            </ThemeProvider>
         </QueryClientProvider>
     </StrictMode>
 );

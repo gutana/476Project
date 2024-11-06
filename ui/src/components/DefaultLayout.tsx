@@ -4,20 +4,26 @@ import { Link, useNavigate } from "react-router-dom"
 import { UserContext } from "./UserWrapper"
 import { UserType } from "../models/user"
 
-import { Button, Container, Image, Nav, Navbar } from "react-bootstrap"
+import { Button, Card, Container, Image, Nav, Navbar } from "react-bootstrap"
 import { CustomNavLink } from "./CustomNavLink"
+import { ThemeContext } from "./ThemeProvider"
+import { ThemeToggler } from "./ThemeToggler"
 interface Props {
     children: ReactNode
 }
 
 export const DefaultLayout = ({ children }: Props) => {
 
+    const theme = useContext(ThemeContext);
+
     return (
         <>
             <CustomNavbar />
-            <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
-                {children}
-            </div>
+            <Card style={{ borderRadius: 0, minHeight: '94vh' }} data-bs-theme={theme?.value}>
+                <div style={{ maxWidth: '800px', margin: 'auto', marginTop: '10px' }}>
+                    {children}
+                </div>
+            </Card>
         </>
     )
 }
@@ -25,9 +31,10 @@ export const DefaultLayout = ({ children }: Props) => {
 export function CustomNavbar() {
     const navigate = useNavigate();
     const user = useContext(UserContext);
+    const theme = useContext(ThemeContext);
 
     return (
-        <Navbar expand="lg" className="bg-body-tertiary container-fluid w-100 m-auto">
+        <Navbar style={{ minHeight: '6vh' }} data-bs-theme={theme?.value} expand="lg" className="bg-body-tertiary container-fluid w-100 m-auto">
             <Container className="container-fluid">
 
                 {/* Main Icon */}
@@ -59,8 +66,11 @@ export function CustomNavbar() {
                         <CustomNavLink linkTo="/addSchool" text="Add School" allowedUsers={[UserType.Administrator]} />
                     </Nav>
 
+
+                    <div style={{ marginRight: "8px" }} >
+                        <ThemeToggler />
+                    </div>
                     <Button
-                        className="ml-2 mr-5"
                         variant="danger"
                         onClick={() => {
                             sessionStorage.clear();

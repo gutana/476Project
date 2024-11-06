@@ -1,3 +1,4 @@
+import { useContext } from "react"
 import { Card } from "react-bootstrap"
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export const NewsCard = ({ Title, Content, Date }: Props) => {
+
     return (
         <Card style={{ margin: 'auto', marginTop: '10px' }}>
             <Card.Body>

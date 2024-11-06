@@ -4,6 +4,7 @@ import { NewsCard } from "./components/NewsCard";
 import { useQuery } from "@tanstack/react-query";
 import { LatestNewsQuery } from "../../api/queries/newsQueries";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { Card } from "react-bootstrap";
 
 export default function Home() {
     const user = useContext(UserContext);
@@ -17,14 +18,14 @@ export default function Home() {
         <>
             <h3>{user && "Welcome, " + user?.firstName}</h3>
 
-            <div style={{ marginTop: "10px", padding: '10px', border: '1px solid lightgrey', borderRadius: '10px' }}>
+            <Card style={{ marginTop: "10px", padding: '10px', border: '1px solid lightgrey', borderRadius: '10px' }}>
                 <h4 style={{ textAlign: 'center' }}>Latest News</h4>
                 {isLoading && <LoadingSpinner />}
 
                 {data && data.map(news => {
                     return <NewsCard key={news.id} Title={news.title} Content={news.content} Date={news.postDate} />
                 })}
-            </div>
+            </Card>
         </>
     )
 }
