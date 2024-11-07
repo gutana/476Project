@@ -33,7 +33,7 @@ public class PostController: BaseController
         if (user.EmailConfirmed == false)
             return Problem("Account has to be verified by an administrator.", statusCode: 500);
 
-        var subs = _context.Users.Where(u => u.EmailConfirmed == true && u.UserType == UserType.Teacher && u.Region == user.Region).ToList()
+        var subs = _context.Users.Where(u => u.EmailConfirmed == true && u.UserType == UserType.Substitute && u.Region == user.Region).ToList()
                               .ConvertAll(u => UserDto.MapIdentityUserToUserDto(u));
 
         return Ok(subs);
