@@ -121,7 +121,7 @@ public class PostController: BaseController
     public async Task<IActionResult> Accept(string postId)
     {
         User? user = await GetCurrentUserCached();
-        if(user == null || user.UserType == UserType.Administrator)
+        if (user == null || user.UserType == UserType.Administrator)
             return Unauthorized();
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator");

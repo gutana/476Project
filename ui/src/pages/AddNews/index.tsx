@@ -10,6 +10,10 @@ export default function AddNewsPage() {
     const user = useContext(UserContext);
     const navigate = useNavigate();
 
+    if (!user || user.userType !== UserType.Administrator) {
+        navigate("/");
+    }
+
     const [resultMessage, setResultMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>();
 
@@ -29,9 +33,6 @@ export default function AddNewsPage() {
             postNewsMutation.reset();
         }
     })
-
-    if (user?.userType !== UserType.Administrator)
-        navigate('/');
 
     const onSubmit = (event: any) => {
         event.preventDefault();

@@ -44,7 +44,7 @@ export default function ApproveAccountPage() {
         )
     }
 
-    if ((!isLoading && !user) || (user && user.userType !== UserType.Administrator)) {
+    if (!user || (user && user.userType !== UserType.Administrator)) {
         window.location.href = "/";
     }
 

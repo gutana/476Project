@@ -12,14 +12,18 @@ export default function ViewPostingsPage() {
     const user = useContext(UserContext);
     const [postings, setPostings] = useState<Post[]>([]);
 
+    if (!user) {
+        window.location.href = "/";
+    }
+
     const { data, isLoading, isError } = useQuery({
-        queryFn: (user?.userType != UserType.Administrator ? () => GetAvailablePosts() : () => GetAllPosts()),
+        queryFn: (user?.userType !== UserType.Administrator ? () => GetAvailablePosts() : () => GetAllPosts()),
         queryKey: ['getAvailablePosts'],
-        enabled: user != null
+        enabled: user !== null
     })
 
     useEffect(() => {
-        if (data != undefined)
+        if (data !== undefined)
             setPostings(data);
     }, [data])
 

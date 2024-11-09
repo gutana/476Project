@@ -5,6 +5,7 @@ import { userQuery } from "../api/queries/userQueries";
 import { User } from "../models/user";
 import { RefreshMutation } from "../api/mutations/userMutations";
 import { baseWebsiteURL } from "../utils/ApiURLs";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Props {
     children: ReactNode
@@ -51,7 +52,7 @@ export const UserWrapper = ({ children }: Props) => {
         enabled: userQueryEnabled
     })
 
-    if (!expiresAt || Date.now() > parseInt(expiresAt)) {
+    if (isError || !expiresAt || Date.now() > parseInt(expiresAt)) {
         getRefresh().then(res => {
             setExpiresAt(res ? sessionStorage.getItem("tokenExpiry") : null);
         })
@@ -70,6 +71,10 @@ export const UserWrapper = ({ children }: Props) => {
     // If we get down here, then token is probably valid, so lets fetch user
     if (userQueryEnabled === false)
         setUserQueryEnabled(true);
+
+    if (isLoading) {
+        return <LoadingSpinner />
+    }
 
     return (
         <UserContext.Provider value={data ?? null}>
