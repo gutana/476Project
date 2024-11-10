@@ -15,6 +15,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { allGrades, primarySubjects, secondarySubjects } from "../../utils/consts";
 import { stringToGrades, stringToPrimary, stringToSecondary } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
+import { GetAllSchools } from "../../api/queries/schoolQueries";
 
 interface TypeaheadValue {
     name: string,
@@ -63,7 +64,9 @@ export default function AddPostPage() {
     const [title, setTitle] = useState("Success!");
     const [message, setMessage] = useState("");
 
-    const [schools, setSchools] = useState<School[]>([]);
+    const [allSchools, setAllSchools] = useState<School[]>([]);
+    const [school, setSchool] = useState<School | undefined>(user?.school);
+    const [selectedSchool, setSelectedSchool] = useState<any>([]);
     const [subs, setSubs] = useState<Substitute[]>([]);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -72,6 +75,11 @@ export default function AddPostPage() {
     const { data, isLoading, isError, error } = useQuery({
         queryFn: () => subQuery(),
         queryKey: ["getSubQuery"]
+    })
+
+    const result = useQuery({
+        queryFn: () => GetAllSchools(),
+        queryKey: ["getAllSchools"]
     })
 
     const capitalizeFirst = (value: string) => {
@@ -94,7 +102,12 @@ export default function AddPostPage() {
     }
 
     useEffect(() => {
-        if (data == undefined)
+        if (result.data === undefined) return;
+        setAllSchools(result.data);
+    }, [result.data])
+
+    useEffect(() => {
+        if (data === undefined)
             return;
 
         setSubs(translateToSub(data ?? []));
@@ -194,8 +207,6 @@ export default function AddPostPage() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         setErrorMessage("");
-
-        let school: School | undefined = user?.school;
         let reqSub: Substitute | undefined = requestedSub[0];
 
         if (school) {
@@ -204,7 +215,7 @@ export default function AddPostPage() {
                 setErrorMessage("Set a Primary School Subject.");
                 return;
             }
-            else if (school.schoolType.toString() === "Secondary" && secondary.length === 0) {
+            else if (sType === "Secondary" && secondary.length === 0) {
                 setErrorMessage("Set a Secondary School Subject.");
                 return;
             }
@@ -274,14 +285,19 @@ export default function AddPostPage() {
     const changeSub = (e: any) => {
         setRequestedSub(e);
     }
+    
+    const changeSchool = (e: any) => {
+        setSelectedSchool(e);
+        setSchool(e[0]);
+    }
 
-    if (!user || isLoading || postMutation.isPending) {
+    if (isLoading || postMutation.isPending) {
         return (
             <LoadingSpinner />
         )
     }
 
-    if ((!isLoading && !user) || (user && user.userType !== UserType.Teacher)) {
+    if (!user || (user && user.userType === UserType.Substitute)) {
         window.location.href = "/";
     }
 
@@ -289,18 +305,22 @@ export default function AddPostPage() {
         <>
             <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />
             <div className="p-3">
-                <h3 className="pb-2">Add New Posting for {user?.school?.schoolName}</h3>
+                <h3 className="pb-2">{user?.school ? `Add New Posting for ${user.school.schoolName}` : `Add New Posting`}</h3>
                 <Form onSubmit={handleSubmit}>
-
-                    {user?.school && <MultipleSelection values={user.school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Select grades..." selection={grades} setSelection={setGrades} />}
-                    {user?.school && user.school.schoolType.toString() === "Primary" &&
-                        <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Select primary subject..." selection={primary} setSelection={setPrimary} />}
-                    {user?.school && user.school.schoolType.toString() === "Secondary" &&
-                        <MultipleSelection values={secondarySubjects} title="Secondary School Subject(s)" placeholder="Select secondary subject..." selection={secondary} setSelection={setSecondary} />}
+                    {user?.userType === UserType.Administrator && allSchools &&
+                    <Form.Group className="mb-3" controlId="school">
+                        <Form.Label>School</Form.Label>
+                        <Typeahead labelKey="schoolName" selected={selectedSchool} options={allSchools.filter(val => val.region === user?.region)} id="0" placeholder="Search schools..." onChange={changeSchool} />
+                    </Form.Group>}
+                    {school && <MultipleSelection values={school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Search grades..." selection={grades} setSelection={setGrades} />}
+                    {school && school.schoolType.toString() === "Primary" &&
+                        <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Search primary subjects..." selection={primary} setSelection={setPrimary} />}
+                    {school && school.schoolType.toString() === "Secondary" &&
+                        <MultipleSelection values={secondarySubjects} title="Secondary School Subject(s)" placeholder="Search secondary subjects..." selection={secondary} setSelection={setSecondary} />}
 
                     <Form.Group className="mb-3" controlId="substitute">
                         <Form.Label>Request Substitute</Form.Label>
-                        <Typeahead labelKey="name" selected={requestedSub} options={subs} id="1" placeholder="Search substitute..." onChange={changeSub} />
+                        <Typeahead labelKey="name" selected={requestedSub} options={subs} id="1" placeholder="Search substitutes..." onChange={changeSub} />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="description">

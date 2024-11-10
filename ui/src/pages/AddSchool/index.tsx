@@ -94,13 +94,7 @@ export default function AddSchoolPage() {
         setPhoneNumber(e.target.value);
     }
 
-    if (!user) {
-        return (
-            <LoadingSpinner />
-        )
-    }
-
-    if ((!loading && !user) || (user && user.userType !== UserType.Administrator)) {
+    if (!user || (user && user.userType !== UserType.Administrator)) {
         window.location.href = "/";
     }
 

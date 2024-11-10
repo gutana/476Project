@@ -57,7 +57,7 @@ export default function EditProfilePage() {
 
     const updateUser = (vars: EditInformation) => {
         if (!user) {
-            window.location.reload();
+            window.location.href = "/";
             return;
         }
         user.firstName = vars.FirstName;
@@ -65,7 +65,7 @@ export default function EditProfilePage() {
         user.email = vars.Email;
         user.phoneNumber = vars.PhoneNumber;
         user.region = vars.Region;
-        user.school = allSchools.find(school => school.id == vars.SchoolId);
+        user.school = allSchools.find(school => school.id === vars.SchoolId);
     }
 
     const handleSubmit = (e: any) => {
@@ -110,7 +110,10 @@ export default function EditProfilePage() {
     }
 
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            window.location.href = "/";
+            return;
+        }
         setFirstName(user.firstName);
         setLastName(user.lastName);
         setEmail(user.email);
@@ -119,7 +122,7 @@ export default function EditProfilePage() {
         setSchool(user?.school ? user.school.id : "");
     }, [user])
 
-    if (!user || result.isLoading) {
+    if (result.isLoading) {
         return (
             <LoadingSpinner />
         )
