@@ -21,7 +21,8 @@ export const Endpoints = {
     },
     POST: {
         ACCEPT_POSTING: '/post/accept',        
-        ADD_POSTING: '/post/addPosting',
+        ADD_POSTING: '/post/add',
+        CANCEL_POSTING: '/post/cancel',
         GET_ALL: '/post/getAll',
         GET_APPROVED_SUBS: '/post/getApprovedSubs',
         GET_AVAILABLE: '/post/getAvailable',

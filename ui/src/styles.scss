@@ -1,34 +1,57 @@
 @use 'sass:color';
 
+
+/*
+
+light_theme
+primary button: #A0C7F3
+danger button: #FC8398
+success button: #A4F881
+light yellow: #fffef0
+darker yellow: #fffd8f
+light blue: #f1f7ff
+darker blue: #bed9f7
+dark_theme
+primary button: #7e9dbf
+danger button: #FC8398
+success button: #A4F881
+light brown: #585843
+darker brown: #333224
+dark grey: #171816
+darker grey: #111212
+
+*/
+
 // LIGHT MODE // 
-$lightPrimary: #aa00b0;
-$lightDanger: rgb(182, 36, 36);
-$lightSuccess: rgb(255, 0, 230);
+$lightPrimary: #418de4;
+$lightDanger: #d85a6f;
+$lightSuccess: #49af1d;
 
-$lightCardBorder: blue;
-$lightNavLinkSelected: #800084;
+$lightCardBorder:  #adadaa;
+$lightNavLinkSelected:  #638dc5;
 
-$lightAccordionBase: rgb(226, 156, 95);
-$lightAccordionSelected: rgb(124, 84, 49);
+$lightAccordionBase: #e8e9e2;
+$lightAccordionSelected: #adadaa;
 
-$lightCardBg: seashell;
+$lightCardBg: #e8e9e2;
 
 
 // DARK MODE // 
-$darkPrimary: #7e9dbf;
-$darkDanger: #84002c;
-$darkSuccess: rgb(12, 138, 0);
+$darkPrimary: #2a79d3;
+$darkDanger: #eb6b80;
+$darkSuccess: #33880f;
 
-$darkCardBorder: rgb(99, 99, 99);
-$darkNavLinkSelected: #3171b6;
+$darkCardBorder: #808080;
+$darkNavLinkSelected: #638dc5;
 
-$darkAccordionBase: rgb(40, 40, 60);
-$darkAccordionSelected: rgb(72, 34, 13);
+$darkAccordionBase: #40413f;
+$darkAccordionSelected: #808080;
 
-$darkCardBg: rgb(25, 22, 38);
+$darkCardBg: #40413f;
 
 // Override light mode colors
 :root {
+
     .btn {
         border: none;
     }
@@ -49,6 +72,7 @@ $darkCardBg: rgb(25, 22, 38);
         $lightDangerActive: darken($lightSuccess, 15%);
         $lightSuccessHover: darken($lightSuccess, 10%);
         $lightSuccessActive: darken($lightSuccess, 15%);
+
 
         .btn-primary {
             --bs-btn-bg: #{$lightPrimary};
@@ -71,14 +95,20 @@ $darkCardBg: rgb(25, 22, 38);
 
         .btn-outline-danger {
             border: #{$lightDanger} solid 1px;
+            --bs-btn-color: #{$lightDanger};
             --bs-btn-hover: #{$lightDangerHover};
             --bs-btn-hover-bg: #{$lightDangerHover};
             --bs-btn-active-bg: #{$lightDangerActive};
+            --bs-btn-bg: #{fade-out($lightDanger, 0.75)};
+        }
+
+        .parent-card {
+            background-color: #adadaa;
         }
 
         .card {
             border-color: #{$lightCardBorder};
-            --bs-card-bg: red;
+            --bs-card-bg: #{$lightCardBg};
         }
 
         .nav-link.active {
@@ -138,9 +168,11 @@ $darkCardBg: rgb(25, 22, 38);
 
         .btn-outline-danger {
             border: #{$darkDanger} solid 1px;
+            --bs-btn-color: #{$darkDanger};
             --bs-btn-hover: #{$darkDanger};
             --bs-btn-hover-bg: #{$darkDanger};
             --bs-btn-hover-active: #{$dangerActive};
+            --bs-btn-bg: #{fade-out($darkDanger, 0.75)};
         }
 
         .card {

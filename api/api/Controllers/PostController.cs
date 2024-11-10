@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace api.Controllers;
@@ -100,9 +101,9 @@ public class PostController: BaseController
         return Ok(ConvertToPostDtoList(postings));
     }
 
-    [HttpPost("addPosting")]
+    [HttpPost("add")]
     [Authorize]
-    public async Task<IActionResult> AddPosting(PostDtos resp)
+    public async Task<IActionResult> Add(PostDtos resp)
     {
         User? user = await GetCurrentUserCached();
         if (user == null)
@@ -137,6 +138,26 @@ public class PostController: BaseController
         {
             return Problem(e.getMessage(), statusCode: 420);
         }
+    }
+
+    [HttpPost("cancel")]
+    [Authorize]
+    public async Task<IActionResult> Cancel(string postId)
+    {
+        User? user = await GetCurrentUserCached();
+
+        if (user == null)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized();
+
+        if (_context.CancelPosting(postId, user.Id))
+            return Ok();
+        else
+            return Problem("Unexpected error occured.", statusCode: 500);
+        // Todo: Will potentially want additional error handling here
+        // Cases: Post is already cancelled ?? if sub cancels posting when teacher cancelled prior
+   
     }
 
     private List<PostDto> ConvertToPostDtoList(List<Post> posts)

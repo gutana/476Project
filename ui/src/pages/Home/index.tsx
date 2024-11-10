@@ -19,7 +19,7 @@ export default function Home() {
         <>
             <h3>{user && "Welcome, " + user?.firstName}</h3>
 
-            <Card style={{ marginTop: "10px", padding: '10px', borderRadius: '10px' }}>
+            <Card className="parent-card" style={{ marginTop: "10px", padding: '10px', borderRadius: '10px' }}>
                 <h4 style={{ textAlign: 'center' }}>Latest News</h4>
                 {isLoading && <LoadingSpinner />}
 

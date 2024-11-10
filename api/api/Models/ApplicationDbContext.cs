@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace api.Models;
 
@@ -108,6 +109,36 @@ public class ApplicationDbContext : IdentityDbContext<User>
         post.AcceptedByUser = user;
         SaveChanges();
 
+        return true;
+    }
+    
+    public bool CancelPosting(string postId, string userId)
+    {
+        Post? post = Posts
+            .Where(p => p.Id == postId)
+            .Include(p => p.AcceptedByUser) // not sure if this is needed
+            .FirstOrDefault();
+
+        if (post == null)
+            return false; // potentially want detailed error handling here
+
+        User? user = Users
+            .Where(u => u.Id == userId)
+            .FirstOrDefault();
+
+        if (user == null)
+            return false; // potentially want detailed error handling here
+
+        if (user.UserType == UserType.Teacher && user.Id == post.Poster.Id)
+            Remove(post);
+        else if (post.AcceptedByUser != null) {
+            if ((user.UserType == UserType.Substitute && post.AcceptedByUser.Id == user.Id) || user.UserType == UserType.Administrator)
+                post.AcceptedByUser = null; 
+        }
+        else
+            return false;
+
+        SaveChanges();
         return true;
     }
 
