@@ -27,3 +27,6 @@ yarn-error.log*
 bin
 */Debug/*
 obj
+
+ui/public/styles.css
+ui/public/styles.css.map
