@@ -1,0 +1,171 @@
+@use 'sass:color';
+
+// LIGHT MODE // 
+$lightPrimary: #aa00b0;
+$lightDanger: rgb(182, 36, 36);
+$lightSuccess: rgb(255, 0, 230);
+
+$lightCardBorder: blue;
+$lightNavLinkSelected: #800084;
+
+$lightAccordionBase: rgb(226, 156, 95);
+$lightAccordionSelected: rgb(124, 84, 49);
+
+$lightCardBg: seashell;
+
+
+// DARK MODE // 
+$darkPrimary: #7e9dbf;
+$darkDanger: #84002c;
+$darkSuccess: rgb(12, 138, 0);
+
+$darkCardBorder: rgb(99, 99, 99);
+$darkNavLinkSelected: #3171b6;
+
+$darkAccordionBase: rgb(40, 40, 60);
+$darkAccordionSelected: rgb(72, 34, 13);
+
+$darkCardBg: rgb(25, 22, 38);
+
+// Override light mode colors
+:root {
+    .btn {
+        border: none;
+    }
+
+    a {
+        font-weight: bold;
+    }
+
+}
+
+
+:root {
+    [data-bs-theme="light"] {
+
+        $primaryHover: darken($lightPrimary, 10%);
+        $primaryActive: darken($lightPrimary, 20%);
+        $lightDangerHover: darken($lightDanger, 10%);
+        $lightDangerActive: darken($lightSuccess, 15%);
+        $lightSuccessHover: darken($lightSuccess, 10%);
+        $lightSuccessActive: darken($lightSuccess, 15%);
+
+        .btn-primary {
+            --bs-btn-bg: #{$lightPrimary};
+            --bs-btn-hover-bg: #{$primaryHover};
+            --bs-btn-active-bg: #{$primaryActive};
+        }
+
+        .btn-success {
+            --bs-btn-bg: #{$lightSuccess};
+            --bs-btn-hover-bg: #{$lightSuccessHover};
+            --bs-btn-active-bg: #{$lightSuccessActive};
+            --bs-btn-disabled-bg: #{$lightSuccessActive}
+        }
+
+        .btn-danger {
+            --bs-btn-bg: #{$lightDanger};
+            --bs-btn-hover-bg: #{$lightDangerHover};
+            --bs-btn-active-bg: #{$lightDangerActive};
+        }
+
+        .btn-outline-danger {
+            border: #{$lightDanger} solid 1px;
+            --bs-btn-hover: #{$lightDangerHover};
+            --bs-btn-hover-bg: #{$lightDangerHover};
+            --bs-btn-active-bg: #{$lightDangerActive};
+        }
+
+        .card {
+            border-color: #{$lightCardBorder};
+            --bs-card-bg: red;
+        }
+
+        .nav-link.active {
+            color: #{$lightNavLinkSelected};
+        }
+
+        .nav-link {
+            --bs-nav-link-hover-color: #{$lightPrimary};
+        }
+
+        .accordion {
+            --bs-accordion-active-bg: #{$lightAccordionSelected};
+            --bs-accordion-active-color: white;
+            --bs-heading-color: white;
+            --bs-accordion-bg: #{$lightAccordionBase};
+        }
+
+        .card-body {
+            background-color: #{$lightCardBg};
+        }
+
+        --bs-heading-color: white !important;
+
+    }
+}
+
+// Override dark mode colors
+:root {
+    [data-bs-theme="dark"] {
+
+        $primary: $darkPrimary;
+        $primaryHover: darken($darkPrimary, 10%);
+        $primaryActive: darken($darkPrimary, 20%);
+        $dangerHover: darken($darkDanger, 5%);
+        $dangerActive: darken($darkDanger, 10%);
+        $darkSuccessHover: darken($darkSuccess, 10%);
+        $darkSuccessActive: darken($darkSuccess, 15%);
+
+        .btn-primary {
+            --bs-btn-bg: #{$primary};
+            --bs-btn-hover-bg: #{$primaryHover};
+            --bs-btn-active-bg: #{$primaryActive}
+        }
+
+        .btn-success {
+            --bs-btn-bg: #{$darkSuccess};
+            --bs-btn-hover-bg: #{$darkSuccessHover};
+            --bs-btn-active-bg: #{$darkSuccessActive};
+            --bs-btn-disabled-bg: #{$darkSuccessActive}
+        }
+
+        .btn-danger {
+            --bs-btn-bg: #{$darkDanger};
+            --bs-btn-hover-bg: #{$dangerHover};
+            --bs-btn-active-bg: #{$dangerActive};
+        }
+
+        .btn-outline-danger {
+            border: #{$darkDanger} solid 1px;
+            --bs-btn-hover: #{$darkDanger};
+            --bs-btn-hover-bg: #{$darkDanger};
+            --bs-btn-hover-active: #{$dangerActive};
+        }
+
+        .card {
+            --bs-card-border-color: #{$darkCardBorder};
+        }
+
+        .nav-link.active {
+            color: #{$darkNavLinkSelected};
+        }
+
+        .nav-link {
+            --bs-nav-link-hover-color: #{$darkPrimary};
+        }
+
+        .accordion {
+            --bs-accordion-active-bg: #{$darkAccordionSelected};
+            --bs-accordion-active-color: white !important;
+            --bs-accordion-bg: #{$darkAccordionBase};
+        }
+
+        .card-body {
+            background-color: #{$darkCardBg};
+        }
+    }
+}
+
+
+@import "./bootstrap.min.css";

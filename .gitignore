@@ -28,5 +28,7 @@ bin
 */Debug/*
 obj
 
-ui/public/styles.css
-ui/public/styles.css.map
+*styles.css
+*styles.css.map
+
+*/build/*

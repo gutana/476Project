@@ -18,7 +18,8 @@ export const ThemeProvider = ({ children }: Props) => {
     useEffect(() => {
         if (theme == null) {
             localStorage.setItem("theme", "dark");
-            setTheme("dark");
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme'))
+                setTheme("dark");
         }
         else {
             localStorage.setItem("theme", theme);

@@ -1,6 +1,6 @@
 import { Nav } from "react-bootstrap"
 import { UserType } from "../models/user"
-import { Link } from "react-router-dom"
+import { Link, NavLink } from "react-router-dom"
 
 import { useContext } from "react"
 import { UserContext } from "./UserWrapper"
@@ -17,7 +17,7 @@ export const CustomNavLink = ({ linkTo, text, allowedUsers }: Props) => {
     if (user == null) return null;
 
     if (allowedUsers === undefined || allowedUsers.includes(user.userType)) {
-        return (<Nav.Link as={Link} to={linkTo}>{text}</Nav.Link>)
+        return (<Nav.Link eventKey={linkTo} as={NavLink} to={linkTo}>{text}</Nav.Link>)
     }
 
     return null;

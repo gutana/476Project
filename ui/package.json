@@ -24,8 +24,13 @@
         "web-vitals": "^2.1.4"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "prestart": "sass ./src/styles.scss ./public/styles.css",
+        "start": "npm-run-all -p watch-css start-react",
+        "start-react": "react-scripts start",
+        "watch-css": "sass --watch ./src/styles.scss:./public/styles.css",
+        "prebuild": "sass ./src/styles.scss ./public/styles.css",
         "build": "react-scripts build",
+        "build-css": "sass ./src/styles.scss ./public/styles.css",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
@@ -48,6 +53,8 @@
         ]
     },
     "devDependencies": {
-        "@types/validator": "^13.12.2"
+        "@types/validator": "^13.12.2",
+        "npm-run-all": "^4.1.5",
+        "sass": "^1.80.6"
     }
 }
