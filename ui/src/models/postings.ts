@@ -1,8 +1,7 @@
 import { School, SchoolType } from "./schools";
 import { User } from "./user";
 
-export interface CreatePostData
-{
+export interface CreatePostData {
     schoolId: string,
     postDescription: string,
     requestedSub: string,
@@ -12,8 +11,7 @@ export interface CreatePostData
     grades: Grade[]
 }
 
-export interface Post
-{
+export interface Post {
     id: string,
     posterId: string,
     posterFirstName: string,
@@ -30,7 +28,7 @@ export interface Post
     postDateTime: Date,
     primarySchoolSubjects: PrimarySchoolSubject[] | null,
     secondarySchoolSubjects: SecondarySchoolSubject[] | null,
-    grades: Grade[]    
+    grades: Grade[]
 }
 
 export enum Grade {
@@ -48,6 +46,27 @@ export enum Grade {
     Ten,
     Eleven,
     Twelve
+}
+
+export const MapGradeNameToGrade = (gradeName: string) => {
+    switch (gradeName) {
+        case "PreK": return Grade.PreK;
+        case "Pre-K": return Grade.PreK;
+        case "Kindergarten": return Grade.Kindergarten;
+        case "One": return Grade.One;
+        case "Two": return Grade.Two;
+        case "Three": return Grade.Three;
+        case "Four": return Grade.Four;
+        case "Five": return Grade.Five;
+        case "Six": return Grade.Six;
+        case "Seven": return Grade.Seven;
+        case "Eight": return Grade.Eight;
+        case "Nine": return Grade.Nine;
+        case "Ten": return Grade.Ten;
+        case "Eleven": return Grade.Eleven;
+        case "Twelve": return Grade.Twelve;
+    }
+    throw `Error: Unexpected string: ${gradeName} trying to convert to Grade Enum`;
 }
 
 export enum PrimarySchoolSubject {

@@ -225,6 +225,39 @@ namespace api.Migrations
                     b.ToTable("Posts", "identity");
                 });
 
+            modelBuilder.Entity("api.Models.PrimarySchoolCourse", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("endTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int[]>("grades")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("startTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("subject")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AspNetUsers");
+
+                    b.ToTable("PrimarySchoolCourses", "identity");
+                });
+
             modelBuilder.Entity("api.Models.School", b =>
                 {
                     b.Property<string>("Id")
@@ -257,6 +290,39 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Schools", "identity");
+                });
+
+            modelBuilder.Entity("api.Models.SecondarySchoolCourse", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("endTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int[]>("grades")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("startTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("subject")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AspNetUsers");
+
+                    b.ToTable("SecondarySchoolCourses", "identity");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
@@ -426,6 +492,28 @@ namespace api.Migrations
                     b.Navigation("School");
                 });
 
+            modelBuilder.Entity("api.Models.PrimarySchoolCourse", b =>
+                {
+                    b.HasOne("api.Models.User", "user")
+                        .WithMany("primarySchoolCourses")
+                        .HasForeignKey("AspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
+            modelBuilder.Entity("api.Models.SecondarySchoolCourse", b =>
+                {
+                    b.HasOne("api.Models.User", "user")
+                        .WithMany("secondarySchoolCourses")
+                        .HasForeignKey("AspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
             modelBuilder.Entity("api.Models.User", b =>
                 {
                     b.HasOne("api.Models.School", "School")
@@ -433,6 +521,13 @@ namespace api.Migrations
                         .HasForeignKey("SchoolId");
 
                     b.Navigation("School");
+                });
+
+            modelBuilder.Entity("api.Models.User", b =>
+                {
+                    b.Navigation("primarySchoolCourses");
+
+                    b.Navigation("secondarySchoolCourses");
                 });
 #pragma warning restore 612, 618
         }

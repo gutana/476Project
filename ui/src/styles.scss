@@ -27,13 +27,14 @@ $lightPrimary: #418de4;
 $lightDanger: #d85a6f;
 $lightSuccess: #49af1d;
 
-$lightCardBorder:  #adadaa;
-$lightNavLinkSelected:  #638dc5;
+$lightCardBorder: #adadaa;
+$lightNavLinkSelected: #638dc5;
 
 $lightAccordionBase: #e8e9e2;
 $lightAccordionSelected: #adadaa;
 
 $lightCardBg: #e8e9e2;
+$lightHeadingColor: black;
 
 
 // DARK MODE // 
@@ -48,6 +49,7 @@ $darkAccordionBase: #40413f;
 $darkAccordionSelected: #808080;
 
 $darkCardBg: #40413f;
+$darkHeadingColor: rgb(222, 226, 230);
 
 // Override light mode colors
 :root {
@@ -130,7 +132,7 @@ $darkCardBg: #40413f;
             background-color: #{$lightCardBg};
         }
 
-        --bs-heading-color: white !important;
+        --bs-heading-color: $lightHeadingColor;
 
     }
 }
@@ -177,6 +179,7 @@ $darkCardBg: #40413f;
 
         .card {
             --bs-card-border-color: #{$darkCardBorder};
+            --bs-card-bg: #{$darkCardBg};
         }
 
         .nav-link.active {
@@ -196,6 +199,12 @@ $darkCardBg: #40413f;
         .card-body {
             background-color: #{$darkCardBg};
         }
+
+        .rbt-token {
+            background-color: $darkCardBg;
+        }
+
+        --bs-heading-color: $darkHeadingColor;
     }
 }
 

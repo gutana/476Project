@@ -35,7 +35,7 @@ export const DefaultLayout = ({ children }: Props) => {
             <Card style={{ borderRadius: 0, minHeight: '94vh' }} data-bs-theme={theme?.value}>
                 <div style={mobile ?
                     { maxWidth: '1000px', margin: '10px' } :
-                    { maxWidth: '1000px', minWidth: '800px', margin: 'auto', marginTop: '10px' }
+                    { maxWidth: '1200px', minWidth: '900px', margin: 'auto', marginTop: '10px' }
                 }>
                     {children}
                 </div>

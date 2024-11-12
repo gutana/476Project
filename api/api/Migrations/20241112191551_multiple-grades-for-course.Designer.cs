@@ -12,8 +12,8 @@ using api.Models;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241102024820_Initial")]
-    partial class Initial
+    [Migration("20241112191551_multiple-grades-for-course")]
+    partial class multiplegradesforcourse
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -182,17 +182,17 @@ namespace api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AcceptedByUserId")
+                        .HasColumnType("text");
+
                     b.Property<int[]>("Grades")
                         .HasColumnType("integer[]");
 
-                    b.Property<DateOnly?>("PostDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("PostDateTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PostDescription")
                         .HasColumnType("text");
-
-                    b.Property<TimeOnly?>("PostTime")
-                        .HasColumnType("time without time zone");
 
                     b.Property<string>("PosterId")
                         .HasColumnType("text");
@@ -203,7 +203,7 @@ namespace api.Migrations
                     b.Property<bool?>("Private")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("RequestedSub")
+                    b.Property<string>("RequestedSubId")
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolId")
@@ -217,7 +217,48 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AcceptedByUserId");
+
+                    b.HasIndex("PosterId");
+
+                    b.HasIndex("RequestedSubId");
+
+                    b.HasIndex("SchoolId");
+
                     b.ToTable("Posts", "identity");
+                });
+
+            modelBuilder.Entity("api.Models.PrimarySchoolCourse", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("endTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int[]>("grades")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("startTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("subject")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AspNetUsers");
+
+                    b.ToTable("PrimarySchoolCourses", "identity");
                 });
 
             modelBuilder.Entity("api.Models.School", b =>
@@ -252,6 +293,39 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Schools", "identity");
+                });
+
+            modelBuilder.Entity("api.Models.SecondarySchoolCourse", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("endTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int[]>("grades")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("startTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("subject")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AspNetUsers");
+
+                    b.ToTable("SecondarySchoolCourses", "identity");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
@@ -307,6 +381,9 @@ namespace api.Migrations
                     b.Property<int?>("Region")
                         .HasColumnType("integer");
 
+                    b.Property<string>("SchoolId")
+                        .HasColumnType("text");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -334,6 +411,8 @@ namespace api.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("SchoolId");
 
                     b.ToTable("AspNetUsers", "identity");
                 });
@@ -387,6 +466,71 @@ namespace api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("api.Models.Post", b =>
+                {
+                    b.HasOne("api.Models.User", "AcceptedByUser")
+                        .WithMany()
+                        .HasForeignKey("AcceptedByUserId");
+
+                    b.HasOne("api.Models.User", "Poster")
+                        .WithMany()
+                        .HasForeignKey("PosterId");
+
+                    b.HasOne("api.Models.User", "RequestedSub")
+                        .WithMany()
+                        .HasForeignKey("RequestedSubId");
+
+                    b.HasOne("api.Models.School", "School")
+                        .WithMany()
+                        .HasForeignKey("SchoolId");
+
+                    b.Navigation("AcceptedByUser");
+
+                    b.Navigation("Poster");
+
+                    b.Navigation("RequestedSub");
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("api.Models.PrimarySchoolCourse", b =>
+                {
+                    b.HasOne("api.Models.User", "user")
+                        .WithMany("primarySchoolCourses")
+                        .HasForeignKey("AspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
+            modelBuilder.Entity("api.Models.SecondarySchoolCourse", b =>
+                {
+                    b.HasOne("api.Models.User", "user")
+                        .WithMany("secondarySchoolCourses")
+                        .HasForeignKey("AspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
+            modelBuilder.Entity("api.Models.User", b =>
+                {
+                    b.HasOne("api.Models.School", "School")
+                        .WithMany()
+                        .HasForeignKey("SchoolId");
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("api.Models.User", b =>
+                {
+                    b.Navigation("primarySchoolCourses");
+
+                    b.Navigation("secondarySchoolCourses");
                 });
 #pragma warning restore 612, 618
         }

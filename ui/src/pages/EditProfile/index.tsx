@@ -12,9 +12,18 @@ import Toasts from "../../components/Toasts";
 import { stringToRegion } from "../../components/stringToDataType";
 import { School } from "../../models/schools";
 import { GetAllSchools } from "../../api/queries/schoolQueries";
+import { ButtonGroup, ToggleButton } from "react-bootstrap";
+import { EditCoursesPanel } from "./components/EditCoursesPanel";
 
 export default function EditProfilePage() {
     let user = useContext(UserContext);
+
+    const [radioValue, setRadioValue] = useState('1');
+
+    const radios = [
+        { name: "Personal Information", value: '1' },
+        { name: "Course Schedule", value: '2' },
+    ]
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -131,54 +140,78 @@ export default function EditProfilePage() {
     return (
         <>
             <Toasts show={show} setShow={setShow} variant="success" title="Success!" message="Account Info has been updated!" />
-            <div className="p-3">
-                <h3 className="pb-2">Edit User Information</h3>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3" controlId="firstName">
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                    </Form.Group>
+            <h3 className="pb-2">Edit User Information</h3>
 
-                    <Form.Group className="mb-3" controlId="lastName">
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                    </Form.Group>
+            {user?.userType === UserType.Teacher &&
+                <ButtonGroup style={{ width: '100%' }}>
+                    {radios.map((radio, i) => {
+                        return (
+                            <ToggleButton
+                                key={i}
+                                id={`radio-${i}`}
+                                type="radio"
+                                value={radio.value}
+                                checked={radioValue === radio.value}
+                                onChange={(e) => setRadioValue(e.currentTarget.value)}
+                            >
+                                {radio.name}
+                            </ToggleButton>
+                        )
+                    })}
+                </ButtonGroup>
+            }
 
-                    <Form.Group className="mb-3" controlId="email">
-                        <Form.Label>Email Address</Form.Label>
-                        <Form.Control type="email" aria-describedby="emailHelp" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </Form.Group>
+            {radioValue === '1' ?
 
-                    <Form.Group className="mb-3" controlId="phoneNumber">
-                        <Form.Label>Phone Number</Form.Label>
-                        <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
-                    </Form.Group>
+                <div className="p-3">
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3" controlId="firstName">
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Region</Form.Label>
-                        <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
-                            <option value={Region.Regina}>Regina</option>
-                            <option value={Region.Saskatoon}>Saskatoon</option>
-                        </Form.Select>
-                    </Form.Group>
+                        <Form.Group className="mb-3" controlId="lastName">
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                        </Form.Group>
 
-                    {user && user.userType === UserType.Teacher && <Form.Group className="mb-3">
-                        <Form.Label>School</Form.Label>
-                        <Form.Select onChange={(e) => setSchool(e.target.value)} value={school} required>
-                            {allSchools.map((school) => {
-                                if (stringToRegion(school.region) !== stringToRegion(region)) return;
-                                return <option key={school.id} value={school.id}>{school.schoolName}</option>
-                            })}
-                        </Form.Select>
-                    </Form.Group>}
+                        <Form.Group className="mb-3" controlId="email">
+                            <Form.Label>Email Address</Form.Label>
+                            <Form.Control type="email" aria-describedby="emailHelp" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </Form.Group>
 
-                    {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                        <Form.Group className="mb-3" controlId="phoneNumber">
+                            <Form.Label>Phone Number</Form.Label>
+                            <Form.Control type="text" value={phoneNumber} onChange={onNumberChange} />
+                        </Form.Group>
 
-                    <Button variant="primary" disabled={isLoading} type="submit">
-                        {isLoading ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                </Form>
-            </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Region</Form.Label>
+                            <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
+                                <option value={Region.Regina}>Regina</option>
+                                <option value={Region.Saskatoon}>Saskatoon</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        {user && user.userType === UserType.Teacher && <Form.Group className="mb-3">
+                            <Form.Label>School</Form.Label>
+                            <Form.Select onChange={(e) => setSchool(e.target.value)} value={school} required>
+                                {allSchools.map((school) => {
+                                    if (stringToRegion(school.region) !== stringToRegion(region)) return null;
+                                    return <option key={school.id} value={school.id}>{school.schoolName}</option>
+                                })}
+                            </Form.Select>
+                        </Form.Group>}
+
+                        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
+                        <Button variant="primary" disabled={isLoading} type="submit">
+                            {isLoading ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </Form>
+                </div>
+                :
+                <EditCoursesPanel />}
         </>
     )
 }

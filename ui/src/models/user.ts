@@ -1,3 +1,4 @@
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "./courseSchedule"
 import { School } from "./schools"
 
 export interface User {
@@ -9,6 +10,8 @@ export interface User {
     id: string,
     email: string,
     phoneNumber: string,
+    primarySchoolCourses: PrimarySchoolCourse[],
+    secondarySchoolCourses: SecondarySchoolCourse[]
 }
 
 export interface Substitute {

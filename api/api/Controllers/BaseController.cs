@@ -24,7 +24,11 @@ public abstract class BaseController : Controller
         if (userId == null)
             return null;
 
-        return await _userManager.Users.Include(user => user.School).FirstAsync(user => user.Id == userId);
+        return await _userManager.Users.
+            Include(user => user.School).
+            Include(user => user.primarySchoolCourses).
+            Include(user => user.secondarySchoolCourses).
+            FirstAsync(user => user.Id == userId);
     }
 
     protected async Task<User?> GetCurrentUserCached()
@@ -41,9 +45,13 @@ public abstract class BaseController : Controller
         else
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromSeconds(60));
+                .SetSlidingExpiration(TimeSpan.FromSeconds(360));
 
-            User? user = await _userManager.Users.Include(user => user.School).FirstAsync(user => user.Id == userId);
+            User? user = await _userManager.Users.
+                Include(user => user.School).
+                Include(user => user.primarySchoolCourses).
+                Include(user => user.secondarySchoolCourses).
+                FirstAsync(user => user.Id == userId);
             _cache.Set(userId, user, cacheEntryOptions);
             return user;
         }

@@ -1,5 +1,6 @@
 ﻿using api.Models;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.DTO;
 
@@ -13,6 +14,9 @@ public class UserDto
     public School? School { get; set; }
     public UserType UserType { get; set; }
     public string? PhoneNumber { get; set; }
+
+    public List<PrimarySchoolCourseDto>? primarySchoolCourses { get; set; } 
+    public List<SecondarySchoolCourseDto>? secondarySchoolCourses { get; set; } 
 
     public static UserDto MapIdentityUserToUserDto(User user)
     {
@@ -31,7 +35,87 @@ public class UserDto
             Region = (Region)user.Region,
             School = user.School,
             UserType = (UserType)user.UserType,
-            PhoneNumber = user.PhoneNumber ?? ""
+            PhoneNumber = user.PhoneNumber ?? "",
+            primarySchoolCourses = ConvertPrimaryCourseListToDto(user.primarySchoolCourses),
+            secondarySchoolCourses = ConvertSecondaryCourseListToDto(user.secondarySchoolCourses)
         };
     }
+
+    private static List<PrimarySchoolCourseDto> ConvertPrimaryCourseListToDto(List<PrimarySchoolCourse> courses)
+    {
+        List<PrimarySchoolCourseDto> output = new();
+        foreach(PrimarySchoolCourse course in courses)
+        {
+            output.Add(PrimarySchoolCourseDto.MapToDto(course));
+        }
+        return output;
+    }
+
+    private static List<SecondarySchoolCourseDto> ConvertSecondaryCourseListToDto(List<SecondarySchoolCourse> courses)
+    {
+        List<SecondarySchoolCourseDto> output = new();
+        foreach(SecondarySchoolCourse course in courses)
+        {
+            output.Add(SecondarySchoolCourseDto.MapToDto(course));
+        }
+        return output;
+    }
+
+}
+
+public class PrimarySchoolCourseDto
+{
+    public string Id { get; set; }
+
+    public List<Grade> grades { get; set; }
+    public PrimarySchoolSubject subject { get; set; }
+
+    public DateTime startTime { get; set; }
+    public DateTime endTime { get; set; }
+    public string? location { get; set; }
+    public static PrimarySchoolCourseDto MapToDto(PrimarySchoolCourse course)
+    {
+        return new PrimarySchoolCourseDto{
+            Id = course.Id,
+            grades = course.grades,
+            subject = course.subject,
+            startTime = course.startTime,
+            endTime = course.endTime,
+            location = course.location,
+        };
+    }
+}
+public class SecondarySchoolCourseDto
+{
+    public string Id { get; set; }
+
+    public List<Grade> grades { get; set; }
+    public SecondarySchoolSubject subject { get; set; }
+
+    public DateTime startTime { get; set; }
+    public DateTime endTime { get; set; }
+    public string? location { get; set; }
+    public static SecondarySchoolCourseDto MapToDto(SecondarySchoolCourse course)
+    {
+        return new SecondarySchoolCourseDto{
+            Id = course.Id,
+            grades = course.grades,
+            subject = course.subject,
+            startTime = course.startTime,
+            endTime = course.endTime,
+            location = course.location,
+        };
+    }
+
+}
+
+
+public class AddCourseToProfileRequest
+{
+    public List<Grade> grades {  get; set; }   
+    public PrimarySchoolSubject? primarySchoolSubject { get; set; }
+    public SecondarySchoolSubject? secondarySchoolSubject { get; set; }
+    public string startTime { get; set; }
+    public string endTime { get; set; }
+    public string information { get; set; }
 }

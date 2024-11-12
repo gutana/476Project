@@ -7,6 +7,8 @@ export const Endpoints = {
     REFRESH: '/refresh',
 
     ACCOUNT: {
+        ADD_COURSE_TO_PROFILE: '/account/addCourseToProfile',
+        DELETE_COURSE: '/account/deleteCourse',
         EDIT_INFO: '/account/editInfo',
         GET_USER: '/account/getUser',
         REGISTER: '/account/register'
@@ -20,7 +22,7 @@ export const Endpoints = {
         GET_LATEST: '/news/getLatest'
     },
     POST: {
-        ACCEPT_POSTING: '/post/accept',        
+        ACCEPT_POSTING: '/post/accept',
         ADD_POSTING: '/post/add',
         CANCEL_POSTING: '/post/cancel',
         GET_ALL: '/post/getAll',

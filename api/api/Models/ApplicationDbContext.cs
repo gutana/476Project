@@ -13,6 +13,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<Post> Posts { get; set; }
     public DbSet<School> Schools { get; set; }
     public DbSet<NewsPost> NewsPosts { get; set; }
+    public DbSet<PrimarySchoolCourse> PrimarySchoolCourses { get; set; }
+    public DbSet<SecondarySchoolCourse> SecondarySchoolCourses { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -26,6 +28,32 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
         builder.Entity<User>().Property(u => u.FirstName).HasMaxLength(32);
         builder.Entity<User>().Property(u => u.LastName).HasMaxLength(32);
+
+        builder.Entity<PrimarySchoolCourse>(entity =>
+        {
+            entity.Property(e => e.startTime).IsRequired();
+            entity.Property(e => e.endTime).IsRequired();
+            entity.Property(e => e.grades).IsRequired();
+            entity.Property(e => e.subject).IsRequired();
+            entity.Property(e => e.location).IsRequired();
+        }); 
+        builder.Entity<SecondarySchoolCourse>(entity =>
+        {
+            entity.Property(e => e.startTime).IsRequired();
+            entity.Property(e => e.endTime).IsRequired();
+            entity.Property(e => e.grades).IsRequired();
+            entity.Property(e => e.subject).IsRequired();
+            entity.Property(e => e.location).IsRequired();
+        });
+
+
+        builder.Entity<PrimarySchoolCourse>()
+            .HasOne(schedule => schedule.user)
+            .WithMany(p => p.primarySchoolCourses);
+
+        builder.Entity<SecondarySchoolCourse>()
+            .HasOne(schedule => schedule.user)
+            .WithMany(s => s.secondarySchoolCourses);
 
         builder.HasDefaultSchema("identity");
     }
@@ -73,6 +101,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
             post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
             post.Grades = dto.Grades;
+
             post.PostDescription = dto.PostDescription;
             if (post.RequestedSub != null)
                 post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
@@ -240,6 +269,83 @@ public class ApplicationDbContext : IdentityDbContext<User>
             return false;
         }
     }
+    public async Task<bool> AddCourseToProfile(string userId, AddCourseToProfileRequest req)
+    {
+        try
+        {
+            var user = await Users
+                .Include(user => user.primarySchoolCourses)
+                .Include(user => user.secondarySchoolCourses)
+                .FirstAsync(user => user.Id == userId);
+
+            if (user == null) return false;
+
+            if (req.secondarySchoolSubject != null)
+            {
+                user.secondarySchoolCourses ??= new List<SecondarySchoolCourse>();
+                user.secondarySchoolCourses.Add(new SecondarySchoolCourse
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    grades = req.grades,
+                    subject = (SecondarySchoolSubject)req.secondarySchoolSubject,
+                    startTime = ParseTime(req.startTime),
+                    endTime = ParseTime(req.endTime),
+                    location = req.information ?? ""
+                });
+            }
+            else
+            {
+                if (req.primarySchoolSubject == null) throw new Exception("Expected primary school subject.");
+
+                user.primarySchoolCourses ??= new List<PrimarySchoolCourse>();
+                user.primarySchoolCourses.Add(new PrimarySchoolCourse
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    grades = req.grades,
+                    subject = (PrimarySchoolSubject)req.primarySchoolSubject,
+                    startTime = ParseTime(req.startTime),
+                    endTime = ParseTime(req.endTime),
+                    location = req.information ?? ""
+                });
+            }
+
+            SaveChanges();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteCourseFromProfile(string courseId, string userId)
+    {
+        var user = await Users
+            .Include(user => user.primarySchoolCourses)
+            .Include(user => user.secondarySchoolCourses)
+            .FirstAsync(user => user.Id == userId);
+
+        var course = user.primarySchoolCourses.First(c => c.Id == courseId);
+        if (course != null)
+        {
+            user.primarySchoolCourses.Remove(course);
+            PrimarySchoolCourses.Remove(course);
+            SaveChanges();
+            return true;
+        }
+
+        var course2 = user.secondarySchoolCourses.First(c => c.Id == courseId);
+        if (course2 != null)
+        {
+            user.secondarySchoolCourses.Remove(course2);
+            SecondarySchoolCourses.Remove(course2);
+            SaveChanges();
+            return true;
+        }
+        return false;
+    }
+
 
     public async Task<List<NewsPost>> GetLatestNews(int take)
     {
@@ -247,5 +353,22 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .OrderByDescending(post => post.PostDate)
             .Take(take)
             .ToListAsync();
+    }
+
+    // Expects a string formatted "HH:MM" in 24 hour format.
+    private DateTime ParseTime(string timeString)
+    {
+        var split = timeString.Split(":");
+
+        if (split.Length != 2)
+            throw new Exception("Improper time format receieved. Expected HH:MM.");
+
+        int hour = int.Parse(split[0]);
+        int min = int.Parse(split[1]);
+
+        if (hour < 0 || hour > 23 || min < 0 || min > 59) 
+            throw new Exception("Improper time format receieved. Expected HH:MM.");
+
+        return new DateTime(1, 1, 1, hour, min, 0, DateTimeKind.Utc);
     }
 }

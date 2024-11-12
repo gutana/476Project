@@ -102,4 +102,42 @@ public class AccountController : BaseController
 
         return BadRequest(result.Errors);
     }
+
+    [HttpPost("addCourseToProfile")]
+    [Authorize]
+    public async Task<IActionResult> AddCourseToProfile([FromBody] AddCourseToProfileRequest req)
+    {
+        var user = await GetCurrentUserCached();
+
+        if (user == null || user.UserType != UserType.Teacher)
+            return Unauthorized();
+
+        bool success = await _context.AddCourseToProfile(user.Id, req);
+
+        CacheInvalidate(user.Id);
+
+        if (success)
+            return Ok();
+        else
+            return BadRequest();
+    }
+
+    [HttpGet("deleteCourse")]
+    [Authorize]
+    public async Task<IActionResult> DeleteCourse(string courseId)
+    {
+        var user = await GetCurrentUserCached();
+
+        if (user == null) 
+            return Unauthorized();
+
+        CacheInvalidate(user.Id);
+
+        bool success = await _context.DeleteCourseFromProfile(courseId, user.Id);
+
+        if (success)
+            return Ok();
+
+        return Problem();
+    }
 }

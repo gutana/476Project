@@ -38,7 +38,7 @@ public enum Grade
 
 public enum PrimarySchoolSubject
 {
-    FrenchImmersion,
+    FrenchImmersion = 0,
     CoreFrench,
     ArtsEd,
     General
@@ -46,7 +46,7 @@ public enum PrimarySchoolSubject
 
 public enum SecondarySchoolSubject // TODO: ADD ALL 
 {
-    English,
+    English = 0,
     Math,
     Science,
     History,

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models;
 
@@ -15,6 +13,11 @@ public class User : IdentityUser
 
     public List<PrimarySchoolSubject>? preferredPrimarySchoolSubject {  get; set; }
     public List<SecondarySchoolSubject>? preferredSecondarySchoolSubject {  get; set; }
+
+
+    // Class Schedule 
+    public List<PrimarySchoolCourse> primarySchoolCourses { get; set; } = new();
+    public List<SecondarySchoolCourse> secondarySchoolCourses { get; set; } = new();
 }
 
 public enum Region 

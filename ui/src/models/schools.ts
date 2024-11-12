@@ -13,6 +13,6 @@ export interface School {
 }
 
 export enum SchoolType {
-    Primary,
-    Secondary,
+    Primary = "Primary",
+    Secondary = "Secondary"
 }

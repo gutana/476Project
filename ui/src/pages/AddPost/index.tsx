@@ -30,7 +30,7 @@ interface Props {
     placeholder: string
 }
 
-function MultipleSelection({ values, title, placeholder, selection, setSelection }: Props) {
+export function MultipleSelection({ values, title, placeholder, selection, setSelection }: Props) {
     const setSelections = (vals: any) => {
         setSelection(vals);
     }
@@ -285,7 +285,7 @@ export default function AddPostPage() {
     const changeSub = (e: any) => {
         setRequestedSub(e);
     }
-    
+
     const changeSchool = (e: any) => {
         setSelectedSchool(e);
         setSchool(e[0]);
@@ -308,10 +308,10 @@ export default function AddPostPage() {
                 <h3 className="pb-2">{user?.school ? `Add New Posting for ${user.school.schoolName}` : `Add New Posting`}</h3>
                 <Form onSubmit={handleSubmit}>
                     {user?.userType === UserType.Administrator && allSchools &&
-                    <Form.Group className="mb-3" controlId="school">
-                        <Form.Label>School</Form.Label>
-                        <Typeahead labelKey="schoolName" selected={selectedSchool} options={allSchools.filter(val => val.region === user?.region)} id="0" placeholder="Search schools..." onChange={changeSchool} />
-                    </Form.Group>}
+                        <Form.Group className="mb-3" controlId="school">
+                            <Form.Label>School</Form.Label>
+                            <Typeahead labelKey="schoolName" selected={selectedSchool} options={allSchools.filter(val => val.region === user?.region)} id="0" placeholder="Search schools..." onChange={changeSchool} />
+                        </Form.Group>}
                     {school && <MultipleSelection values={school.schoolType.toString() === "Primary" ? allGrades.slice(0, 10) : allGrades.slice(10)} title="Grade(s)" placeholder="Search grades..." selection={grades} setSelection={setGrades} />}
                     {school && school.schoolType.toString() === "Primary" &&
                         <MultipleSelection values={primarySubjects} title="Primary School Subject(s)" placeholder="Search primary subjects..." selection={primary} setSelection={setPrimary} />}
