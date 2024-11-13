@@ -118,7 +118,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                     <Accordion.Header as="div">
                         <Stack direction="horizontal">
                             <h5>
-                                {post.school.schoolName} - {post.grades.toString()}
+                                {post.school.schoolName} - {post.grades.join(", ")}
                             </h5>
                         </Stack>
                     </Accordion.Header>

@@ -29,7 +29,7 @@ export default function EditProfilePage() {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const [region, setRegion] = useState<Region | string>("");
+    const [region, setRegion] = useState<Region | string | undefined>("");
     const [school, setSchool] = useState<string>("");
     const [allSchools, setAllSchools] = useState<School[]>([]);
 
@@ -98,6 +98,11 @@ export default function EditProfilePage() {
 
         if (user.userType === UserType.Teacher && (!school || school.length === 0)) {
             setErrorMessage("School has to be selected!");
+            return;
+        }
+
+        if (realRegion === undefined) {
+            setErrorMessage("Select Region");
             return;
         }
 

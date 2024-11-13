@@ -2,7 +2,7 @@ import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../models/p
 import { SchoolType } from "../models/schools";
 import { Region, UserType } from "../models/user";
 
-export const stringToRegion = (region: string | Region) => {
+export const stringToRegion = (region: string | Region | undefined) => {
     if (!(typeof region === "string")) {
         return region;
     }
@@ -14,7 +14,7 @@ export const stringToRegion = (region: string | Region) => {
         case "1":
             return Region.Saskatoon;
         default:
-            return Region.Regina;
+            return undefined;
     }
 }
 

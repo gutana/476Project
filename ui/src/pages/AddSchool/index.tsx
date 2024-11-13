@@ -76,6 +76,15 @@ export default function AddSchoolPage() {
             return;
         }
 
+        if (realRegion === undefined) {
+            setErrorMessage("Select Region.");
+            return;
+        }
+
+        if (realSchoolType === null) {
+            setErrorMessage("Select School Type");
+        }
+
         setLoading(true);
         schoolMutation.mutate({
             SchoolType: realSchoolType,

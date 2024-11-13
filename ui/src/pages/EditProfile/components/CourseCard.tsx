@@ -38,7 +38,7 @@ export const CourseCard = ({ course, setCourses }: Props) => {
                 </Col>
                 <Col lg={9}>
                     <Row>
-                        <Col>{<b>Grade(s): </b>}{course.grades.map(grade => grade + " ")}</Col>
+                        <Col>{<b>Grade(s): </b>}{course.grades.join(", ")}</Col>
                         <Col>{<b>Start time: </b>} {FormatDateForDisplayAsTimeOnly(course.startTime)}</Col>
                         <Col>{<b>End time: </b>} {FormatDateForDisplayAsTimeOnly(course.endTime)}</Col>
                     </Row>
