@@ -7,7 +7,7 @@ import { AddCourseCard } from "./AddCourseCard";
 
 export const EditCoursesPanel = () => {
 
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);;
 
     const [schedule, setSchedule] = useState<(PrimarySchoolCourse | SecondarySchoolCourse)[]>([]);
 

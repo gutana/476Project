@@ -13,7 +13,7 @@ import { AddSchoolMutation } from "../../api/mutations/schoolMutations";
 import { stringToRegion, stringToSchoolType } from "../../components/stringToDataType";
 
 export default function AddSchoolPage() {
-    let user = useContext(UserContext);
+    const [user] = useContext(UserContext);
 
     const [schoolName, setSchoolName] = useState("");
     const [schoolType, setSchoolType] = useState<SchoolType | string>("");

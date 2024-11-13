@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const CustomNavLink = ({ linkTo, text, allowedUsers }: Props) => {
-    const user = useContext(UserContext);
+    const [user, refetch] = useContext(UserContext);
 
     if (user == null) return null;
 

@@ -10,12 +10,15 @@ import Toasts from "../../components/Toasts";
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../../models/postings";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
-import { School } from "../../models/schools";
+import { School, SchoolType } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { allGrades, primarySubjects, secondarySubjects } from "../../utils/consts";
 import { stringToGrades, stringToPrimary, stringToSecondary } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { GetAllSchools } from "../../api/queries/schoolQueries";
+import { Link } from "react-router-dom";
+import { AlertIcon } from "../../components/Icons";
+import { Container } from "react-bootstrap";
 
 interface TypeaheadValue {
     name: string,
@@ -52,7 +55,7 @@ export function MultipleSelection({ values, title, placeholder, selection, setSe
 }
 
 export default function AddPostPage() {
-    let user = useContext(UserContext);
+    const [user] = useContext(UserContext);
 
     const [desc, setDesc] = useState("");
     const [requestedSub, setRequestedSub] = useState<any>([]);
@@ -85,6 +88,69 @@ export default function AddPostPage() {
     const capitalizeFirst = (value: string) => {
         return value.slice(0, 1).toUpperCase() + value.slice(1);
     }
+
+    // Pre-populate the grades with info from the user object
+    useEffect(() => {
+        if (user === null || user.userType === UserType.Administrator) return;
+
+        let grades: Grade[] = [];
+
+        for (let i = 0; i < user.primarySchoolCourses.length; i++) {
+            grades = [...grades, ...user.primarySchoolCourses[i].grades]
+        }
+
+        for (let i = 0; i < user.secondarySchoolCourses.length; i++) {
+            grades = [...grades, ...user.secondarySchoolCourses[i].grades]
+        }
+        const existingGrades = grades.map((grade) => {
+            let gra = allGrades.find(gr => {
+                return (gr.name == grade as unknown as string) ||
+                    (gr.name === "Pre-K" && grade as unknown as string == "PreK"); // Needed because Pre-K !== PreK
+
+            })
+            if (gra === undefined) throw `Error: Unable to load existing grades: Grade: ${grade}.`;
+            return { name: gra.name, value: gra.value };;
+        });
+        const uniqueGrades = Array.from(new Map(existingGrades.map(item => [item.name, item])).values())
+        setGrades(uniqueGrades.sort((a, b) => parseInt(a.value) - parseInt(b.value)));
+    }, [user])
+
+    // Pre-populate the subjects with info from the user object
+    useEffect(() => {
+        if (!user || user.school === undefined || user.userType === UserType.Administrator) return;
+
+        let subjects: (PrimarySchoolSubject | SecondarySchoolSubject)[] = [];
+
+        if (user.school.schoolType === SchoolType.Primary) {
+            subjects = [...subjects, ...user.primarySchoolCourses.map(course => course.subject)]
+        } else {
+            subjects = [...subjects, ...user.secondarySchoolCourses.map(course => course.subject)]
+        }
+
+        const formattedSubjects = subjects.map(
+            subject => {
+                if (user === null || user.school === undefined) throw "Error: Attempted to load subjects but no user or school.";
+
+                if (user.school.schoolType === SchoolType.Primary) {
+                    const result = primarySubjects.find(subj => subj.name.replaceAll(' ', '') === subject.toString());
+                    if (result === undefined) throw "Error: Unable to find primary school subjects in teacher profile.";
+                    return result;
+                } else {
+                    const result = secondarySubjects.find(subj =>
+                        subj.name.replaceAll(' ', '') === subject.toString()
+                    );
+                    if (result === undefined) throw "Error: Unable to find secondary school subjects in teacher profile.";
+                    return result;
+                }
+            }
+        )
+
+        if (user.school.schoolType === SchoolType.Primary)
+            setPrimary(formattedSubjects);
+        else
+            setSecondary(formattedSubjects);
+
+    }, [user])
 
     const translateToSub = (users: User[]): Substitute[] => {
         let subs: Substitute[] = [];
@@ -301,11 +367,23 @@ export default function AddPostPage() {
         window.location.href = "/";
     }
 
+    const showProfileInfoText: boolean = primary.length === 0 && secondary.length === 0 && grades.length === 0;
+
+    console.log(`Showing alert? ${showProfileInfoText}`);
     return (
         <>
             <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />
             <div className="p-3">
                 <h3 className="pb-2">{user?.school ? `Add New Posting for ${user.school.schoolName}` : `Add New Posting`}</h3>
+                {showProfileInfoText &&
+                    <Alert variant="warning">
+                        <Container style={{ display: 'flex', flexDirection: 'row' }}><AlertIcon size="24" />
+                            <div style={{ marginLeft: '12px' }}>
+                                Your grades and subjects can be set on the <Link to="/edit">Edit Profile</Link> page.
+                            </div>
+                        </Container>
+                    </Alert>}
+
                 <Form onSubmit={handleSubmit}>
                     {user?.userType === UserType.Administrator && allSchools &&
                         <Form.Group className="mb-3" controlId="school">

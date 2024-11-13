@@ -18,13 +18,15 @@ export const AddCourseCard = () => {
     const [endTime, setEndTime] = useState<string | null>(null);
     const [infoText, setInfoText] = useState<string | null>("");
 
-    const user = useContext(UserContext);
+    const [user, refetch] = useContext(UserContext);
     const isPrimarySchoolTeacher = user?.school?.schoolType === "Primary";
 
     const addCourseMutation = useMutation({
         mutationFn: AddCourseToProfileMutation,
         onSuccess: (data, variables, context) => {
             console.log("Great success!");
+            if (refetch !== null)
+                refetch();
         },
         onError: (data, variables, context) => {
 

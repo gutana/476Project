@@ -10,7 +10,7 @@ import { EmptyPostingsCard } from "../../components/EmptyPostingsCard";
 
 // View ALL postings page if administrator
 export default function ViewPostingsPage() {
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);;
 
     const [postings, setPostings] = useState<Post[]>([]);
 

@@ -16,7 +16,7 @@ import { ButtonGroup, ToggleButton } from "react-bootstrap";
 import { EditCoursesPanel } from "./components/EditCoursesPanel";
 
 export default function EditProfilePage() {
-    let user = useContext(UserContext);
+    const [user] = useContext(UserContext);
 
     const [radioValue, setRadioValue] = useState('1');
 

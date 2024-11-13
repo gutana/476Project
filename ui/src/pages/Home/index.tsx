@@ -7,7 +7,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { Button, Card, Spinner } from "react-bootstrap";
 
 export default function Home() {
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);;
 
     const { data, isLoading, isError } = useQuery({
         queryFn: () => LatestNewsQuery(),

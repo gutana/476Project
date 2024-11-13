@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { PostNewsMutation } from "../../api/mutations/newsMutations";
 
 export default function AddNewsPage() {
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);
     const navigate = useNavigate();
 
     if (!user || user.userType !== UserType.Administrator) {

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryObserverResult, RefetchOptions, useQuery } from "@tanstack/react-query";
 import { ReactNode, useState, createContext } from "react"
 // import { useNavigate } from "react-router-dom";
 import { userQuery } from "../api/queries/userQueries";
@@ -40,13 +40,14 @@ export const getRefresh = async () => {
     return true;
 }
 
-export const UserContext = createContext<User | null>(null);
+export const UserContext = createContext<[User | null, (((options?: RefetchOptions) => Promise<QueryObserverResult<User, Error>>) | null)]>([null, null]);
 
 export const UserWrapper = ({ children }: Props) => {
     const [expiresAt, setExpiresAt] = useState(sessionStorage.getItem("tokenExpiry"))
     const [userQueryEnabled, setUserQueryEnabled] = useState(false);
 
-    const { isLoading, isError, data } = useQuery({
+    // Call refetch from children if you invalidate user object
+    const { isLoading, isError, data, refetch } = useQuery({
         queryKey: ["userwrapper23452"],
         queryFn: () => userQuery(),
         enabled: userQueryEnabled
@@ -76,8 +77,15 @@ export const UserWrapper = ({ children }: Props) => {
         return <LoadingSpinner />
     }
 
+    if (!data)
+        return (
+            <UserContext.Provider value={[null, null]}>
+                {children}
+            </UserContext.Provider >
+        )
+
     return (
-        <UserContext.Provider value={data ?? null}>
+        <UserContext.Provider value={[data, refetch]}>
             {children}
         </UserContext.Provider>
     )

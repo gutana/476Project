@@ -120,7 +120,7 @@ const router = createBrowserRouter([
 ]);
 
 const queryClient = new QueryClient();
-// const UserContext = createContext(null);
+
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );

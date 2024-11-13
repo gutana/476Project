@@ -9,7 +9,7 @@ import AccountCard from "./components/AccountCard";
 import Toasts from "../../components/Toasts";
 
 export default function ApproveAccountPage() {
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);;
     const [accounts, setAccounts] = useState<User[] | undefined>([]);
     const [show, setShow] = useState<boolean>(false);
     const [title, setTitle] = useState<string>("Success");

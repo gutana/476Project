@@ -46,7 +46,7 @@ export const DefaultLayout = ({ children }: Props) => {
 
 export function CustomNavbar() {
     const navigate = useNavigate();
-    const user = useContext(UserContext);
+    const [user] = useContext(UserContext);;
     const theme = useContext(ThemeContext);
 
     return (
