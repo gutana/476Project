@@ -62,6 +62,7 @@ export default function AddSchoolPage() {
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
+        setErrorMessage("");
         let sanitizedNumber = sanitizeNumber(phoneNumber);
         let realRegion = stringToRegion(region);
         let realSchoolType = stringToSchoolType(schoolType);
@@ -83,6 +84,7 @@ export default function AddSchoolPage() {
 
         if (realSchoolType === null) {
             setErrorMessage("Select School Type");
+            return;
         }
 
         setLoading(true);

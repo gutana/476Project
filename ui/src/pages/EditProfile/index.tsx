@@ -79,6 +79,7 @@ export default function EditProfilePage() {
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
+        setErrorMessage("");
         let sanitizedNumber = sanitizeNumber(phoneNumber);
         let realRegion = stringToRegion(region);
 
@@ -102,7 +103,7 @@ export default function EditProfilePage() {
         }
 
         if (realRegion === undefined) {
-            setErrorMessage("Select Region");
+            setErrorMessage("Select Region.");
             return;
         }
 
