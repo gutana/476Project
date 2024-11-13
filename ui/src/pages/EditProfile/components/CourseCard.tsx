@@ -4,6 +4,8 @@ import { FormatDateForDisplayAsTimeOnly } from "../../../utils/miscUtils";
 import { TrashIcon } from "../../../components/Icons";
 import { useMutation } from "@tanstack/react-query";
 import { DeleteCourseMutation } from "../../../api/mutations/accountMutations";
+import { useContext } from "react";
+import { UserContext } from "../../../components/UserWrapper";
 
 interface Props {
     course: PrimarySchoolCourse | SecondarySchoolCourse
@@ -12,10 +14,14 @@ interface Props {
 
 export const CourseCard = ({ course, setCourses }: Props) => {
 
+    const [_, refetch] = useContext(UserContext);
+
     const deleteMutation = useMutation({
         mutationFn: DeleteCourseMutation,
         onSuccess: () => {
             setCourses(prev => prev.filter(elem => elem.id !== course.id))
+            if (refetch !== null)
+                refetch();
         },
         onError: () => {
 

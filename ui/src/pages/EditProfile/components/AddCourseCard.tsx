@@ -1,13 +1,15 @@
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap"
 import { allGrades, primarySubjects, secondarySubjects } from "../../../utils/consts"
-import { ReactElement, useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../../components/UserWrapper"
-import { Grade, MapGradeNameToGrade, PrimarySchoolSubject, SecondarySchoolSubject } from "../../../models/postings"
+import { MapGradeNameToGrade, PrimarySchoolSubject, SecondarySchoolSubject } from "../../../models/postings"
 import { useMutation } from "@tanstack/react-query"
 import { AddCourseToProfileMutation } from "../../../api/mutations/accountMutations"
 import { SchoolType } from "../../../models/schools"
 import { Token, Typeahead } from "react-bootstrap-typeahead"
-import { Option, RenderTokenProps, TypeaheadProps } from "react-bootstrap-typeahead/types/types"
+import { Option, RenderTokenProps } from "react-bootstrap-typeahead/types/types"
+import { MultipleSelection } from "../../AddPost"
+import { setgroups } from "process"
 
 
 export const AddCourseCard = () => {
@@ -24,7 +26,6 @@ export const AddCourseCard = () => {
     const addCourseMutation = useMutation({
         mutationFn: AddCourseToProfileMutation,
         onSuccess: (data, variables, context) => {
-            console.log("Great success!");
             if (refetch !== null)
                 refetch();
         },
@@ -34,7 +35,6 @@ export const AddCourseCard = () => {
     })
 
     const setGradeSelection = (e: Option[]) => {
-        console.log(e);
         setGrades(e as string[]);
     }
     const setSubjectSelection = (e: any) => {
@@ -92,14 +92,7 @@ export const AddCourseCard = () => {
         renderToken?: (option: any, { onRemove }: RenderTokenProps, index: any) => React.JSX.Element
     } = {};
 
-    props.multiple = true;
-    props.renderToken = (option, tokenProps: RenderTokenProps, index) => {
-        return (
-            <Token key={index} {...tokenProps} option={option}>
-                {`${option}`}
-            </Token>
-        )
-    }
+
 
 
     return (
@@ -122,6 +115,7 @@ export const AddCourseCard = () => {
                                         grade.name
                                     )
                                 }
+                                multiple
                                 selected={grades}
                             />
                         </Col>

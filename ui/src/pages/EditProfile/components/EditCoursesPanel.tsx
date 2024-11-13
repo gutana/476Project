@@ -18,7 +18,7 @@ export const EditCoursesPanel = () => {
             setSchedule(user.primarySchoolCourses);
 
         if (user.secondarySchoolCourses?.length > 0)
-            setSchedule(prev => [...prev, ...user.secondarySchoolCourses])
+            setSchedule(user.secondarySchoolCourses)
 
     }, [user])
 

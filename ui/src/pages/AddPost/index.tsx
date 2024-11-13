@@ -75,6 +75,8 @@ export default function AddPostPage() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [show, setShow] = useState<boolean>(false);
 
+    const [profileDataLoaded, setProfileDataLoaded] = useState(false);
+
     const { data, isLoading, isError, error } = useQuery({
         queryFn: () => subQuery(),
         queryKey: ["getSubQuery"]
@@ -82,7 +84,8 @@ export default function AddPostPage() {
 
     const result = useQuery({
         queryFn: () => GetAllSchools(),
-        queryKey: ["getAllSchools"]
+        queryKey: ["getAllSchools"],
+        enabled: (user !== null && user.userType === UserType.Administrator)
     })
 
     const capitalizeFirst = (value: string) => {
@@ -150,6 +153,7 @@ export default function AddPostPage() {
         else
             setSecondary(formattedSubjects);
 
+        setProfileDataLoaded(true);
     }, [user])
 
     const translateToSub = (users: User[]): Substitute[] => {
@@ -367,9 +371,9 @@ export default function AddPostPage() {
         window.location.href = "/";
     }
 
-    const showProfileInfoText: boolean = primary.length === 0 && secondary.length === 0 && grades.length === 0;
+    const showProfileInfoText: boolean = profileDataLoaded &&
+        (primary.length === 0 && secondary.length === 0 && grades.length === 0);
 
-    console.log(`Showing alert? ${showProfileInfoText}`);
     return (
         <>
             <Toasts show={show} setShow={setShow} variant={variant} title={title} message={message} />

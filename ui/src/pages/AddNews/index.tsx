@@ -20,7 +20,6 @@ export default function AddNewsPage() {
     const postNewsMutation = useMutation({
         mutationFn: PostNewsMutation,
         onSuccess: (data, variables, context) => {
-            console.log("Successful post!");
             setResultMessage("Post was successful!");
             setErrorMessage(null);
             postNewsMutation.reset();

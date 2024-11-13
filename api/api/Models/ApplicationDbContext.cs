@@ -326,7 +326,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .Include(user => user.secondarySchoolCourses)
             .FirstAsync(user => user.Id == userId);
 
-        var course = user.primarySchoolCourses.First(c => c.Id == courseId);
+        var course = user.primarySchoolCourses.FirstOrDefault(c => c.Id == courseId);
         if (course != null)
         {
             user.primarySchoolCourses.Remove(course);
@@ -335,7 +335,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             return true;
         }
 
-        var course2 = user.secondarySchoolCourses.First(c => c.Id == courseId);
+        var course2 = user.secondarySchoolCourses.FirstOrDefault(c => c.Id == courseId);
         if (course2 != null)
         {
             user.secondarySchoolCourses.Remove(course2);
