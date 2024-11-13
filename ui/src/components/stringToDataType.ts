@@ -1,6 +1,7 @@
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../models/postings";
 import { SchoolType } from "../models/schools";
 import { Region, UserType } from "../models/user";
+import { TypeaheadValue } from "../pages/AddPost";
 
 export const stringToRegion = (region: string | Region | undefined) => {
     if (!(typeof region === "string")) {
@@ -151,4 +152,71 @@ export const stringToGrades= (grade: string | Grade) => {
         default:
             return null
     }
+}
+
+export const translateToSchoolTypeahead = (vals: any[]) => {
+    let translated: TypeaheadValue[] = [];
+    for (let i = 0; i < vals.length; i++) {
+        const item = vals[i];
+        translated.push({ name: item.schoolName, value: item.id });
+    }
+    
+    return translated;
+}
+
+export const translateGrade = (grades: TypeaheadValue[], primary?: boolean): any => {
+    if (grades.length === 0) return -1;
+    let translatedGrade: Grade[] = [];
+    let gradesValue: string[] = [];
+
+    grades.forEach(grade => {
+        gradesValue.push(grade.value);
+    })
+
+    for (let i = 0; i < gradesValue.length; i++) {
+        let grade = gradesValue[i];
+        let translated = stringToGrades(grade);
+        if (translated === null) return -1;
+        if (primary !== undefined) {
+            if (Number(grade) > 9 && primary) return -2;
+            if (Number(grade) < 10 && !primary) return -3;
+        }
+        translatedGrade.push(translated);
+    }
+
+    return translatedGrade;
+}
+
+export const translatePrimary = (primary: TypeaheadValue[]): any => {
+    let translatedPrimary: PrimarySchoolSubject[] = [];
+    let primaryValue: string[] = [];
+    primary.forEach(p => {
+        primaryValue.push(p.value);
+    })
+
+    for (let i = 0; i < primaryValue.length; i++) {
+        let p = primaryValue[i];
+        let translated = stringToPrimary(p);
+        if (translated === null) return -1;
+        translatedPrimary.push(translated);
+    }
+
+    return translatedPrimary;
+}
+
+export const translateSecondary = (secondary: TypeaheadValue[]): any => {
+    let translatedSecondary: SecondarySchoolSubject[] = [];
+    let secondaryValue: string[] = [];
+    secondary.forEach(s => {
+        secondaryValue.push(s.value);
+    })
+
+    for (let i = 0; i < secondaryValue.length; i++) {
+        let s = secondaryValue[i];
+        let translated = stringToSecondary(s);
+        if (translated === null) return -1;
+        translatedSecondary.push(translated);
+    }
+
+    return translatedSecondary;
 }

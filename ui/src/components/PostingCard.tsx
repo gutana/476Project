@@ -12,10 +12,10 @@ import Toasts from "./Toasts";
 
 interface Props {
     post: Post;
-    setPostings?: React.Dispatch<React.SetStateAction<Post[]>>;
+    updatePostings?: Function
 }
 
-export const PostingCard = ({ post, setPostings }: Props) => {
+export const PostingCard = ({ post, updatePostings }: Props) => {
     const [user] = useContext(UserContext);;
 
     const showAcceptbutton: boolean =
@@ -46,9 +46,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 setVariant("danger");
                 setTitle("Whoops!");
                 setMessage(data.message);
-
-                if (setPostings != undefined)
-                    setPostings((prev) => prev.filter((item) => item.id !== post.id));
+                if (updatePostings) updatePostings(post.id);
             } else {
                 setShow(true);
                 setVariant("danger");

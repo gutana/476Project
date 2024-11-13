@@ -1,8 +1,7 @@
-
 export const repititionError = "Number of retries exceeded.";
 
 export const allGrades = [
-    { name: "Pre-K", value: "0" },
+    { name: "Pre-K", match: "PreK", value: "0" },
     { name: "Kindergarten", value: "1" },
     { name: "One", value: "2" },
     { name: "Two", value: "3" },
@@ -19,10 +18,10 @@ export const allGrades = [
 ]
 
 export const primarySubjects = [
-    { name: "French Immersion", value: "0" },
-    { name: "Core French", value: "1" },
-    { name: "Arts Education", value: "2" },
-    { name: "General Studies", value: "3" }
+    { name: "French Immersion", match: "FrenchImmersion", value: "0" },
+    { name: "Core French", match: "CoreFrench", value: "1" },
+    { name: "Arts Education", match: "ArtsEducation", value: "2" },
+    { name: "General Studies", match: "GeneralStudies", value: "3" }
 ]
 
 export const secondarySubjects = [
@@ -30,5 +29,5 @@ export const secondarySubjects = [
     { name: "Math", value: "1" },
     { name: "Science", value: "2" },
     { name: "History", value: "3" },
-    { name: "Social Studies", value: "4" },
+    { name: "Social Studies", match: "SocialStudies", value: "4" },
 ]
