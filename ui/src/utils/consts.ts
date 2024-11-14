@@ -1,5 +1,10 @@
 export const repititionError = "Number of retries exceeded.";
 
+export const regionsInList = [
+    "Regina",
+    "Saskatoon"
+]
+
 export const allGrades = [
     { name: "Pre-K", match: "PreK", value: "0" },
     { name: "Kindergarten", value: "1" },
