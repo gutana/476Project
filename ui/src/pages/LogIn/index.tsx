@@ -59,9 +59,11 @@ export default function LogIn() {
                 Submit
             </Button>
 
-            <Form.Group>
-                <div className="mb-3">Don't have an account?</div>
-                <Button variant="secondary" href="/signup">Sign up!</Button>
+            <Form.Group className="mb-3">
+                <div className="mb-3">Don't have an account?
+                    <br></br>
+                    <Button style={{ fontWeight: 'normal' }} variant="secondary" href="/signup">Sign up!</Button>
+                </div>
             </Form.Group>
         </Form>
     )
