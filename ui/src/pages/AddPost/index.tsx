@@ -101,9 +101,9 @@ export default function AddPostPage() {
   ];
 
   const periodRadios = [
-    {name: "AM", value: "1" },
-    {name: "PM", value: "2" }
-  ]
+    { name: "AM", value: "1" },
+    { name: "PM", value: "2" },
+  ];
 
   const [desc, setDesc] = useState("");
   const [requestedSub, setRequestedSub] = useState<any>([]);
@@ -483,8 +483,8 @@ export default function AddPostPage() {
             />
           )}
 
-          <div style={{display: 'flex'}}>
-            <ButtonGroup className="mt-2 mb-2 mx-auto" style={{width: '60%'}}>
+          <div style={{ display: "flex" }}>
+            <ButtonGroup className="mt-2 mb-2 mx-auto" style={{ width: "60%" }}>
               {dayDurationRadios.map((radio, i) => {
                 return (
                   <ToggleButton
@@ -509,11 +509,11 @@ export default function AddPostPage() {
             <>
               <Form.Label>Date</Form.Label>
               <Stack direction="horizontal" gap={3}>
-                <div style={{width: '80%'}}>
+                <div style={{ width: "80%" }}>
                   <Form.Group className="mb-3" controlId="date">
                     <Form.Control
                       type="Date"
-                      min={today.toISOString().split('T')[0]}
+                      min={today.toISOString().split("T")[0]}
                       onChange={(e) => {
                         changeStartDate(e);
                         changeEndDate(e);
@@ -521,22 +521,20 @@ export default function AddPostPage() {
                     />
                   </Form.Group>
                 </div>
-                <div style={{width: '20%'}}>
-                  <ButtonGroup className="mb-3" style={{width: '100%'}}>
+                <div style={{ width: "20%" }}>
+                  <ButtonGroup className="mb-3" style={{ width: "100%" }}>
                     {periodRadios.map((radio, i) => {
                       return (
                         <ToggleButton
                           key={`periodRadio-${i}`}
                           id={`periodRadio-${i}`}
                           type="radio"
-                          
                           value={radio.value}
                           checked={radioPeriod === radio.value}
                           onChange={(e) => {
-                            setRadioPeriod(e.currentTarget.value)
-                            setAmpm(radio.name as AMPM)
-                          }
-                          }
+                            setRadioPeriod(e.currentTarget.value);
+                            setAmpm(radio.name as AMPM);
+                          }}
                         >
                           {radio.name}
                         </ToggleButton>
@@ -553,7 +551,7 @@ export default function AddPostPage() {
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="Date"
-                min={today.toISOString().split('T')[0]}
+                min={today.toISOString().split("T")[0]}
                 onChange={(e) => {
                   changeStartDate(e);
                   changeEndDate(e);
@@ -570,8 +568,12 @@ export default function AddPostPage() {
                   <Form.Control
                     type="Date"
                     onChange={changeStartDate}
-                    min={today.toISOString().split('T')[0]}
-                    max={endDate === undefined ? addDays(today, 13).toISOString().split('T')[0] : endDate.toISOString().split('T')[0]}
+                    min={today.toISOString().split("T")[0]}
+                    max={
+                      endDate === undefined
+                        ? addDays(today, 13).toISOString().split("T")[0]
+                        : endDate.toISOString().split("T")[0]
+                    }
                   />
                 </Form.Group>
               </div>
@@ -581,8 +583,16 @@ export default function AddPostPage() {
                   <Form.Control
                     type="Date"
                     onChange={changeEndDate}
-                    min={startDate === undefined ? today.toISOString().split('T')[0] : startDate.toISOString().split('T')[0]}
-                    max={startDate === undefined ? addDays(today, 13).toISOString().split('T')[0] : addDays(startDate, 13).toISOString().split('T')[0]}
+                    min={
+                      startDate === undefined
+                        ? today.toISOString().split("T")[0]
+                        : startDate.toISOString().split("T")[0]
+                    }
+                    max={
+                      startDate === undefined
+                        ? addDays(today, 13).toISOString().split("T")[0]
+                        : addDays(startDate, 13).toISOString().split("T")[0]
+                    }
                   />
                 </Form.Group>
               </div>

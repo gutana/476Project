@@ -102,6 +102,7 @@ export default function ViewPostingsPage() {
         setFilteredPostings(matched);
     }
 
+
     if (data && data.length === 0)
         return (<EmptyPostingsCard />);
 
