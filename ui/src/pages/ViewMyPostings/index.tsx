@@ -3,23 +3,34 @@ import { GetPostsByUser, GetTakenPosts } from "../../api/queries/postQueries";
 import { PostingCard } from "../../components/PostingCard";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { EmptyPostingsCard } from "../../components/EmptyPostingsCard";
+import { useEffect, useState } from "react";
+import { formatDate } from "../../utils/Time";
+import { Post } from "../../models/postings";
 
 export default function ViewMyPostingsPage() {
-    const { data, isLoading, isError } = useQuery({
-        queryFn: () => GetTakenPosts(),
-        queryKey: ['getTakenPosts']
-    })
+  const [postings, setPostings] = useState<Post[]>([]);
 
-    if (!isLoading && data?.length === 0)
-        return <EmptyPostingsCard />;
+  const { data, isLoading, isError } = useQuery({
+    queryFn: () => GetTakenPosts(),
+    queryKey: ["getTakenPosts"],
+  });
 
-    return (
-        <>
-            {isLoading && <LoadingSpinner />}
-            {data?.map((post) => {
-                return <PostingCard post={post} key={post.id} />;
-            })}
-        </>
-    );
+  useEffect(() => {
+    if (data !== undefined) {
+      setPostings(data);
+    }
+  }, [data]);
+
+  if (!isLoading && data?.length === 0) return <EmptyPostingsCard />;
+
+  return (
+    <>
+      {isLoading && <LoadingSpinner />}
+      {postings?.map((post) => {
+        return (
+          <PostingCard post={post} key={post.id} setPostings={setPostings} />
+        );
+      })}
+    </>
+  );
 }
-

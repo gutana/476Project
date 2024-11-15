@@ -1,4 +1,6 @@
 ﻿using api.DTO;
+using api.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,33 +84,78 @@ public class ApplicationDbContext : IdentityDbContext<User>
         }
     }
 
-    public bool CreateNewPosting(PostDtos dto, string userId)
+    public bool CreateNewPosting(CreatePostDto dto, string userId)
     {
         try
         {
-            Post post = new();
-            
-            var school = Schools.Where(s => s.Id == dto.SchoolId).FirstOrDefault();
-            if (school == null || school == default)
-                return false;
-            
-            post.Id = Guid.NewGuid().ToString();
-            post.Poster = Users.First(poster => poster.Id == userId);
-            post.School = school;
-            post.SchoolType = school.SchoolType;
-            post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
-            post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
-            post.Grades = dto.Grades;
+            if (dto.StartDateOfAbsence == dto.EndDateOfAbsence)
+            {
+                Post post = new();
+                
+                var school = Schools.Where(s => s.Id == dto.SchoolId).FirstOrDefault();
+                if (school == null || school == default)
+                    return false;
+                
+                post.Id = Guid.NewGuid().ToString();
+                post.Poster = Users.First(poster => poster.Id == userId);
+                post.School = school;
+                post.SchoolType = school.SchoolType;
+                post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
+                post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
+                post.Grades = dto.Grades;
 
-            post.PostDescription = dto.PostDescription;
-            if (post.RequestedSub != null)
-                post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
-            post.Private = dto.Private;
-            post.PostDateTime = DateTime.UtcNow;    // need to change to accept date of absence rather than current date/time
+                post.PostDescription = dto.PostDescription;
+                if (post.RequestedSub != null)
+                    post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
+                post.Private = dto.Private;
+                post.PostDateTime = DateTime.UtcNow;
 
-            Posts.Add(post);
-            SaveChanges();
-            return true;
+                post.DateOfAbsence = dto.StartDateOfAbsence.ToUniversalTime();
+                post.AbsenceType = dto.AbsenceType;
+                post.AmPm = dto.AbsenceType != AbsenceType.HalfDay? null : dto.AmPm;
+
+                Posts.Add(post);
+                SaveChanges();
+                return true;
+            }
+            else
+            {
+                int daysBetween = (dto.EndDateOfAbsence - dto.StartDateOfAbsence).Days;
+                if (daysBetween > 5) return false;
+
+                for (int i = 0; i < daysBetween; i++)
+                {
+                    Post post = new();
+
+                    var school = Schools.Where(s => s.Id == dto.SchoolId).FirstOrDefault();
+                    if (school == null || school == default)
+                        return false;
+
+                    post.Id = Guid.NewGuid().ToString();
+                    post.Poster = Users.First(poster => poster.Id == userId);
+                    post.School = school;
+                    post.SchoolType = school.SchoolType;
+                    post.PrimarySchoolSubjects = dto.PrimarySchoolSubjects;
+                    post.SecondarySchoolSubjects = dto.SecondarySchoolSubjects;
+                    post.Grades = dto.Grades;
+
+                    post.PostDescription = dto.PostDescription;
+                    if (post.RequestedSub != null)
+                        post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub);
+                    post.Private = dto.Private;
+                    post.PostDateTime = DateTime.UtcNow;
+
+                    post.DateOfAbsence = dto.StartDateOfAbsence.AddDays(i).ToUniversalTime();
+                    post.AbsenceType = dto.AbsenceType;
+                    post.AmPm = dto.AbsenceType != AbsenceType.HalfDay ? null : dto.AmPm;
+
+                    Posts.Add(post);
+                }
+                SaveChanges();
+                return true;
+            }
+
+            
         } catch
         {
             return false;
@@ -208,6 +255,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     
     public async Task<List<Post>> GetAvailablePostings(User user)
     {
+        DateTime cutoff = Time.UtcToSaskTime(DateTime.UtcNow).Date;
+
         return await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
@@ -216,7 +265,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
                     post.AcceptedByUser == null &&
                     post.Poster.Id != user.Id &&
                     post.School.Region == user.Region &&
-                    /* deal with dates whenever thats done */
+                    post.DateOfAbsence.Date >= cutoff &&
                     (post.Private != true || (post.RequestedSub != null && post.RequestedSub.Id == user.Id) || post.PostDateTime < DateTime.UtcNow.AddMinutes(-5)))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();

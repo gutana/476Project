@@ -11,11 +11,14 @@ public class PostDto
     public string? AcceptedByUserId { get; set; }
     public string? AcceptedByUserFirstName {  get; set; }
     public string? AcceptedByUserLastName { get; set; }
-    public School? School { get; set; }
+    public School School { get; set; }
     public SchoolType? SchoolType { get; set; }
     public string? PostDescription { get; set; }
     public bool? Private { get; set; }
     public DateTime PostDateTime { get; set; }
+    public DateTime DateOfAbsence { get; set; }
+    public AbsenceType AbsenceType { get; set; }
+    public string? AmPm { get; set; }
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
@@ -37,6 +40,9 @@ public class PostDto
             PostDescription = post.PostDescription,
             Private = post.Private,
             PostDateTime = post.PostDateTime,
+            DateOfAbsence = post.DateOfAbsence,
+            AbsenceType = post.AbsenceType,
+            AmPm = post.AmPm,
             PrimarySchoolSubjects = post.PrimarySchoolSubjects,
             SecondarySchoolSubjects = post.SecondarySchoolSubjects,
             Grades = post.Grades
@@ -44,12 +50,16 @@ public class PostDto
 
     }
 }
-public class PostDtos
+public class CreatePostDto
 {
     public string? SchoolId { get; set; }
     public string? PostDescription { get; set; }
     public string? RequestedSub { get; set; }
     public bool? Private { get; set; }
+    public DateTime StartDateOfAbsence { get; set; }
+    public DateTime EndDateOfAbsence { get; set; }
+    public AbsenceType AbsenceType { get; set; }
+    public string? AmPm { get; set; }
 
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }

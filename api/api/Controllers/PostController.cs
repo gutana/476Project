@@ -103,7 +103,7 @@ public class PostController: BaseController
 
     [HttpPost("add")]
     [Authorize]
-    public async Task<IActionResult> Add(PostDtos resp)
+    public async Task<IActionResult> Add(CreatePostDto resp)
     {
         User? user = await GetCurrentUserCached();
         if (user == null)

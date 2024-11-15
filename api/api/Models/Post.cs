@@ -11,11 +11,21 @@ public class Post
     public User? RequestedSub { get; set; }
     public bool? Private { get; set; }
     public DateTime PostDateTime { get; set; }
+    public DateTime DateOfAbsence { get; set; }
+    public AbsenceType AbsenceType { get; set; }
+    public string? AmPm {  get; set; }
     public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
     public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
     
     // TODO: Attach documents
+}
+
+public enum AbsenceType
+{
+    HalfDay,
+    FullDay,
+    MultipleDays
 }
 
 public enum Grade

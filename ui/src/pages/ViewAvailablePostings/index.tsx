@@ -13,6 +13,8 @@ import { allGrades, primarySubjects, regionsInList, secondarySubjects } from "..
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { translateToSchoolTypeahead } from "../../components/stringToDataType";
+import { formatDate } from "../../utils/Time";
+
 
 // View ALL postings page if administrator
 export default function ViewPostingsPage() {
@@ -158,7 +160,7 @@ export default function ViewPostingsPage() {
                 </Container>
             </Form>
             {filteredPostings?.map((post) => {
-                return <PostingCard key={post.id} post={post} updatePostings={updatePostings} />;
+                return <PostingCard key={post.id} post={post} setPostings={updatePostings} />;
             })}
             {filteredPostings.length === 0 && <h3 className="m-3">
                     <small className="text-muted">

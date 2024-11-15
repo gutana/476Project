@@ -6,6 +6,10 @@ export interface CreatePostData {
     postDescription: string,
     requestedSub: string,
     private: boolean,
+    startDateOfAbsence: Date,
+    endDateOfAbsence?: Date,
+    absenceType: AbsenceType,
+    amPm: AMPM | null,
     primarySchoolSubjects: PrimarySchoolSubject[] | null,
     secondarySchoolSubjects: SecondarySchoolSubject[] | null,
     grades: Grade[]
@@ -25,7 +29,10 @@ export interface Post {
     requestedSubFirstName: string | null,
     requestedSubLastName: string | null,
     private: boolean,
-    postDateTime: Date,
+    postDateTime: string,
+    dateOfAbsence: string,
+    absenceType: AbsenceType,
+    amPm: AMPM | null,
     primarySchoolSubjects: PrimarySchoolSubject[] | null,
     secondarySchoolSubjects: SecondarySchoolSubject[] | null,
     grades: Grade[]
@@ -67,6 +74,23 @@ export const MapGradeNameToGrade = (gradeName: string) => {
         case "Twelve": return Grade.Twelve;
     }
     throw `Error: Unexpected string: ${gradeName} trying to convert to Grade Enum`;
+}
+
+export type AMPM = "AM" | "PM" 
+
+export enum AbsenceType {
+    HalfDay,
+    FullDay,
+    MultipleDays
+}
+
+export const MapAbsenceTypeStringToAbsenceType = (absenceType: string) => {
+    switch (absenceType) {
+        case "Half-Day": return AbsenceType.HalfDay;
+        case "Full-Day": return AbsenceType.FullDay;
+        case "Multiple Days": return AbsenceType.MultipleDays;
+    }
+    throw `Error: Unexpected string: ${absenceType} trying to convert to AbsenceType Enum`;
 }
 
 export enum PrimarySchoolSubject {

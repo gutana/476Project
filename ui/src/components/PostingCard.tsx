@@ -1,5 +1,5 @@
 import { Accordion, Button, Card, Spinner, Stack } from "react-bootstrap";
-import { Post } from "../models/postings";
+import { AbsenceType, Post } from "../models/postings";
 import { UserContext } from "./UserWrapper";
 import { useContext, useState } from "react";
 import { UserType } from "../models/user";
@@ -9,21 +9,23 @@ import {
 } from "../api/mutations/postMutations";
 import { useMutation } from "@tanstack/react-query";
 import Toasts from "./Toasts";
+import { formatDate } from "../utils/Time";
 
 interface Props {
     post: Post;
-    updatePostings?: Function
+    setPostings?: Function
 }
 
-export const PostingCard = ({ post, updatePostings }: Props) => {
-    const [user] = useContext(UserContext);;
+export const PostingCard = ({ post, setPostings }: Props) => {
+    const [user] = useContext(UserContext);
 
     const showAcceptbutton: boolean =
         post.acceptedByUserId === null && post.posterId !== user?.id && user?.userType !== UserType.Administrator;
     const showCancelbutton: boolean =
-        (user?.userType === UserType.Administrator && post.acceptedByUserId !== null) ||
+        ((user?.userType === UserType.Administrator && post.acceptedByUserId !== null) ||
         post.posterId === user?.id ||
-        post.acceptedByUserId === user?.id;
+        post.acceptedByUserId === user?.id) &&
+        post.dateOfAbsence > Date.now().toString();
 
     const [show, setShow] = useState(false);
     const [variant, setVariant] = useState("");
@@ -46,7 +48,7 @@ export const PostingCard = ({ post, updatePostings }: Props) => {
                 setVariant("danger");
                 setTitle("Whoops!");
                 setMessage(data.message);
-                if (updatePostings) updatePostings(post.id);
+                if (setPostings) setPostings(post.id);
             } else {
                 setShow(true);
                 setVariant("danger");
@@ -98,6 +100,8 @@ export const PostingCard = ({ post, updatePostings }: Props) => {
         setActive((prev) => !prev);
     };
 
+    console.log(post.amPm);
+
     return (
         <>
             <Toasts
@@ -130,7 +134,7 @@ export const PostingCard = ({ post, updatePostings }: Props) => {
                                         <div className="p-2">
                                             {post.posterFirstName + " " + post.posterLastName}
                                         </div>
-                                        <div className="p-2">DateOfAbsence</div>
+                                        <div className="p-2">{formatDate(post.dateOfAbsence)}</div>
                                     </Stack>
                                 </div>
                                 <div className="p-2">{post.school.schoolName}</div>
@@ -144,6 +148,7 @@ export const PostingCard = ({ post, updatePostings }: Props) => {
                                         <div className="p-2">{post.secondarySchoolSubjects}</div>
                                     )}
                                     <div className="p-2">Time of class</div>
+                                    {post.absenceType as unknown as string === "HalfDay" && <div className="p-2">{post.amPm}</div>}
                                 </Stack>
                             </div>
                             <div className="d-grid gap-2">
