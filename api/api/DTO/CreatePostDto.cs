@@ -19,8 +19,8 @@ public class PostDto
     public DateTime DateOfAbsence { get; set; }
     public AbsenceType AbsenceType { get; set; }
     public string? AmPm { get; set; }
-    public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
-    public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
+    public List<PrimarySchoolCourseDto>? PrimarySchoolSubjects { get; set; }
+    public List<SecondarySchoolCourseDto>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
     
     // Used to strip unnecessary User data that we don't want to send to client
@@ -43,11 +43,8 @@ public class PostDto
             DateOfAbsence = post.DateOfAbsence,
             AbsenceType = post.AbsenceType,
             AmPm = post.AmPm,
-            PrimarySchoolSubjects = post.PrimarySchoolSubjects,
-            SecondarySchoolSubjects = post.SecondarySchoolSubjects,
             Grades = post.Grades
         };
-
     }
 }
 public class CreatePostDto
@@ -61,8 +58,8 @@ public class CreatePostDto
     public AbsenceType AbsenceType { get; set; }
     public string? AmPm { get; set; }
 
-    public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
-    public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
+    public List<string>? PrimarySchoolSubjects { get; set; }
+    public List<string>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
 }
 

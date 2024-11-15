@@ -14,8 +14,8 @@ public class Post
     public DateTime DateOfAbsence { get; set; }
     public AbsenceType AbsenceType { get; set; }
     public string? AmPm {  get; set; }
-    public List<PrimarySchoolSubject>? PrimarySchoolSubjects { get; set; }
-    public List<SecondarySchoolSubject>? SecondarySchoolSubjects { get; set; }
+    public List<string>? PrimarySchoolSubjects { get; set; }
+    public List<string>? SecondarySchoolSubjects { get; set; }
     public List<Grade>? Grades { get; set; }
     
     // TODO: Attach documents

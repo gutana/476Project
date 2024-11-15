@@ -65,6 +65,20 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .FirstAsync(user => user.Id == id);
     }
 
+    public async Task<List<PrimarySchoolCourse>> GetPrimarySchoolCourses(List<String> courses)
+    {
+        return await PrimarySchoolCourses
+            .Where(course => courses.Contains(course.Id))
+            .ToListAsync();
+    }
+
+    public async Task<List<SecondarySchoolCourse>> GetSecondarySchoolCourses(List<String> courses)
+    {
+        return await SecondarySchoolCourses
+            .Where(course => courses.Contains(course.Id))
+            .ToListAsync();
+    }
+
     public bool CreateNewsPost(CreateNewsPostDto dto)
     {
         try
@@ -84,7 +98,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
         }
     }
 
-    public bool CreateNewPosting(CreatePostDto dto, string userId)
+    public async Task<bool> CreateNewPosting(CreatePostDto dto, string userId)
     {
         try
         {
@@ -243,21 +257,37 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .First(school => school.Id == schoolId);
     }
 
-    public async Task<List<Post>> GetPostingsByUser(string userId)
+    public async Task<List<PostDto>> ConvertToPostDto(List<Post> posts)
     {
-        return await Posts
+        List<PostDto> postDtos = new List<PostDto>();
+        foreach (var post in posts)
+        {
+            var temp = PostDto.MapPostToPostDto(post);
+            temp.PrimarySchoolSubjects = post.PrimarySchoolSubjects != null ? UserDto.ConvertPrimaryCourseListToDto(await GetPrimarySchoolCourses(post.PrimarySchoolSubjects)) : null;
+            temp.SecondarySchoolSubjects = post.SecondarySchoolSubjects != null ? UserDto.ConvertSecondaryCourseListToDto(await GetSecondarySchoolCourses(post.SecondarySchoolSubjects)) : null;
+            postDtos.Add(temp);
+        }
+
+        return postDtos;
+    }
+
+    public async Task<List<PostDto>> GetPostingsByUser(string userId)
+    {
+        var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
             .Include(post => post.AcceptedByUser)
             .Where(post => post.Poster.Id == userId)
             .ToListAsync();
+
+        return await ConvertToPostDto(posts);
     }
     
-    public async Task<List<Post>> GetAvailablePostings(User user)
+    public async Task<List<PostDto>> GetAvailablePostings(User user)
     {
         DateTime cutoff = Time.UtcToSaskTime(DateTime.UtcNow).Date;
 
-        return await Posts
+        var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
             .Include(post => post.AcceptedByUser)
@@ -269,27 +299,33 @@ public class ApplicationDbContext : IdentityDbContext<User>
                     (post.Private != true || (post.RequestedSub != null && post.RequestedSub.Id == user.Id) || post.PostDateTime < DateTime.UtcNow.AddMinutes(-5)))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
+
+        return await ConvertToPostDto(posts);
     }
     
-    public async Task<List<Post>> GetTakenPostings(User user)
+    public async Task<List<PostDto>> GetTakenPostings(User user)
     {
-        return await Posts
+        var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
-            .Include (post => post.AcceptedByUser)
+            .Include(post => post.AcceptedByUser)
             .Where(post => (post.AcceptedByUser != null && post.AcceptedByUser.Id == user.Id))
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
+
+        return await ConvertToPostDto(posts);
     }
 
-    public async Task<List<Post>> GetAllPostings()
+    public async Task<List<PostDto>> GetAllPostings()
     {
-        return await Posts
+        var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
             .Include(post => post.AcceptedByUser)
             .OrderByDescending(post => post.PostDateTime)
             .ToListAsync();
+
+        return await ConvertToPostDto(posts);
     }
 
 

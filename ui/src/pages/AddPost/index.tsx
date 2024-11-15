@@ -25,7 +25,7 @@ import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
 import { School, SchoolType } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
-import { translateGrade, translatePrimary, translateSecondary } from "../../components/stringToDataType";
+import { translateCourses, translateGrade, translatePrimary, translateSecondary, translateTime } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {
   allGrades,
@@ -43,6 +43,7 @@ import { Link } from "react-router-dom";
 import { AlertIcon } from "../../components/Icons";
 import { ButtonGroup, Container, Stack, ToggleButton } from "react-bootstrap";
 import { addDays } from "../../utils/Time";
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
 
 export interface TypeaheadValue {
     name: string,
@@ -105,11 +106,12 @@ export default function AddPostPage() {
     { name: "PM", value: "2" },
   ];
 
+  const [allCourses, setAllCourses] = useState<TypeaheadValue[]>([]);
+  const [courses, setCourses] = useState<TypeaheadValue[]>([]);
+
   const [desc, setDesc] = useState("");
   const [requestedSub, setRequestedSub] = useState<any>([]);
   const [grades, setGrades] = useState<TypeaheadValue[]>([]);
-  const [primary, setPrimary] = useState<TypeaheadValue[]>([]);
-  const [secondary, setSecondary] = useState<TypeaheadValue[]>([]);
 
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -148,27 +150,27 @@ export default function AddPostPage() {
   // Pre-populate the grades with info from the user object
   useEffect(() => {
     if (user === null || user.userType === UserType.Administrator) return;
-
-    let grades: Grade[] = [];
+    let grades: Grade[] = []
 
     for (let i = 0; i < user.primarySchoolCourses.length; i++) {
       grades = [...grades, ...user.primarySchoolCourses[i].grades];
     }
 
-        for (let i = 0; i < user.secondarySchoolCourses.length; i++) {
-            grades = [...grades, ...user.secondarySchoolCourses[i].grades]
-        }
-        const existingGrades = grades.map((grade) => {
-            let gra = allGrades.find(gr => {
-                return (gr.name == grade as unknown as string) ||
-                    (gr.name === "Pre-K" && grade as unknown as string == "PreK"); // Needed because Pre-K !== PreK
+    for (let i = 0; i < user.secondarySchoolCourses.length; i++) {
+        grades = [...grades, ...user.secondarySchoolCourses[i].grades]
+    }
+    const existingGrades = grades.map((grade) => {
+        let gra = allGrades.find(gr => {
+            return (gr.name == grade as unknown as string) ||
+                (gr.name === "Pre-K" && grade as unknown as string == "PreK"); // Needed because Pre-K !== PreK
 
-            })
-            if (gra === undefined) throw `Error: Unable to load existing grades: Grade: ${grade}.`;
-            return { name: gra.name, value: gra.value };;
-        });
-        const uniqueGrades = Array.from(new Map(existingGrades.map(item => [item.name, item])).values())
-        setGrades(uniqueGrades.sort((a, b) => parseInt(a.value) - parseInt(b.value)));
+        })
+        if (gra === undefined) throw `Error: Unable to load existing grades: Grade: ${grade}.`;
+        return { name: gra.name, value: gra.value };;
+    });
+    const uniqueGrades = Array.from(new Map(existingGrades.map(item => [item.name, item])).values())
+    setGrades(uniqueGrades.sort((a, b) => parseInt(a.value) - parseInt(b.value)));
+    
     }, [user])
 
   // Pre-populate the subjects with info from the user object
@@ -177,48 +179,29 @@ export default function AddPostPage() {
       !user ||
       user.school === undefined ||
       user.userType === UserType.Administrator
-    )
-      return;
+    ) return;
 
-    let subjects: (PrimarySchoolSubject | SecondarySchoolSubject)[] = [];
+    let courses: PrimarySchoolCourse[] | SecondarySchoolCourse[] = [];
 
-    if (user.school.schoolType === SchoolType.Primary) {
-      subjects = [
-        ...subjects,
-        ...user.primarySchoolCourses.map((course) => course.subject),
-      ];
+    if (user.primarySchoolCourses.length > 0) {
+        courses = user.primarySchoolCourses;
     } else {
-      subjects = [
-        ...subjects,
-        ...user.secondarySchoolCourses.map((course) => course.subject),
-      ];
+        courses = user.secondarySchoolCourses;
     }
 
-    const formattedSubjects = subjects.map((subject) => {
-      if (user === null || user.school === undefined)
-        throw "Error: Attempted to load subjects but no user or school.";
+    let typeaheadCourses: TypeaheadValue[] = [];
+    for (let i = 0; i < courses.length; i++) {
+        let course = courses[i];                
+        let val = {
+            name: `${course.subject} - ${translateTime(course.startTime)} to ${translateTime(course.endTime)}`,
+            value: course.id
+        };
 
-      if (user.school.schoolType === SchoolType.Primary) {
-        const result = primarySubjects.find(
-          (subj) => subj.name.replaceAll(" ", "") === subject.toString()
-        );
-        if (result === undefined)
-          throw "Error: Unable to find primary school subjects in teacher profile.";
-        return result;
-      } else {
-        const result = secondarySubjects.find(
-          (subj) => subj.name.replaceAll(" ", "") === subject.toString()
-        );
-        if (result === undefined)
-          throw "Error: Unable to find secondary school subjects in teacher profile.";
-        return result;
-      }
-    });
+        typeaheadCourses.push(val);
+    }
 
-    if (user.school.schoolType === SchoolType.Primary)
-      setPrimary(formattedSubjects);
-    else setSecondary(formattedSubjects);
-
+    setAllCourses(typeaheadCourses);
+    setCourses(typeaheadCourses);
     setProfileDataLoaded(true);
   }, [user]);
 
@@ -294,10 +277,10 @@ export default function AddPostPage() {
 
     if (school) {
       let sType = school.schoolType.toString();
-      if (sType === "Primary" && primary.length === 0) {
+      if (sType === "Primary" && courses.length === 0) {
         setErrorMessage("Set a Primary School Subject.");
         return;
-      } else if (sType === "Secondary" && secondary.length === 0) {
+      } else if (sType === "Secondary" && courses.length === 0) {
         setErrorMessage("Set a Secondary School Subject.");
         return;
       }
@@ -306,8 +289,8 @@ export default function AddPostPage() {
       return;
     }
 
-        let sType = school.schoolType.toString();
-        let grade: Grade[] | number = translateGrade(grades, sType === "Primary");
+    let sType = school.schoolType.toString();
+    let grade: Grade[] | number = translateGrade(grades, sType === "Primary");
 
     if (grade === -1) {
       setErrorMessage(`Select a ${sType} Grade.`);
@@ -326,22 +309,8 @@ export default function AddPostPage() {
       setErrorMessage("Invalid grade.");
       return;
     }
-
-        let realPrimary = translatePrimary(primary);
-        let realSecondary = translateSecondary(secondary);
-
-        if (realPrimary === -1 && sType === "Primary") {
-            setErrorMessage("Primary Subject Error.");
-            return;
-        } else if (realSecondary === -1 && sType === "Secondary") {
-            setErrorMessage("Secondary Subject Error.");
-            return;
-        }
-
-        if (sType === "Primary")
-            realSecondary = null;
-        else
-            realPrimary = null;
+    
+    let realCourses: string[] = translateCourses(courses);
 
     console.log({
       schoolId: school.id,
@@ -349,8 +318,8 @@ export default function AddPostPage() {
       postDescription: desc,
       private: requestedSub.length !== 0,
       grades: grade,
-      primarySchoolSubjects: realPrimary,
-      secondarySchoolSubjects: realSecondary,
+      primarySchoolSubjects: sType === "Primary" ? realCourses : null,
+      secondarySchoolSubjects: sType === "Secondary" ? realCourses : null,
       startDateOfAbsence: startDate,
       endDateOfAbsence: endDate,
       absenceType: absenceType,
@@ -362,20 +331,20 @@ export default function AddPostPage() {
       return;
     }
 
-        postMutation.mutate({
-            requestedSub: reqSub ? reqSub.id : "",
-            schoolId: school.id,
-            postDescription: desc,
-            private: requestedSub.length !== 0,
-            grades: grade,
-            startDateOfAbsence: startDate,
-            endDateOfAbsence: endDate,
-            absenceType: absenceType,
-            amPm: ampm,
-            primarySchoolSubjects: realPrimary,
-            secondarySchoolSubjects: realSecondary
-        })
-    }
+    postMutation.mutate({
+        requestedSub: reqSub ? reqSub.id : "",
+        schoolId: school.id,
+        postDescription: desc,
+        private: requestedSub.length !== 0,
+        grades: grade,
+        startDateOfAbsence: startDate,
+        endDateOfAbsence: endDate,
+        absenceType: absenceType,
+        amPm: ampm,
+        primarySchoolSubjects: sType === "Primary" ? realCourses : null,
+        secondarySchoolSubjects: sType === "Secondary" ? realCourses : null
+    })
+  }
 
   const changeSub = (e: any) => {
     setRequestedSub(e);
@@ -404,8 +373,7 @@ export default function AddPostPage() {
 
   const showProfileInfoText: boolean =
     profileDataLoaded &&
-    primary.length === 0 &&
-    secondary.length === 0 &&
+    courses.length === 0 &&
     grades.length === 0;
 
   return (
@@ -466,20 +434,20 @@ export default function AddPostPage() {
           )}
           {school && school.schoolType.toString() === "Primary" && (
             <MultipleSelection
-              values={primarySubjects}
+              values={allCourses}
               title="Primary School Subject(s)"
               placeholder="Search primary subjects..."
-              selection={primary}
-              setSelection={setPrimary}
+              selection={courses}
+              setSelection={setCourses}
             />
           )}
           {school && school.schoolType.toString() === "Secondary" && (
             <MultipleSelection
-              values={secondarySubjects}
+              values={allCourses}
               title="Secondary School Subject(s)"
               placeholder="Search secondary subjects..."
-              selection={secondary}
-              setSelection={setSecondary}
+              selection={courses}
+              setSelection={setCourses}
             />
           )}
 

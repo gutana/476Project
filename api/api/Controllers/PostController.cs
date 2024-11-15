@@ -43,7 +43,7 @@ public class PostController: BaseController
     [Authorize]
     public async Task<IActionResult> GetByUser(string? userId)
     {
-        List<Post> postings;
+        List<PostDto> postings;
         User? user = await GetCurrentUserCached();
         if (user == null)
             return Unauthorized();
@@ -55,7 +55,7 @@ public class PostController: BaseController
         else
             postings = await _context.GetPostingsByUser(user.Id);
 
-        return Ok(ConvertToPostDtoList(postings));
+        return Ok(postings);
     }
 
     [HttpGet("getAvailable")]
@@ -69,7 +69,7 @@ public class PostController: BaseController
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetAvailablePostings(user);
-        return Ok(ConvertToPostDtoList(postings));
+        return Ok(postings);
     }
 
     [HttpGet("getTakenByUser")]
@@ -83,7 +83,7 @@ public class PostController: BaseController
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetTakenPostings(user);
-        return Ok(ConvertToPostDtoList(postings));
+        return Ok(postings);
     }
 
     [HttpGet("getAll")]
@@ -97,7 +97,7 @@ public class PostController: BaseController
             return Unauthorized("Account has to be verified by an administrator.");
 
         var postings = await _context.GetAllPostings();
-        return Ok(ConvertToPostDtoList(postings));
+        return Ok(postings);
     }
 
     [HttpPost("add")]
@@ -110,7 +110,7 @@ public class PostController: BaseController
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator");
 
-        if (_context.CreateNewPosting(resp, user.Id))
+        if (await _context.CreateNewPosting(resp, user.Id))
             return Ok("Post has been created!");
         else
             return Problem("Unexpected error occurred.", statusCode: 500);

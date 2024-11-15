@@ -1,3 +1,4 @@
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "../models/courseSchedule";
 import { Grade, PrimarySchoolSubject, SecondarySchoolSubject } from "../models/postings";
 import { SchoolType } from "../models/schools";
 import { Region, UserType } from "../models/user";
@@ -204,6 +205,15 @@ export const translatePrimary = (primary: TypeaheadValue[]): any => {
     return translatedPrimary;
 }
 
+export const translateCourses = (courses: TypeaheadValue[]): any => {
+    let courseValue: string[] = [];    
+    courses.forEach(p => {
+        courseValue.push(p.value);
+    })
+
+    return courseValue;
+}
+
 export const translateSecondary = (secondary: TypeaheadValue[]): any => {
     let translatedSecondary: SecondarySchoolSubject[] = [];
     let secondaryValue: string[] = [];
@@ -219,4 +229,9 @@ export const translateSecondary = (secondary: TypeaheadValue[]): any => {
     }
 
     return translatedSecondary;
+}
+
+export const translateTime = (time: string) => {
+    let dateTime = new Date(time);
+    return dateTime.getUTCHours() + ":" + dateTime.getUTCMinutes() + dateTime.toLocaleTimeString().slice(-3);
 }

@@ -1,6 +1,4 @@
 ﻿using api.Models;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.DTO;
 
@@ -41,7 +39,7 @@ public class UserDto
         };
     }
 
-    private static List<PrimarySchoolCourseDto> ConvertPrimaryCourseListToDto(List<PrimarySchoolCourse> courses)
+    public static List<PrimarySchoolCourseDto> ConvertPrimaryCourseListToDto(List<PrimarySchoolCourse> courses)
     {
         List<PrimarySchoolCourseDto> output = new();
         foreach(PrimarySchoolCourse course in courses)
@@ -51,7 +49,7 @@ public class UserDto
         return output;
     }
 
-    private static List<SecondarySchoolCourseDto> ConvertSecondaryCourseListToDto(List<SecondarySchoolCourse> courses)
+    public static List<SecondarySchoolCourseDto> ConvertSecondaryCourseListToDto(List<SecondarySchoolCourse> courses)
     {
         List<SecondarySchoolCourseDto> output = new();
         foreach(SecondarySchoolCourse course in courses)

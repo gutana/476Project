@@ -10,6 +10,8 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import Toasts from "./Toasts";
 import { formatDate } from "../utils/Time";
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "../models/courseSchedule";
+import { translateTime } from "./stringToDataType";
 
 interface Props {
     post: Post;
@@ -100,6 +102,16 @@ export const PostingCard = ({ post, setPostings }: Props) => {
         setActive((prev) => !prev);
     };
 
+    const formatSubjects = (values: PrimarySchoolCourse[] | SecondarySchoolCourse[]) => {
+        let subjects: string[] = [];
+        values.forEach(v => {
+            let val = `${v.subject} - ${translateTime(v.startTime)} to ${translateTime(v.endTime)}`
+            subjects.push(val);
+        })
+
+        return subjects.join(", ");
+    }
+
     console.log(post.amPm);
 
     return (
@@ -142,10 +154,10 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                             <div className="mx-auto">
                                 <Stack direction="horizontal" gap={2}>
                                     {post.primarySchoolSubjects != null && (
-                                        <div className="p-2">{post.primarySchoolSubjects}</div>
+                                        <div className="p-2">{formatSubjects(post.primarySchoolSubjects)}</div>
                                     )}
                                     {post.secondarySchoolSubjects != null && (
-                                        <div className="p-2">{post.secondarySchoolSubjects}</div>
+                                        <div className="p-2">{formatSubjects(post.secondarySchoolSubjects)}</div>
                                     )}
                                     <div className="p-2">Time of class</div>
                                     {post.absenceType as unknown as string === "HalfDay" && <div className="p-2">{post.amPm}</div>}

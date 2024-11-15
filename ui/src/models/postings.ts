@@ -1,3 +1,4 @@
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "./courseSchedule";
 import { School, SchoolType } from "./schools";
 import { User } from "./user";
 
@@ -10,8 +11,8 @@ export interface CreatePostData {
     endDateOfAbsence?: Date,
     absenceType: AbsenceType,
     amPm: AMPM | null,
-    primarySchoolSubjects: PrimarySchoolSubject[] | null,
-    secondarySchoolSubjects: SecondarySchoolSubject[] | null,
+    primarySchoolSubjects: string[] | null,
+    secondarySchoolSubjects: string[] | null,
     grades: Grade[]
 }
 
@@ -33,8 +34,8 @@ export interface Post {
     dateOfAbsence: string,
     absenceType: AbsenceType,
     amPm: AMPM | null,
-    primarySchoolSubjects: PrimarySchoolSubject[] | null,
-    secondarySchoolSubjects: SecondarySchoolSubject[] | null,
+    primarySchoolSubjects: PrimarySchoolCourse[] | null,
+    secondarySchoolSubjects: SecondarySchoolCourse[] | null,
     grades: Grade[]
 }
 
