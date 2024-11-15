@@ -39,7 +39,8 @@ You will need to start two things (not including the database) to get the projec
 
 #### When starting with a new database
 
-- In starting a new project with a new database, we need to set up our database: In Visual Studio, go to `Tools -> NuGet Package Manager -> Package Manager Console` 
+- When starting a new project with a new database **or when making changes to the data model**, we need to perform a database migration.
+- In Visual Studio, go to `Tools -> NuGet Package Manager -> Package Manager Console` 
 
 - In the console, first enter: `add-migration migrationname`
 - Once that is complete, enter `update-database`
