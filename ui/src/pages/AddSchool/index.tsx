@@ -62,6 +62,7 @@ export default function AddSchoolPage() {
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
+        setErrorMessage("");
         let sanitizedNumber = sanitizeNumber(phoneNumber);
         let realRegion = stringToRegion(region);
         let realSchoolType = stringToSchoolType(schoolType);
@@ -73,6 +74,16 @@ export default function AddSchoolPage() {
 
         if (sanitizedNumber && sanitizedNumber.length !== 10) {
             setErrorMessage("Phone number has to be 10 digits!")
+            return;
+        }
+
+        if (realRegion === undefined) {
+            setErrorMessage("Select Region.");
+            return;
+        }
+
+        if (realSchoolType === null) {
+            setErrorMessage("Select School Type");
             return;
         }
 

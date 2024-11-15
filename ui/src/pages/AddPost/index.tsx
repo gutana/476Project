@@ -13,15 +13,16 @@ import { AddPostingMutation } from "../../api/mutations/postMutations";
 import { School, SchoolType } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { allGrades, primarySubjects, secondarySubjects } from "../../utils/consts";
-import { stringToGrades, stringToPrimary, stringToSecondary } from "../../components/stringToDataType";
+import { translateGrade, translatePrimary, translateSecondary } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { GetAllSchools } from "../../api/queries/schoolQueries";
 import { Link } from "react-router-dom";
 import { AlertIcon } from "../../components/Icons";
 import { Container } from "react-bootstrap";
 
-interface TypeaheadValue {
+export interface TypeaheadValue {
     name: string,
+    match?: string,
     value: string
 }
 
@@ -200,61 +201,6 @@ export default function AddPostPage() {
         }
     })
 
-    const translateGrade = (primary: boolean): any => {
-        if (grades.length === 0) return -1;
-        let translatedGrade: Grade[] = [];
-        let gradesValue: string[] = [];
-
-        grades.forEach(grade => {
-            gradesValue.push(grade.value);
-        })
-
-        for (let i = 0; i < gradesValue.length; i++) {
-            let grade = gradesValue[i];
-            let translated = stringToGrades(grade);
-            if (translated === null) return -1;
-            if (Number(grade) > 9 && primary) return -2;
-            if (Number(grade) < 10 && !primary) return -3;
-            translatedGrade.push(translated);
-        }
-
-        return translatedGrade;
-    }
-
-    const translatePrimary = (): any => {
-        let translatedPrimary: PrimarySchoolSubject[] = [];
-        let primaryValue: string[] = [];
-        primary.forEach(p => {
-            primaryValue.push(p.value);
-        })
-
-        for (let i = 0; i < primaryValue.length; i++) {
-            let p = primaryValue[i];
-            let translated = stringToPrimary(p);
-            if (translated === null) return -1;
-            translatedPrimary.push(translated);
-        }
-
-        return translatedPrimary;
-    }
-
-    const translateSecondary = (): any => {
-        let translatedSecondary: SecondarySchoolSubject[] = [];
-        let secondaryValue: string[] = [];
-        secondary.forEach(s => {
-            secondaryValue.push(s.value);
-        })
-
-        for (let i = 0; i < secondaryValue.length; i++) {
-            let s = secondaryValue[i];
-            let translated = stringToSecondary(s);
-            if (translated === null) return -1;
-            translatedSecondary.push(translated);
-        }
-
-        return translatedSecondary;
-    }
-
     const notifyUser = (data: string, success: boolean) => {
         if (success) {
             setVariant("success");
@@ -295,7 +241,7 @@ export default function AddPostPage() {
         }
 
         let sType = school.schoolType.toString();
-        let grade: Grade[] | number = translateGrade(sType === "Primary");
+        let grade: Grade[] | number = translateGrade(grades, sType === "Primary");
 
         if (grade === -1) {
             setErrorMessage(`Select a ${sType} Grade.`);
@@ -315,8 +261,8 @@ export default function AddPostPage() {
             return;
         }
 
-        let realPrimary = translatePrimary();
-        let realSecondary = translateSecondary();
+        let realPrimary = translatePrimary(primary);
+        let realSecondary = translateSecondary(secondary);
 
         if (realPrimary === -1 && sType === "Primary") {
             setErrorMessage("Primary Subject Error.");

@@ -52,11 +52,19 @@ export default function LogIn() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>
-            <div className="mb-3">Don't have an account? <Link to="/signup">Sign up!</Link></div>
+            {/* <div className="mb-3">Don't have an account?
+                <Link to="/signup">Sign up!</Link></div> */}
             {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
             <Button variant="primary" type="submit">
                 Submit
             </Button>
+
+            <Form.Group className="mb-3">
+                <div className="mb-3">Don't have an account?
+                    <br></br>
+                    <Button style={{ fontWeight: 'normal' }} variant="secondary" href="/signup">Sign up!</Button>
+                </div>
+            </Form.Group>
         </Form>
     )
 }

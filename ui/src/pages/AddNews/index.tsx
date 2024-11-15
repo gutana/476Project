@@ -35,6 +35,7 @@ export default function AddNewsPage() {
 
     const onSubmit = (event: any) => {
         event.preventDefault();
+        setErrorMessage("");
         const title = event.target[0].value;
         const content = event.target[1].value;
 
