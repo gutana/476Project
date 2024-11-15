@@ -49,6 +49,13 @@ You will need to start two things (not including the database) to get the projec
 - Start the API by pressing F5 or pressing the green "Play" button in Visual Studio.
 
 
+## First Admin User
+
+Accounts on the website must be approved by an existing administrator. This poses a slight issue when starting without any existing users. For new projects, follow these instructions to create the first Administrator account: 
+- Launch the application as described above. 
+- Sign up and request to be an administrator. 
+- **Manually change** the `EmailConfirmed` field on the user you just created to `TRUE`. 
+  - The user can be found in the `AspNetUsers` table in the `identity` schema. 
 ## Testing
 
 ### API Tests
