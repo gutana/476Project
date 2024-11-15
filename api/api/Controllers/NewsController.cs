@@ -11,12 +11,12 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class NewsController : BaseController
 {
-    private readonly ILogger<AccountController> _logger;
+    private readonly ILogger<NewsController> _logger;
     private readonly ApplicationDbContext _context;
 
     private readonly string latestNewsCacheKey = "LatestNewsCacheKey";
 
-    public NewsController(UserManager<User> userManager, ILogger<AccountController> logger, ApplicationDbContext context, IMemoryCache cache)
+    public NewsController(UserManager<User> userManager, ILogger<NewsController> logger, ApplicationDbContext context, IMemoryCache cache)
         : base(userManager, cache)
     {
         _logger = logger;

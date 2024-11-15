@@ -44,16 +44,25 @@ public abstract class BaseController : Controller
         }
         else
         {
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromSeconds(360));
+            try
+            {
 
-            User? user = await _userManager.Users.
-                Include(user => user.School).
-                Include(user => user.primarySchoolCourses).
-                Include(user => user.secondarySchoolCourses).
-                FirstAsync(user => user.Id == userId);
-            _cache.Set(userId, user, cacheEntryOptions);
-            return user;
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(360));
+
+                User? user = await _userManager.Users.
+                    Include(user => user.School).
+                    Include(user => user.primarySchoolCourses).
+                    Include(user => user.secondarySchoolCourses).
+                    FirstAsync(user => user.Id == userId);
+                _cache.Set(userId, user, cacheEntryOptions);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
         }
     }
     
