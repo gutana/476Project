@@ -23,6 +23,7 @@ export default function SignUp() {
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [errorMessagePass, setErrorMessagePass] = useState<string | null>(null);
+    const [errorMessageEmail, setErrorMessageEmail] = useState<string | null>(null);
     // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
     const [region, setRegion] = useState<Region | null>(null);
 
@@ -49,6 +50,7 @@ export default function SignUp() {
 
     const handlePassword = (event: any) => {
         let item = event.target.value;
+        let validPassword = false;
         //console.log(item);
         if (item === "") {
             setErrorMessagePass("Please enter a password");
@@ -58,11 +60,32 @@ export default function SignUp() {
             minUppercase: 1, minNumbers: 1, minSymbols: 0
         })) {
             setErrorMessagePass("")
+            validPassword = true;
         }
         else {
             setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.")
         }
 
+    }
+
+    const handleEmail = (event: any) => {
+        let item = event.target.value;
+        let validEmail = false;
+        console.log(item);
+        if (validator.isEmail(item)) {
+            validEmail = true;
+            setErrorMessageEmail("");
+        }
+
+        if (item === "") {
+            validEmail = false;
+            setErrorMessageEmail("Please enter an email");
+        }
+
+        if (validator.isEmail(item) === false && item.length > 0) {
+            validEmail = false;
+            setErrorMessageEmail("Not a valid email");
+        }
     }
 
     const handleSubmit = (event: any) => {
@@ -144,11 +167,16 @@ export default function SignUp() {
 
                     <Form.Group className="mb-3" controlId="email">
                         <Form.Label>Email address</Form.Label>
-                        <Form.Control type="email" aria-describedby="emailHelp" required />
+                        <Form.Control
+                            type="email"
+                            aria-describedby="emailHelp"
+                            required
+                            onBlur={handleEmail}                        />
                         <Form.Text id="emailHelp" muted>
                             We'll never share your email with anyone else.
                         </Form.Text>
                     </Form.Group>
+                    {errorMessageEmail && <Alert variant="danger">{errorMessageEmail}</Alert>}
 
                     <Form.Group className="mb-3" controlId="phoneNumber">
                         <Form.Label>Phone Number</Form.Label>
