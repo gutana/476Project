@@ -24,11 +24,15 @@ export default function SignUp() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [errorMessagePass, setErrorMessagePass] = useState<string | null>(null);
     const [errorMessageEmail, setErrorMessageEmail] = useState<string | null>(null);
+    //const [errorMessagePassConfirm, setErrorMessagePassConfirm] = useState<string | null>(null);
     // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
     const [region, setRegion] = useState<Region | null>(null);
 
     const [allSchools, setAllSchools] = useState<School[]>([]);
     const [userType, setUserType] = useState<UserType | null>(null);
+
+    //const [pass, setPass] = useState<string>("");
+    //const [confirmPass, setConfirmPass] = useState<string>("");
 
     // const queryClient = useQueryClient();
 
@@ -65,13 +69,21 @@ export default function SignUp() {
         else {
             setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.")
         }
-
     }
+
+    /*const handlePasswordConfirm = (event: any) => {
+        let p = pass;
+        let pc = event.target.value;
+
+        if (p !== pc) {
+            setErrorMessagePassConfirm("Passwords do not match");
+        }
+    }*/
 
     const handleEmail = (event: any) => {
         let item = event.target.value;
         let validEmail = false;
-        console.log(item);
+        //console.log(item);
         if (validator.isEmail(item)) {
             validEmail = true;
             setErrorMessageEmail("");
@@ -118,6 +130,14 @@ export default function SignUp() {
 
         if (data.SchoolId === "-1") {
             setErrorMessage("School has to be selected!");
+            return;
+        }
+
+        if (validator.isEmail(data.Email) === false) {
+            return;
+        }
+
+        if (validator.isStrongPassword(data.Password) === false) {
             return;
         }
 
