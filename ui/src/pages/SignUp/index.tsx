@@ -52,12 +52,12 @@ export default function SignUp() {
         },
     });
 
-    const handlePassword = (event: any) => {
+    const handlePasswordClear = (event: any) => {
         let item = event.target.value;
         let validPassword = false;
         //console.log(item);
         if (item === "") {
-            setErrorMessagePass("Please enter a password");
+            //setErrorMessagePass("Please enter a password");
         }
         if (validator.isStrongPassword(event.target.value, {
             minLength: 8, minLowercase: 1,
@@ -67,7 +67,23 @@ export default function SignUp() {
             validPassword = true;
         }
         else {
-            setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.")
+            //setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.");
+        }
+    }
+
+    const handlePasswordSet = (event: any) => {
+        let item = event.target.value;
+        if (item === "") {
+            setErrorMessagePass("Please enter a password");
+        }
+        if (validator.isStrongPassword(item, {
+            minLength: 8, minLowercase: 1,
+            minUppercase: 1, minNumbers: 1, minSymbols: 0
+        }) === false) {
+            setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.");
+        }
+        else {
+            setErrorMessagePass("");
         }
     }
 
@@ -213,7 +229,8 @@ export default function SignUp() {
                         <Form.Control
                             type="password"
                             required
-                            onChange={handlePassword}
+                            onChange={handlePasswordClear}
+                            onBlur={handlePasswordSet}
                         />
                     </Form.Group>
                     {errorMessagePass && <Alert variant="danger">{errorMessagePass}</Alert>}
