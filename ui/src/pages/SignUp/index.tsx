@@ -162,7 +162,10 @@ export default function SignUp() {
             return;
         }
 
-        if (validator.isStrongPassword(data.Password) === false) {
+        if (validator.isStrongPassword(data.Password, {
+            minLength: 8, minLowercase: 1,
+            minUppercase: 1, minNumbers: 1, minSymbols: 0
+        }) === false) {
             return;
         }
 
