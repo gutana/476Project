@@ -79,11 +79,8 @@ export default function SignUp() {
         if (validator.isStrongPassword(item, {
             minLength: 8, minLowercase: 1,
             minUppercase: 1, minNumbers: 1, minSymbols: 0
-        }) === false) {
+        }) === false && item.length > 0) {
             setErrorMessagePass("Password not strong enough, must include: 8 characters, 1 uppercase, 1 number.");
-        }
-        else {
-            setErrorMessagePass("");
         }
     }
 
@@ -96,7 +93,7 @@ export default function SignUp() {
         }
     }*/
 
-    const handleEmail = (event: any) => {
+    const handleEmailClear = (event: any) => {
         let item = event.target.value;
         let validEmail = false;
         //console.log(item);
@@ -107,12 +104,24 @@ export default function SignUp() {
 
         if (item === "") {
             validEmail = false;
-            setErrorMessageEmail("Please enter an email");
+            //setErrorMessageEmail("Please enter an email");
         }
 
         if (validator.isEmail(item) === false && item.length > 0) {
             validEmail = false;
-            setErrorMessageEmail("Not a valid email");
+            //setErrorMessageEmail("Not a valid email");
+        }
+    }
+
+    const handleEmailSet = (event: any) => {
+        let item = event.target.value;
+
+        if (item === "") {
+            setErrorMessageEmail("Please enter an email address");
+        }
+
+        if (validator.isEmail(item) === false && item.length > 0) {
+            setErrorMessageEmail("Email address is not valid");
         }
     }
 
@@ -207,7 +216,8 @@ export default function SignUp() {
                             type="email"
                             aria-describedby="emailHelp"
                             required
-                            onBlur={handleEmail}                        />
+                            onChange={handleEmailClear}
+                            onBlur={handleEmailSet}                        />
                         <Form.Text id="emailHelp" muted>
                             We'll never share your email with anyone else.
                         </Form.Text>
