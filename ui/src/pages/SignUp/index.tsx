@@ -24,7 +24,7 @@ export default function SignUp() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [errorMessagePass, setErrorMessagePass] = useState<string | null>(null);
     const [errorMessageEmail, setErrorMessageEmail] = useState<string | null>(null);
-    //const [errorMessagePassConfirm, setErrorMessagePassConfirm] = useState<string | null>(null);
+    const [errorMessagePassConfirm, setErrorMessagePassConfirm] = useState<string | null>(null);
     // const [schoolsQueryEnabled, setSchoolsQueryEnabled] = useState(false);
     const [region, setRegion] = useState<Region | null>(null);
 
@@ -85,13 +85,14 @@ export default function SignUp() {
     }
 
     /*const handlePasswordConfirm = (event: any) => {
-        let p = pass;
-        let pc = event.target.value;
-
-        if (p !== pc) {
+        if (event.target[4].value !== event.target[5].value) {  --> does not work
             setErrorMessagePassConfirm("Passwords do not match");
         }
-    }*/
+
+        if (event.target[4].value === event.target[5].value) {
+            setErrorMessagePassConfirm("");
+        }
+    } */
 
     const handleEmailClear = (event: any) => {
         let item = event.target.value;
@@ -135,15 +136,25 @@ export default function SignUp() {
             return;
         }
 
+        let passConfirm = event.target[5].value;
+        if (passConfirm !== event.target[4].value) {
+            setErrorMessagePassConfirm("Passwords do not match");
+            return;
+        }
+
+        if (passConfirm === event.target[4].value) {
+            setErrorMessagePassConfirm("");
+        }
+
         let data = {
             FirstName: event.target[0].value,
             LastName: event.target[1].value,
             Email: event.target[2].value,
             PhoneNumber: sanitizedNumber,
             Password: event.target[4].value,
-            Region: event.target[5].value,
-            UserType: event.target[6].value,
-            SchoolId: event.target[7].value
+            Region: event.target[6].value,
+            UserType: event.target[7].value,
+            SchoolId: event.target[8].value
         };
 
         console.log(event);
@@ -247,6 +258,16 @@ export default function SignUp() {
                         />
                     </Form.Group>
                     {errorMessagePass && <Alert variant="danger">{errorMessagePass}</Alert>}
+
+                    <Form.Group className="mb-3" controlId="confirmPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            required
+                            //onChange={handlePasswordConfirm}
+                        />
+                    </Form.Group>
+                    {errorMessagePassConfirm && <Alert variant="danger">{errorMessagePassConfirm}</Alert>}
 
                     <Form.Group className="mb-3">
                         <Form.Label>Region</Form.Label>
