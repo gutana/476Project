@@ -33,10 +33,10 @@ const AccordionCourse = ({ course }: AccordionProps) => {
         <Accordion className="mb-3" style={{width: "50%"}} onSelect={handleSelect} activeKey={active ? course.id : null}>
             <Accordion.Item eventKey={course.id} key={course.id}>
                 <Accordion.Header as="div">
-                    {course.subject}
+                    {MapSchoolSubjectToString(course.subject.toString())}
                 </Accordion.Header>
                 <Accordion.Body>
-                    {`Grade(s): ${course.grades.join(",")}`}
+                    {`Grade(s): ${course.grades.join(", ")}`}
                     <br></br>
                     Time: {`${formatTime(course.startTime)} to ${formatTime(course.endTime)}`}
                     <br></br>
@@ -165,7 +165,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 
                 <Accordion.Item
                     eventKey={post.id}
-                    style={user?.id === post.posterId ? { margin: "2vw", backgroundColor: "rgba(100, 255, 40, 0.3)" } : { margin: "2vw"}}
+                    style={{ margin: "2vw"}}
                     key={post.id}
                 >
                     <Accordion.Header as="div">
@@ -185,7 +185,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                 <Row>
                                     <Col>{post.postDescription}</Col>
                                 </Row>
-                                <Row className="mt-4">
+                                <Row className="mt-2">
                                     {post.primarySchoolSubjects && post.primarySchoolSubjects.map(course => {
                                         return <AccordionCourse course={course} />
                                     })}
@@ -194,6 +194,14 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                     })}
                                 </Row>
                                 <Row className="mt-4">
+                                    {showTakenByText && (
+                                        <div className="p-2">
+                                            Taken by:{" "}
+                                            {post.acceptedByUserFirstName +
+                                                " " +
+                                                post.acceptedByUserLastName}
+                                        </div>
+                                    )}
                                     <Col>
                                     {showAcceptbutton &&
                                         (acceptPostMutation.isSuccess ? (
@@ -240,14 +248,6 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                             </Button>
                                         ))}
                                         </Col>
-                                    {showTakenByText && (
-                                        <div className="p-2">
-                                            Taken by:{" "}
-                                            {post.acceptedByUserFirstName +
-                                                " " +
-                                                post.acceptedByUserLastName}
-                                        </div>
-                                    )}
                                 </Row>
                             </Container>
                         </Stack>

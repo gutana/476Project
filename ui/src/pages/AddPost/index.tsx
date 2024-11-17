@@ -17,7 +17,8 @@ import {
   AbsenceType,
   AMPM,
   Grade,
-  MapAbsenceTypeStringToAbsenceType
+  MapAbsenceTypeStringToAbsenceType,
+  MapSchoolSubjectToString
 } from "../../models/postings";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
@@ -184,7 +185,7 @@ export default function AddPostPage() {
     for (let i = 0; i < courses.length; i++) {
         let course = courses[i];                
         let val = {
-          name: `${course.subject} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
+          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
           value: course.id
         };
 
