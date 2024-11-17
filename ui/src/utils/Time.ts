@@ -21,6 +21,11 @@ export const formatDate = (date: string) => {
   return `${months[month - 1]} ${day}, ${year}`;
 };
 
+export const formatTime = (time: string) => {
+  let dateTime = new Date(time);
+  return dateTime.getUTCHours() + ":" + dateTime.getUTCMinutes() + dateTime.toLocaleTimeString().slice(-3);
+}
+
 export const addDays = (date: Date, daysAdded: number) => {
   let newDate = new Date(date);
   newDate.setDate(newDate.getDate() + daysAdded);

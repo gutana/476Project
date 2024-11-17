@@ -1,4 +1,4 @@
-import { Accordion, Button, Card, Spinner, Stack } from "react-bootstrap";
+import { Accordion, Button, Card, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
 import { AbsenceType, Post } from "../models/postings";
 import { UserContext } from "./UserWrapper";
 import { useContext, useState } from "react";
@@ -9,22 +9,50 @@ import {
 } from "../api/mutations/postMutations";
 import { useMutation } from "@tanstack/react-query";
 import Toasts from "./Toasts";
-import { formatDate } from "../utils/Time";
+import { formatDate, formatTime } from "../utils/Time";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../models/courseSchedule";
-import { translateTime } from "./stringToDataType";
+import Form from "react-bootstrap/Form"
 
 interface Props {
     post: Post;
     setPostings?: Function
 }
 
+interface AccordionProps {
+    course: PrimarySchoolCourse | SecondarySchoolCourse
+}
+
+const AccordionCourse = ({ course }: AccordionProps) => {
+    const [active, setActive] = useState(false);
+    const handleSelect = (e: any) => {
+        setActive(prev => !prev);
+    }
+
+    return (
+        <Accordion className="mb-3" style={{width: "50%"}} onSelect={handleSelect} activeKey={active ? course.id : null}>
+            <Accordion.Item eventKey={course.id} key={course.id}>
+                <Accordion.Header as="div">
+                    {course.subject}
+                </Accordion.Header>
+                <Accordion.Body>
+                    {`Grade(s): ${course.grades.join(",")}`}
+                    <br></br>
+                    Time: {`${formatTime(course.startTime)} to ${formatTime(course.endTime)}`}
+                    <br></br>
+                    {course.location && `Information: ${course.location}`}
+                </Accordion.Body>
+            </Accordion.Item>
+        </Accordion>
+    )
+}
+
 export const PostingCard = ({ post, setPostings }: Props) => {
     const [user] = useContext(UserContext);
 
     const showAcceptbutton: boolean =
-        post.acceptedByUserId === null && post.posterId !== user?.id && user?.userType !== UserType.Administrator;
+        post.acceptedByUserId === null && post.posterId !== user?.id && user?.userType === UserType.Administrator;
     const showCancelbutton: boolean =
-        ((user?.userType === UserType.Administrator && post.acceptedByUserId !== null) ||
+        ((user?.userType === UserType.Administrator && post.acceptedByUserId === null) ||
         post.posterId === user?.id ||
         post.acceptedByUserId === user?.id) &&
         post.dateOfAbsence > Date.now().toString();
@@ -87,6 +115,17 @@ export const PostingCard = ({ post, setPostings }: Props) => {
         if (user != null) acceptPostMutation.mutate(post.id);
     };
 
+    const labelValue = (label: string, value: string) => {
+        return (
+            <Col>
+                <Form.Group className="mb-3">
+                    <Form.Label><b>{label}</b></Form.Label>
+                    {` ${value}`}
+                </Form.Group>
+            </Col>
+        )
+    }
+
     const handleCancel = () => {
         if (
             user?.id == post.posterId ||
@@ -101,18 +140,6 @@ export const PostingCard = ({ post, setPostings }: Props) => {
     const handleSelect = (e: any) => {
         setActive((prev) => !prev);
     };
-
-    const formatSubjects = (values: PrimarySchoolCourse[] | SecondarySchoolCourse[]) => {
-        let subjects: string[] = [];
-        values.forEach(v => {
-            let val = `${v.subject} - ${translateTime(v.startTime)} to ${translateTime(v.endTime)}`
-            subjects.push(val);
-        })
-
-        return subjects.join(", ");
-    }
-
-    console.log(post.amPm);
 
     return (
         <>
@@ -133,49 +160,39 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 >
                     <Accordion.Header as="div">
                         <Stack direction="horizontal">
-                            <h5>
-                                {post.school.schoolName} - {post.grades.join(", ")}
-                            </h5>
+                            <h5>{post.school.schoolName} - {post.grades.join(", ")}</h5>
                         </Stack>
                     </Accordion.Header>
-
                     <Accordion.Body>
-                        {/* <Card.Title>{post.postDescription}</Card.Title> */}
-                        <Stack direction="horizontal" gap={2}>
-                            <div>
-                                <div>
-                                    <Stack direction="horizontal" gap={2}>
-                                        <div className="p-2">
-                                            {post.posterFirstName + " " + post.posterLastName}
-                                        </div>
-                                        <div className="p-2">{formatDate(post.dateOfAbsence)}</div>
-                                    </Stack>
-                                </div>
-                                <div className="p-2">{post.school.schoolName}</div>
-                            </div>
-                            <div className="mx-auto">
-                                <Stack direction="horizontal" gap={2}>
-                                    {post.primarySchoolSubjects != null && (
-                                        <div className="p-2">{formatSubjects(post.primarySchoolSubjects)}</div>
-                                    )}
-                                    {post.secondarySchoolSubjects != null && (
-                                        <div className="p-2">{formatSubjects(post.secondarySchoolSubjects)}</div>
-                                    )}
-                                    <div className="p-2">Time of class</div>
-                                    {post.absenceType as unknown as string === "HalfDay" && <div className="p-2">{post.amPm}</div>}
-                                </Stack>
-                            </div>
-                            <div className="d-grid gap-2">
-                                <div>
+                        <Stack direction="vertical" gap={2}>
+                            <Container>
+                                <Row>
+                                    {labelValue("Posted By:", post.posterFirstName + " " + post.posterLastName)}
+                                    {labelValue("Date:", formatDate(post.dateOfAbsence))}
+                                </Row>
+                                <Row>
+                                    <Col>{post.postDescription}</Col>
+                                </Row>
+                                <Row className="mt-4">
+                                    {post.primarySchoolSubjects && post.primarySchoolSubjects.map(course => {
+                                        return <AccordionCourse course={course} />
+                                    })}
+                                    {post.secondarySchoolSubjects && post.secondarySchoolSubjects.map(course => {
+                                        return <AccordionCourse course={course} />
+                                    })}
+                                </Row>
+                                <Row className="mt-4">
+                                    <Col>
                                     {showAcceptbutton &&
                                         (acceptPostMutation.isSuccess ? (
                                             // Success button
-                                            <Button disabled variant={"success"}>
+                                            <Button className="w-100" disabled variant={"success"}>
                                                 Accepted
                                             </Button>
                                         ) : (
                                             // accept/loading button
                                             <Button
+                                                className="w-100"
                                                 disabled={acceptPostMutation.isPending}
                                                 variant={"success"}
                                                 onClick={handleAccept}
@@ -186,12 +203,14 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                                     "Accept"
                                                 )}
                                             </Button>
-                                        ))}
+                                    ))}
+                                    </Col>
+                                    <Col>
                                     {showCancelbutton &&
                                         (cancelPostMutation.isSuccess ? (
                                             // Success button for cancelling
                                             <Button
-                                                style={{ marginLeft: "5px" }}
+                                                className="w-100"
                                                 disabled
                                                 variant={"danger"}
                                             >
@@ -200,7 +219,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                         ) : (
                                             // cancel/loading button
                                             <Button
-                                                style={{ marginLeft: "5px" }}
+                                                className="w-100"
                                                 disabled={cancelPostMutation.isPending}
                                                 variant={"outline-danger"}
                                                 onClick={handleCancel}
@@ -208,6 +227,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                                 {cancelPostMutation.isPending ? <Spinner /> : "Cancel"}
                                             </Button>
                                         ))}
+                                        </Col>
                                     {showTakenByText && (
                                         <div className="p-2">
                                             Taken by:{" "}
@@ -216,14 +236,123 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                                                 post.acceptedByUserLastName}
                                         </div>
                                     )}
-                                </div>
-                            </div>
+                                </Row>
+                            </Container>
                         </Stack>
-                        {/* <Card.Text>Detailed description here!</Card.Text> */}
-                        {/* <Button variant="primary">View</Button> */}
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
         </>
-    );
+    )
+
+    // return (
+    //     <>
+    //         <Toasts
+    //             show={show}
+    //             setShow={setShow}
+    //             variant={variant}
+    //             title={title}
+    //             message={message}
+    //         />
+    //         <Accordion onSelect={handleSelect} activeKey={active ? post.id : null}>
+    //             <Accordion.Item
+    //                 eventKey={post.id}
+    //                 style={{ margin: "2vw" }}
+    //                 key={post.id}
+    //             >
+    //                 <Accordion.Header as="div">
+    //                     <Stack direction="horizontal">
+    //                         <h5>
+    //                             {post.school.schoolName} - {post.grades.join(", ")}
+    //                         </h5>
+    //                     </Stack>
+    //                 </Accordion.Header>
+
+    //                 <Accordion.Body>
+    //                     {/* <Card.Title>{post.postDescription}</Card.Title> */}
+    //                     <Stack direction="horizontal" gap={2}>
+    //                         <div>
+    //                             <div>
+    //                                 <Stack direction="horizontal" gap={2}>
+    //                                     <div className="p-2">
+    //                                         {post.posterFirstName + " " + post.posterLastName}
+    //                                     </div>
+    //                                     <div className="p-2">{formatDate(post.dateOfAbsence)}</div>
+    //                                 </Stack>
+    //                             </div>
+    //                             <div className="p-2">{post.school.schoolName}</div>
+    //                         </div>
+    //                         <div className="mx-auto">
+    //                             <Stack direction="horizontal" gap={2}>
+    //                                 {post.primarySchoolSubjects != null && (
+    //                                     <div className="p-2">{formatSubjects(post.primarySchoolSubjects)}</div>
+    //                                 )}
+    //                                 {post.secondarySchoolSubjects != null && (
+    //                                     <div className="p-2">{formatSubjects(post.secondarySchoolSubjects)}</div>
+    //                                 )}
+    //                                 <div className="p-2">Time of class</div>
+    //                                 {post.absenceType as unknown as string === "HalfDay" && <div className="p-2">{post.amPm}</div>}
+    //                             </Stack>
+    //                         </div>
+    //                         <div className="d-grid gap-2">
+    //                             <div>
+    //                                 {showAcceptbutton &&
+    //                                     (acceptPostMutation.isSuccess ? (
+    //                                         // Success button
+    //                                         <Button disabled variant={"success"}>
+    //                                             Accepted
+    //                                         </Button>
+    //                                     ) : (
+    //                                         // accept/loading button
+    //                                         <Button
+    //                                             disabled={acceptPostMutation.isPending}
+    //                                             variant={"success"}
+    //                                             onClick={handleAccept}
+    //                                         >
+    //                                             {acceptPostMutation.isPending ? (
+    //                                                 <Spinner size="sm" />
+    //                                             ) : (
+    //                                                 "Accept"
+    //                                             )}
+    //                                         </Button>
+    //                                     ))}
+    //                                 {showCancelbutton &&
+    //                                     (cancelPostMutation.isSuccess ? (
+    //                                         // Success button for cancelling
+    //                                         <Button
+    //                                             style={{ marginLeft: "5px" }}
+    //                                             disabled
+    //                                             variant={"danger"}
+    //                                         >
+    //                                             Cancelled
+    //                                         </Button>
+    //                                     ) : (
+    //                                         // cancel/loading button
+    //                                         <Button
+    //                                             style={{ marginLeft: "5px" }}
+    //                                             disabled={cancelPostMutation.isPending}
+    //                                             variant={"outline-danger"}
+    //                                             onClick={handleCancel}
+    //                                         >
+    //                                             {cancelPostMutation.isPending ? <Spinner /> : "Cancel"}
+    //                                         </Button>
+    //                                     ))}
+    //                                 {showTakenByText && (
+    //                                     <div className="p-2">
+    //                                         Taken by:{" "}
+    //                                         {post.acceptedByUserFirstName +
+    //                                             " " +
+    //                                             post.acceptedByUserLastName}
+    //                                     </div>
+    //                                 )}
+    //                             </div>
+    //                         </div>
+    //                     </Stack>
+    //                     {/* <Card.Text>Detailed description here!</Card.Text> */}
+    //                     {/* <Button variant="primary">View</Button> */}
+    //                 </Accordion.Body>
+    //             </Accordion.Item>
+    //         </Accordion>
+    //     </>
+    // );
 };

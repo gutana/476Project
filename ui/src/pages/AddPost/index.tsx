@@ -17,32 +17,23 @@ import {
   AbsenceType,
   AMPM,
   Grade,
-  MapAbsenceTypeStringToAbsenceType,
-  PrimarySchoolSubject,
-  SecondarySchoolSubject,
+  MapAbsenceTypeStringToAbsenceType
 } from "../../models/postings";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
-import { School, SchoolType } from "../../models/schools";
+import { School } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
-import { translateCourses, translateGrade, translatePrimary, translateSecondary, translateTime } from "../../components/stringToDataType";
+import { translateCourses, translateGrade } from "../../components/stringToDataType";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {
-  allGrades,
-  primarySubjects,
-  secondarySubjects,
+  allGrades
 } from "../../utils/consts";
-import {
-  stringToGrades,
-  stringToPrimary,
-  stringToSecondary,
-} from "../../components/stringToDataType";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import { GetAllSchools } from "../../api/queries/schoolQueries";
 import { Link } from "react-router-dom";
 import { AlertIcon } from "../../components/Icons";
 import { ButtonGroup, Container, Stack, ToggleButton } from "react-bootstrap";
-import { addDays } from "../../utils/Time";
+import { addDays, formatTime } from "../../utils/Time";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
 
 export interface TypeaheadValue {
@@ -184,17 +175,17 @@ export default function AddPostPage() {
     let courses: PrimarySchoolCourse[] | SecondarySchoolCourse[] = [];
 
     if (user.primarySchoolCourses.length > 0) {
-        courses = user.primarySchoolCourses;
+      courses = user.primarySchoolCourses;
     } else {
-        courses = user.secondarySchoolCourses;
+      courses = user.secondarySchoolCourses;
     }
 
     let typeaheadCourses: TypeaheadValue[] = [];
     for (let i = 0; i < courses.length; i++) {
         let course = courses[i];                
         let val = {
-            name: `${course.subject} - ${translateTime(course.startTime)} to ${translateTime(course.endTime)}`,
-            value: course.id
+          name: `${course.subject} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
+          value: course.id
         };
 
         typeaheadCourses.push(val);
@@ -373,8 +364,8 @@ export default function AddPostPage() {
 
   const showProfileInfoText: boolean =
     profileDataLoaded &&
-    courses.length === 0 &&
-    grades.length === 0;
+    (allCourses.length === 0 ||
+    grades.length === 0)
 
   return (
     <>

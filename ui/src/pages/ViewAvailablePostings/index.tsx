@@ -13,8 +13,7 @@ import { allGrades, primarySubjects, regionsInList, secondarySubjects } from "..
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { translateToSchoolTypeahead } from "../../components/stringToDataType";
-import { formatDate } from "../../utils/Time";
-
+import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
 
 // View ALL postings page if administrator
 export default function ViewPostingsPage() {
@@ -71,6 +70,24 @@ export default function ViewPostingsPage() {
         return schools.some(val => val.value === id);
     }
 
+    const checkCourses = (courses: PrimarySchoolCourse[] | SecondarySchoolCourse[] | null, values: TypeaheadValue[]) => {
+        if (values.length === 0) return true;
+        if (courses === null) return false;
+        let subjects: string[] = [];
+        courses.forEach(course => {
+            subjects.push(course.subject.toString());
+        })
+
+        for (let i = 0; i < values.length; i++) {
+            const item = values[i];
+            if (item && subjects.includes(item.match ? item.match : item.name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     const checkMatch = (val1: any, val2: any, lists=false) => {
         if (!val2 || val2.length === 0 || val2 === "-1") return true;
         if (lists) {
@@ -93,10 +110,10 @@ export default function ViewPostingsPage() {
 
         if (changedPostings === undefined) {
             matched = allPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkMatch(post.grades, grades, true)
-            && checkMatch(post.primarySchoolSubjects, primary, true) && checkMatch(post.secondarySchoolSubjects, secondary, true) && checkMatch(post.school.schoolType, schoolType));
+            && checkCourses(post.primarySchoolSubjects, primary) && checkCourses(post.secondarySchoolSubjects, secondary) && checkMatch(post.school.schoolType, schoolType));
         } else {
             matched = changedPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkMatch(post.grades, grades, true)
-            && checkMatch(post.primarySchoolSubjects, primary, true) && checkMatch(post.secondarySchoolSubjects, secondary, true && checkMatch(post.school.schoolType, schoolType)));
+            && checkCourses(post.primarySchoolSubjects, primary) && checkCourses(post.secondarySchoolSubjects, secondary) && checkMatch(post.school.schoolType, schoolType));
         }
 
         setFilteredPostings(matched);

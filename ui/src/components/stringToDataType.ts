@@ -230,8 +230,3 @@ export const translateSecondary = (secondary: TypeaheadValue[]): any => {
 
     return translatedSecondary;
 }
-
-export const translateTime = (time: string) => {
-    let dateTime = new Date(time);
-    return dateTime.getUTCHours() + ":" + dateTime.getUTCMinutes() + dateTime.toLocaleTimeString().slice(-3);
-}
