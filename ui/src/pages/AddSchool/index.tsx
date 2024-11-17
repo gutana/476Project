@@ -20,7 +20,7 @@ export default function AddSchoolPage() {
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const [region, setRegion] = useState<Region | string>("");
+    const [region, setRegion] = useState<Region | string>(Region.Regina);
     const [postalCode, setPostalCode] = useState("");
 
     const [variant, setVariant] = useState("");

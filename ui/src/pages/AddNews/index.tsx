@@ -16,12 +16,16 @@ export default function AddNewsPage() {
 
     const [resultMessage, setResultMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>();
+    const [stateTitle, setTitle] = useState<string>("");
+    const [stateContent, setContent] = useState<string>("");
 
     const postNewsMutation = useMutation({
         mutationFn: PostNewsMutation,
         onSuccess: (data, variables, context) => {
             setResultMessage("Post was successful!");
             setErrorMessage(null);
+            setTitle("");
+            setContent("");
             postNewsMutation.reset();
         },
         onError: (data, variables, context) => {
@@ -33,11 +37,22 @@ export default function AddNewsPage() {
         }
     })
 
+    const handleTitle = (event: any) => {
+        setTitle(event.target.value);
+        //console.log(title);
+    }
+
+    const handleContent = (event: any) => {
+        setContent(event.target.value);
+    }
+
     const onSubmit = (event: any) => {
         event.preventDefault();
         setErrorMessage("");
-        const title = event.target[0].value;
-        const content = event.target[1].value;
+        //const title = event.target[0].value;
+        //const content = event.target[1].value;
+        const title = stateTitle;
+        const content = stateContent;
 
         let errMsg: string = "";
 
@@ -61,8 +76,8 @@ export default function AddNewsPage() {
             Content: content
         })
 
-        event.target[0].value = "";
-        event.target[1].value = "";
+        //event.target[0].value = "";
+        //event.target[1].value = "";
     }
 
     return (
@@ -70,11 +85,11 @@ export default function AddNewsPage() {
             <Form onSubmit={onSubmit}>
                 <Form.Group>
                     <Form.Label>Title</Form.Label>
-                    <Form.Control type="text" placeholder="Title" />
+                    <Form.Control type="text" placeholder="Title" onChange={handleTitle} value={stateTitle} />
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Content</Form.Label>
-                    <Form.Control as="textarea" rows={5} placeholder="Content" />
+                    <Form.Control as="textarea" rows={5} placeholder="Content" onChange={handleContent} value={stateContent} />
                 </Form.Group>
                 <Button type="submit" style={{ marginTop: "10px", width: "100%" }}>Post</Button>
             </Form>

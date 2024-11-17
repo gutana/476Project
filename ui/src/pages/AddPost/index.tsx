@@ -17,7 +17,8 @@ import {
   AbsenceType,
   AMPM,
   Grade,
-  MapAbsenceTypeStringToAbsenceType
+  MapAbsenceTypeStringToAbsenceType,
+  MapSchoolSubjectToString
 } from "../../models/postings";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
@@ -33,8 +34,9 @@ import { GetAllSchools } from "../../api/queries/schoolQueries";
 import { Link } from "react-router-dom";
 import { AlertIcon } from "../../components/Icons";
 import { ButtonGroup, Container, Stack, ToggleButton } from "react-bootstrap";
-import { addDays, formatTime } from "../../utils/Time";
+import { addDays } from "../../utils/Time";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
+import { FormatDateForDisplayAsTimeOnly } from "../../utils/miscUtils";
 
 export interface TypeaheadValue {
     name: string,
@@ -182,9 +184,9 @@ export default function AddPostPage() {
 
     let typeaheadCourses: TypeaheadValue[] = [];
     for (let i = 0; i < courses.length; i++) {
-        let course = courses[i];                
+        let course = courses[i];            
         let val = {
-          name: `${course.subject} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
+          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`,
           value: course.id
         };
 
@@ -472,6 +474,7 @@ export default function AddPostPage() {
                   <Form.Group className="mb-3" controlId="date">
                     <Form.Control
                       type="Date"
+                      defaultValue={today.toISOString().split("T")[0]}
                       min={today.toISOString().split("T")[0]}
                       onChange={(e) => {
                         changeStartDate(e);
@@ -510,6 +513,7 @@ export default function AddPostPage() {
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="Date"
+                defaultValue={today.toISOString().split("T")[0]}
                 min={today.toISOString().split("T")[0]}
                 onChange={(e) => {
                   changeStartDate(e);
@@ -526,6 +530,7 @@ export default function AddPostPage() {
                   <Form.Label>Start Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={today.toISOString().split("T")[0]}
                     onChange={changeStartDate}
                     min={today.toISOString().split("T")[0]}
                     max={
@@ -541,6 +546,7 @@ export default function AddPostPage() {
                   <Form.Label>End Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={addDays(today, 13).toISOString().split("T")[0]}
                     onChange={changeEndDate}
                     min={
                       startDate === undefined
