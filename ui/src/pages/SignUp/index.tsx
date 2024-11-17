@@ -312,6 +312,8 @@ export default function SignUp() {
                     <Button variant="primary" type="submit">
                         Submit
                     </Button>
+
+                    <Button style={{ fontWeight: 'normal', marginLeft: "6px"}} variant="secondary" href="/login">Already have an account?</Button>
                 </Form>
             </div>
 
