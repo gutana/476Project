@@ -50,9 +50,9 @@ export const PostingCard = ({ post, setPostings }: Props) => {
     const [user] = useContext(UserContext);
 
     const showAcceptbutton: boolean =
-        post.acceptedByUserId === null && post.posterId !== user?.id && user?.userType === UserType.Administrator;
+        post.acceptedByUserId === null && post.posterId !== user?.id && user?.userType === UserType.Substitute;
     const showCancelbutton: boolean =
-        ((user?.userType === UserType.Administrator && post.acceptedByUserId === null) ||
+        ((user?.userType === UserType.Administrator && post.acceptedByUserId !== null) ||
         post.posterId === user?.id ||
         post.acceptedByUserId === user?.id) &&
         post.dateOfAbsence > Date.now().toString();
