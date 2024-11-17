@@ -305,19 +305,19 @@ export default function AddPostPage() {
     
     let realCourses: string[] = translateCourses(courses);
 
-    console.log({
-      schoolId: school.id,
-      requestedSub: reqSub ? reqSub.id : "",
-      postDescription: desc,
-      private: requestedSub.length !== 0,
-      grades: grade,
-      primarySchoolSubjects: sType === "Primary" ? realCourses : null,
-      secondarySchoolSubjects: sType === "Secondary" ? realCourses : null,
-      startDateOfAbsence: startDate,
-      endDateOfAbsence: endDate,
-      absenceType: absenceType,
-      ampm: ampm,
-    });
+    // console.log({
+    //   schoolId: school.id,
+    //   requestedSub: reqSub ? reqSub.id : "",
+    //   postDescription: desc,
+    //   private: requestedSub.length !== 0,
+    //   grades: grade,
+    //   primarySchoolSubjects: sType === "Primary" ? realCourses : null,
+    //   secondarySchoolSubjects: sType === "Secondary" ? realCourses : null,
+    //   startDateOfAbsence: startDate,
+    //   endDateOfAbsence: endDate,
+    //   absenceType: absenceType,
+    //   ampm: ampm,
+    // });
 
     if (startDate === undefined) {
       setErrorMessage("You must select a date.");

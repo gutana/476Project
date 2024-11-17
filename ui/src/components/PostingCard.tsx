@@ -191,11 +191,11 @@ export const PostingCard = ({ post, toastMessage, setPostings }: Props) => {
                 <Row className="mt-4">
                   {post.primarySchoolSubjects &&
                     post.primarySchoolSubjects.map((course) => {
-                      return <AccordionCourse course={course} />;
+                      return <AccordionCourse key={course.id} course={course} />;
                     })}
                   {post.secondarySchoolSubjects &&
                     post.secondarySchoolSubjects.map((course) => {
-                      return <AccordionCourse course={course} />;
+                      return <AccordionCourse key={course.id} course={course} />;
                     })}
                 </Row>
                 <Row className="mt-4">

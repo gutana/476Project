@@ -157,7 +157,7 @@ export default function SignUp() {
             SchoolId: event.target[8].value
         };
 
-        console.log(event);
+        // console.log(event);
 
         if (data.Region === "-1" || data.UserType === "-1") {
             setErrorMessage("Region/Account Type has to be selected!");

@@ -56,7 +56,6 @@ export default function ViewMyPostingsPage() {
   }, [teacherData]);
 
   const updatePostings = (id: string) => {
-    console.log("Updated postings");
     const filtered = postings.filter(post => post.id !== id);
     setPostings(filtered);
 }
@@ -74,7 +73,7 @@ export default function ViewMyPostingsPage() {
       {(isLoading || teacherIsLoading) && <LoadingSpinner />}
       {(postings.length === 0 && !isLoading && !teacherIsLoading) && <EmptyPostingsCard />}
       
-      {postings?.map((post) => {
+      {postings.map((post) => {
         return (
           <PostingCard toastMessage={showToast} post={post} key={post.id} setPostings={updatePostings} />
         );

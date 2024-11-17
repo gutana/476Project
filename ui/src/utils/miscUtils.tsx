@@ -18,6 +18,6 @@ export class LocalTime {
     GetFormattedStr() {
         let postfix: string = this.hours > 12 ? "PM" : "AM";
         let adjustedHours = postfix === "AM" ? this.hours : this.hours - 12;
-        return `${adjustedHours}:${this.minutes.toString().padStart(2, '0')}${postfix}`;
+        return `${adjustedHours}:${this.minutes.toString().padStart(2, '0')} ${postfix}`;
     }
 }
