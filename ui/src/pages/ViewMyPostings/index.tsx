@@ -24,20 +24,21 @@ export default function ViewMyPostingsPage() {
     queryKey: ["getPostsByUser1"],
     enabled: user?.userType === UserType.Teacher,
   })
-
+  
   useEffect(() => {
     if (data !== undefined) {
       setPostings(data);
     }
   }, [data]);
-
+  
   useEffect(() => {
     if (teacherData !== undefined) {
+      console.log(teacherData);
       setPostings(previous => [...teacherData, ...previous]);
     }
   }, [teacherData]);
 
-  if (!isLoading && data?.length === 0) return <EmptyPostingsCard />;
+  if ((!isLoading && data?.length === 0) && (!teacherIsLoading && teacherData?.length === 0)) return <EmptyPostingsCard />;
 
   return (
     <>
