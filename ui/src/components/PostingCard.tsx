@@ -1,5 +1,6 @@
+
 import { Accordion, Button, Card, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
-import { AbsenceType, Post } from "../models/postings";
+import { AbsenceType, MapSchoolSubjectToString, Post } from "../models/postings";
 import { UserContext } from "./UserWrapper";
 import { useContext, useState } from "react";
 import { UserType } from "../models/user";
@@ -141,6 +142,15 @@ export const PostingCard = ({ post, setPostings }: Props) => {
         setActive((prev) => !prev);
     };
 
+    const formatSubject = (value: PrimarySchoolCourse | SecondarySchoolCourse) => {
+        let subject: string = "";
+        subject = `${MapSchoolSubjectToString(value.subject.toString())} - ${formatTime(value.startTime)} to ${formatTime(value.endTime)}`;
+        //subject = `${value.subject} - ${translateTime(value.startTime)} to ${translateTime(value.endTime)}`;
+        return subject;
+    }
+
+    console.log(post.amPm);
+
     return (
         <>
             <Toasts
@@ -160,7 +170,9 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 >
                     <Accordion.Header as="div">
                         <Stack direction="horizontal">
-                            <h5>{post.school.schoolName} - {post.grades.join(", ")}</h5>
+                            <h5>
+                                {post.school.schoolName} - {formatDate(post.dateOfAbsence)}
+                            </h5>
                         </Stack>
                     </Accordion.Header>
                     <Accordion.Body>

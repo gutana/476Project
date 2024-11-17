@@ -23,7 +23,9 @@ export const formatDate = (date: string) => {
 
 export const formatTime = (time: string) => {
   let dateTime = new Date(time);
-  return dateTime.getUTCHours() + ":" + dateTime.getUTCMinutes() + dateTime.toLocaleTimeString().slice(-3);
+  let hours = dateTime.getUTCHours();
+  if (hours > 12) hours -= 12;
+  return hours + ":" + dateTime.getUTCMinutes() + dateTime.toLocaleTimeString().slice(-3);
 }
 
 export const addDays = (date: Date, daysAdded: number) => {
