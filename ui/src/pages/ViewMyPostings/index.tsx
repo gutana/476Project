@@ -33,7 +33,6 @@ export default function ViewMyPostingsPage() {
   
   useEffect(() => {
     if (teacherData !== undefined) {
-      console.log(teacherData);
       setPostings(previous => [...teacherData, ...previous]);
     }
   }, [teacherData]);

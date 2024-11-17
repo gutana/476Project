@@ -1,18 +1,13 @@
 import {
   Accordion,
-  AccordionCollapse,
-  AccordionContext,
   Button,
-  Card,
   Col,
   Container,
   Row,
   Spinner,
   Stack,
-  useAccordionButton,
 } from "react-bootstrap";
 import {
-  AbsenceType,
   MapSchoolSubjectToString,
   Post,
 } from "../models/postings";
@@ -55,9 +50,9 @@ const AccordionCourse = ({ course }: AccordionProps) => {
       activeKey={active ? course.id : null}
     >
       <Accordion.Item eventKey={course.id} key={course.id}>
-        <Accordion.Header as="div">{course.subject}</Accordion.Header>
+        <Accordion.Header as="div">{MapSchoolSubjectToString(course.subject.toString())}</Accordion.Header>
         <Accordion.Body>
-          {`Grade(s): ${course.grades.join(",")}`}
+          {`Grade(s): ${course.grades.join(", ")}`}
           <br></br>
           Time:{" "}
           {`${formatTime(course.startTime)} to ${formatTime(course.endTime)}`}
@@ -239,6 +234,14 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 </Row>
                 <Row className="mt-4">
                   <Col>
+                  {showTakenByText && (
+                    <div className="p-2">
+                      Taken by:{" "}
+                      {post.acceptedByUserFirstName +
+                        " " +
+                        post.acceptedByUserLastName}
+                    </div>
+                  )}
                     {showAcceptbutton &&
                       (acceptPostMutation.isSuccess ? (
                         // Success button
@@ -284,14 +287,6 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                         </Button>
                       ))}
                   </Col>
-                  {showTakenByText && (
-                    <div className="p-2">
-                      Taken by:{" "}
-                      {post.acceptedByUserFirstName +
-                        " " +
-                        post.acceptedByUserLastName}
-                    </div>
-                  )}
                 </Row>
               </Container>
             </Stack>
