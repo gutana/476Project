@@ -118,6 +118,7 @@ export const PostingCard = ({ post, setPostings }: Props) => {
       setVariant("success");
       setTitle("Cancelled");
       setMessage("Post has been cancelled");
+      if (setPostings !== undefined) setPostings(post.id);
     },
     onError: (data) => {
       setShow(true);
