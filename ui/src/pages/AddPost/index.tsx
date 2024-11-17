@@ -17,7 +17,8 @@ import {
   AbsenceType,
   AMPM,
   Grade,
-  MapAbsenceTypeStringToAbsenceType
+  MapAbsenceTypeStringToAbsenceType,
+  MapSchoolSubjectToString
 } from "../../models/postings";
 import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
@@ -184,7 +185,7 @@ export default function AddPostPage() {
     for (let i = 0; i < courses.length; i++) {
         let course = courses[i];                
         let val = {
-          name: `${course.subject} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
+          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
           value: course.id
         };
 
@@ -472,6 +473,7 @@ export default function AddPostPage() {
                   <Form.Group className="mb-3" controlId="date">
                     <Form.Control
                       type="Date"
+                      defaultValue={today.toISOString().split("T")[0]}
                       min={today.toISOString().split("T")[0]}
                       onChange={(e) => {
                         changeStartDate(e);
@@ -510,6 +512,7 @@ export default function AddPostPage() {
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="Date"
+                defaultValue={today.toISOString().split("T")[0]}
                 min={today.toISOString().split("T")[0]}
                 onChange={(e) => {
                   changeStartDate(e);
@@ -526,6 +529,7 @@ export default function AddPostPage() {
                   <Form.Label>Start Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={today.toISOString().split("T")[0]}
                     onChange={changeStartDate}
                     min={today.toISOString().split("T")[0]}
                     max={
@@ -541,6 +545,7 @@ export default function AddPostPage() {
                   <Form.Label>End Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={addDays(today, 13).toISOString().split("T")[0]}
                     onChange={changeEndDate}
                     min={
                       startDate === undefined

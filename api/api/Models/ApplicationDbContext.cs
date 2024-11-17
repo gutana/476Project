@@ -205,6 +205,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
         Post? post = Posts
             .Where(p => p.Id == postId)
             .Include(p => p.AcceptedByUser) // not sure if this is needed
+            .Include(p => p.Poster)
             .FirstOrDefault();
 
         if (post == null)
@@ -220,7 +221,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
         if (user.UserType == UserType.Teacher && user.Id == post.Poster.Id)
             Remove(post);
         else if (post.AcceptedByUser != null) {
-            if ((user.UserType == UserType.Substitute && post.AcceptedByUser.Id == user.Id) || user.UserType == UserType.Administrator)
+            if ((post.AcceptedByUser.Id == user.Id) || user.UserType == UserType.Administrator)
                 post.AcceptedByUser = null; 
         }
         else

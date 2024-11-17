@@ -24,20 +24,27 @@ export default function ViewMyPostingsPage() {
     queryKey: ["getPostsByUser1"],
     enabled: user?.userType === UserType.Teacher,
   })
-
+  
   useEffect(() => {
     if (data !== undefined) {
       setPostings(data);
     }
   }, [data]);
-
+  
   useEffect(() => {
     if (teacherData !== undefined) {
       setPostings(previous => [...teacherData, ...previous]);
     }
   }, [teacherData]);
 
-  if (!isLoading && data?.length === 0) return <EmptyPostingsCard />;
+  const updatePostings = (id: string) => {
+    console.log("Updated postings");
+    const filtered = postings.filter(post => post.id !== id);
+    setPostings(filtered);
+}
+
+
+  if (((!isLoading && data?.length === 0) && (!teacherIsLoading && teacherData?.length === 0)) || postings.length === 0) return <EmptyPostingsCard />;
 
   return (
     <>
@@ -45,7 +52,7 @@ export default function ViewMyPostingsPage() {
       
       {postings?.map((post) => {
         return (
-          <PostingCard post={post} key={post.id} setPostings={setPostings} />
+          <PostingCard post={post} key={post.id} setPostings={updatePostings} />
         );
       })}
     </>
