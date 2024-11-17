@@ -14,6 +14,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { translateToSchoolTypeahead } from "../../components/stringToDataType";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
+import Toasts from "../../components/Toasts";
 
 // View ALL postings page if administrator
 export default function ViewPostingsPage() {
@@ -28,6 +29,11 @@ export default function ViewPostingsPage() {
     const [grades, setGrades] = useState<TypeaheadValue[]>([]);
     const [primary, setPrimary] = useState<TypeaheadValue[]>([]);
     const [secondary, setSecondary] = useState<TypeaheadValue[]>([]);
+
+    const [show, setShow] = useState(false);
+    const [variant, setVariant] = useState("");
+    const [title, setTitle] = useState("");
+    const [message, setMessage] = useState("");
 
     if (!user) {
         window.location.href = "/";
@@ -64,6 +70,20 @@ export default function ViewPostingsPage() {
         setAllPostings(filtered);
         filterPosts(undefined, filtered);
     }
+
+    const showToast = (success: boolean, title: string, message: string) => {
+        if (success) {
+          setShow(true);
+          setVariant("success");
+          setTitle(title);
+          setMessage(message);
+        } else {
+          setShow(true);
+          setVariant("danger");
+          setTitle(title);
+          setMessage(message);
+        }
+      }
 
     const checkSchool = (id: string, schools: TypeaheadValue[]) => {
         if (schools.length === 0) return true;
@@ -119,10 +139,6 @@ export default function ViewPostingsPage() {
         setFilteredPostings(matched);
     }
 
-
-    if (data && data.length === 0)
-        return (<EmptyPostingsCard />);
-
     if (isLoading || result.isLoading) {
         return (
             <LoadingSpinner />
@@ -131,7 +147,15 @@ export default function ViewPostingsPage() {
 
     return (
         <>
-            <Form onSubmit={filterPosts}>
+            <Toasts
+            show={show}
+            setShow={setShow}
+            variant={variant}
+            title={title}
+            message={message}
+            />
+            {!isLoading && allPostings.length === 0 && <EmptyPostingsCard />}
+            {allPostings.length > 0 && <Form onSubmit={filterPosts}>
                 <Container>
                     <Row>
                         <Col><MultipleSelection values={schools} title="School(s)" placeholder="Search schools..." selection={school} setSelection={setSchool} /></Col>
@@ -176,11 +200,11 @@ export default function ViewPostingsPage() {
                             </Col>
                         </Row>}
                 </Container>
-            </Form>
+            </Form>}
             {filteredPostings?.map((post) => {
-                return <PostingCard key={post.id} post={post} setPostings={updatePostings} />;
+                return <PostingCard toastMessage={showToast} key={post.id} post={post} setPostings={updatePostings} />;
             })}
-            {filteredPostings.length === 0 && <h3 className="m-3">
+            {allPostings.length > 0 && filteredPostings.length === 0 && <h3 className="m-3">
                     <small className="text-muted">
                         There are no matches to your filters.
                     </small>

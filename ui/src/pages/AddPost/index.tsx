@@ -34,8 +34,9 @@ import { GetAllSchools } from "../../api/queries/schoolQueries";
 import { Link } from "react-router-dom";
 import { AlertIcon } from "../../components/Icons";
 import { ButtonGroup, Container, Stack, ToggleButton } from "react-bootstrap";
-import { addDays, formatTime } from "../../utils/Time";
+import { addDays } from "../../utils/Time";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
+import { FormatDateForDisplayAsTimeOnly } from "../../utils/miscUtils";
 
 export interface TypeaheadValue {
     name: string,
@@ -183,9 +184,9 @@ export default function AddPostPage() {
 
     let typeaheadCourses: TypeaheadValue[] = [];
     for (let i = 0; i < courses.length; i++) {
-        let course = courses[i];                
+        let course = courses[i];            
         let val = {
-          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}`,
+          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`,
           value: course.id
         };
 

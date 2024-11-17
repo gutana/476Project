@@ -19,17 +19,18 @@ import {
   CancelPostingMutation,
 } from "../api/mutations/postMutations";
 import { useMutation } from "@tanstack/react-query";
-import Toasts from "./Toasts";
-import { formatDate, formatTime } from "../utils/Time";
+import { formatDate } from "../utils/Time";
 import {
   PrimarySchoolCourse,
   SecondarySchoolCourse,
 } from "../models/courseSchedule";
 import Form from "react-bootstrap/Form";
+import { FormatDateForDisplayAsTimeOnly } from "../utils/miscUtils";
 
 interface Props {
   post: Post;
-  setPostings?: Function;
+  toastMessage: Function;
+  setPostings: Function;
 }
 
 interface AccordionProps {
@@ -55,7 +56,7 @@ const AccordionCourse = ({ course }: AccordionProps) => {
           {`Grade(s): ${course.grades.join(", ")}`}
           <br></br>
           Time:{" "}
-          {`${formatTime(course.startTime)} to ${formatTime(course.endTime)}`}
+          {`${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`}
           <br></br>
           {course.location && `Information: ${course.location}`}
         </Accordion.Body>
@@ -64,7 +65,7 @@ const AccordionCourse = ({ course }: AccordionProps) => {
   );
 };
 
-export const PostingCard = ({ post, setPostings }: Props) => {
+export const PostingCard = ({ post, toastMessage, setPostings }: Props) => {
   const [user] = useContext(UserContext);
 
   const showAcceptbutton: boolean =
@@ -78,33 +79,20 @@ export const PostingCard = ({ post, setPostings }: Props) => {
       post.acceptedByUserId === user?.id) &&
     post.dateOfAbsence > Date.now().toString();
 
-  const [show, setShow] = useState(false);
-  const [variant, setVariant] = useState("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-
   const [active, setActive] = useState(true);
 
   const acceptPostMutation = useMutation({
     mutationFn: AcceptPostingMutation,
     onSuccess: () => {
-      setShow(true);
-      setVariant("success");
-      setTitle("Accepted");
-      setMessage("Post has been accepted.");
+      toastMessage(true, "Accepted", "Post has been accepted.");
+      setPostings(post.id);
     },
     onError: (data) => {
       if (data.cause === 420) {
-        setShow(true);
-        setVariant("danger");
-        setTitle("Whoops!");
-        setMessage(data.message);
-        if (setPostings) setPostings(post.id);
+        toastMessage(false, "Whoops!", data.message);
+        setPostings(post.id);
       } else {
-        setShow(true);
-        setVariant("danger");
-        setTitle("Whoops!");
-        setMessage("Unknown error has occurred. Please try again later.");
+        toastMessage(false, "Whoops!", "Unknown error has occurred. Please try again later.");
       }
 
       acceptPostMutation.reset();
@@ -114,17 +102,11 @@ export const PostingCard = ({ post, setPostings }: Props) => {
   const cancelPostMutation = useMutation({
     mutationFn: CancelPostingMutation,
     onSuccess: () => {
-      setShow(true);
-      setVariant("success");
-      setTitle("Cancelled");
-      setMessage("Post has been cancelled");
-      if (setPostings !== undefined) setPostings(post.id);
+      toastMessage(true, "Cancelled", "Post has been cancelled");
+      setPostings(post.id);
     },
     onError: (data) => {
-      setShow(true);
-      setVariant("danger");
-      setTitle("Whoops!");
-      setMessage("Unkown error has occurred. Please try again later.");
+      toastMessage(false, "Whoops!", "Unknown error has occurred. Please try again later.")
       cancelPostMutation.reset();
     },
   });
@@ -164,25 +146,8 @@ export const PostingCard = ({ post, setPostings }: Props) => {
     setActive((prev) => !prev);
   };
 
-  const formatSubject = (
-    value: PrimarySchoolCourse | SecondarySchoolCourse
-  ) => {
-    let subject: string = "";
-    subject = `${MapSchoolSubjectToString(
-      value.subject.toString()
-    )} - ${formatTime(value.startTime)} to ${formatTime(value.endTime)}`;
-    return subject;
-  };
-
   return (
     <>
-      <Toasts
-        show={show}
-        setShow={setShow}
-        variant={variant}
-        title={title}
-        message={message}
-      />
       <Accordion onSelect={handleSelect} activeKey={active ? post.id : null}>
         <Accordion.Item
           eventKey={post.id}
