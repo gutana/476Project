@@ -94,6 +94,20 @@ export const MapAbsenceTypeStringToAbsenceType = (absenceType: string) => {
     throw `Error: Unexpected string: ${absenceType} trying to convert to AbsenceType Enum`;
 }
 
+export const MapSchoolSubjectToString = (subject: string) => {
+    switch (subject) {
+        case "FrenchImmersion": return "French Immersion";
+        case "CoreFrench": return "Core French";
+        case "ArtsEd": return "Arts Ed";
+        case "General": return "General";
+        case "English": return "English";
+        case "Math": return "Math";
+        case "Science": return "Science";
+        case "History": return "History";
+        case "SocialStudies": return "Social Studies";
+    }
+}
+
 export enum PrimarySchoolSubject {
     FrenchImmersion,
     CoreFrench,
