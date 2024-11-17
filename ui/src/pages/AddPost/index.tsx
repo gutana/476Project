@@ -473,6 +473,7 @@ export default function AddPostPage() {
                   <Form.Group className="mb-3" controlId="date">
                     <Form.Control
                       type="Date"
+                      defaultValue={today.toISOString().split("T")[0]}
                       min={today.toISOString().split("T")[0]}
                       onChange={(e) => {
                         changeStartDate(e);
@@ -511,6 +512,7 @@ export default function AddPostPage() {
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="Date"
+                defaultValue={today.toISOString().split("T")[0]}
                 min={today.toISOString().split("T")[0]}
                 onChange={(e) => {
                   changeStartDate(e);
@@ -527,6 +529,7 @@ export default function AddPostPage() {
                   <Form.Label>Start Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={today.toISOString().split("T")[0]}
                     onChange={changeStartDate}
                     min={today.toISOString().split("T")[0]}
                     max={
@@ -542,6 +545,7 @@ export default function AddPostPage() {
                   <Form.Label>End Date</Form.Label>
                   <Form.Control
                     type="Date"
+                    defaultValue={addDays(today, 13).toISOString().split("T")[0]}
                     onChange={changeEndDate}
                     min={
                       startDate === undefined
