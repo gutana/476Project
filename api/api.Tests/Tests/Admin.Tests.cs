@@ -33,7 +33,7 @@ public class AdminTests
 
         var unapprovedUser = new User() { Id = unapprovedUserId.ToString(), UserType = UserType.Substitute, EmailConfirmed = false };
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("ApproveUser_OnlyAdminCanApprove");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User>
         {
             new User() { Id = uid1.ToString(), UserType = UserType.Teacher, EmailConfirmed = false  },
@@ -89,7 +89,7 @@ public class AdminTests
         var uid5 = Guid.NewGuid();
         var uid6 = Guid.NewGuid();
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("ApproveUser_OnlyAdminCanFetchUnapprovedUsers");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User>
         {
             new User() { Region = Region.Saskatoon, Id = uid1.ToString(), UserType = UserType.Teacher, EmailConfirmed = false  },

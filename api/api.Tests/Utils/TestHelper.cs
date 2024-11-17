@@ -23,10 +23,10 @@ public static class TestHelper
         return controllerContext;
     }
 
-    public static ApplicationDbContext CreateMockDbContext()
+    public static ApplicationDbContext CreateMockDbContext(string dbName)
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("TestDb");
+            .UseInMemoryDatabase(dbName);
         return new ApplicationDbContext(options.Options);
     }
 

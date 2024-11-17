@@ -25,7 +25,7 @@ public class NewsTests
     public async Task CreateNews_NonexistentUser_ReturnsUnauthorized()
     {
         // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("CreateNews_NonexistentUser_ReturnsUnauthorized");
         var userManager = TestHelper.CreateMockUserManagerWithUsers([]);
         var newsController = new NewsController(userManager, _logger.Object, mockDbContext, _cache);
         newsController.ControllerContext = TestHelper.CreateControllerContextWithUser(Guid.NewGuid().ToString());
@@ -47,7 +47,7 @@ public class NewsTests
         var teachId = Guid.NewGuid().ToString();
         var adminId = Guid.NewGuid().ToString();
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("CreateNews_UnauthorizedUsers_ReturnsUnauthorized");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User>
         {
             new User() { Id = subId, UserType = UserType.Substitute },
@@ -75,7 +75,7 @@ public class NewsTests
     public async Task CreateNews_SuccessfullyCreates()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("CreateNews_SuccessfullyCreates");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User { Id = userId, UserType = UserType.Administrator, EmailConfirmed = true };
@@ -108,7 +108,7 @@ public class NewsTests
         // Arrange
         var existingPost = new NewsPost() { Title = "ABC", Content = "DEF" };
 
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetLatest_ReturnsLatestNews");
         mockContext.NewsPosts = TestHelper.CreateMockDbSet([existingPost]).Object;
 
         var userId = Guid.NewGuid().ToString();

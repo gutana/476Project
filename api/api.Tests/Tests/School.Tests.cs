@@ -30,7 +30,7 @@ public class SchoolTests
         var uid5 = Guid.NewGuid();
         var uid6 = Guid.NewGuid();
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("AddSchool_OnlySuccessful_ForAuthedUser");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User>
         {
             new User() { Id = uid1.ToString(), UserType = UserType.Teacher, EmailConfirmed = false  },
@@ -89,7 +89,7 @@ public class SchoolTests
     {
         var uid1 = Guid.NewGuid();
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("GetByRegion_ReturnsAppropriateSchools");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User> 
             { new User() { Id = uid1.ToString(), UserType = UserType.Teacher, EmailConfirmed = false  }});
 
@@ -121,7 +121,7 @@ public class SchoolTests
     {
         var uid1 = Guid.NewGuid();
 
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("GetAll_ReturnsAll");
         var userManager = TestHelper.CreateMockUserManagerWithUsers(new List<User> 
             { new User() { Id = uid1.ToString(), UserType = UserType.Teacher, EmailConfirmed = false  }});
 

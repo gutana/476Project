@@ -31,7 +31,7 @@ public class AccountTests
     public async Task Register_IsSuccessful()
     {
         // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("Register_IsSuccessful");
         var userManager = TestHelper.CreateMockUserManagerWithUsers([]);
 
         var signInManager = new Mock<SignInManager<User>>(userManager, 
@@ -73,7 +73,7 @@ public class AccountTests
     public async Task RegisterWithIncompleteData_ReturnsBadRequest()
     {
         // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("RegisterWithIncompleteData_ReturnsBadRequest");
         var userManager = TestHelper.CreateMockUserManagerWithUsers([]);
 
         var signInManager = new Mock<SignInManager<User>>(userManager, 
@@ -113,7 +113,7 @@ public class AccountTests
     public async Task GetUser_ReturnsUserDto()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("GetUser_ReturnsUserDto");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -140,7 +140,7 @@ public class AccountTests
     public async Task GetUser_ReturnsUnauthorized()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("GetUser_ReturnsUnauthorized");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([]);
 
@@ -161,7 +161,7 @@ public class AccountTests
     public async Task EditInfo_IsSuccessful()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("EditInfo_IsSuccessful");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -193,7 +193,7 @@ public class AccountTests
     public async Task EditInfo_ReturnsUnauthorized()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("EditInfo_ReturnsUnauthorized");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = false };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -225,7 +225,7 @@ public class AccountTests
     public async Task AddCourseToProfile_DoesntAllowAdmins()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("AddCourseToProfile_DoesntAllowAdmins");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -257,7 +257,7 @@ public class AccountTests
     public async Task AddCourseToProfile_ReturnsBadRequestWhenInvalidTimes()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("AddCourseToProfile_ReturnsBadRequestWhenInvalidTimes");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Teacher, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -289,7 +289,7 @@ public class AccountTests
     public async Task AddCourseToProfile_ReturnsOk()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("AddCourseToProfile_ReturnsOk");
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Teacher, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
@@ -328,7 +328,7 @@ public class AccountTests
     public async Task DeleteCourseFromProfile_ReturnsOk()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("DeleteCourseFromProfile_ReturnsOk");
         string courseId = Guid.NewGuid().ToString();
         var user = new User()
         {
@@ -374,7 +374,7 @@ public class AccountTests
     public async Task DeleteAnotherUsersCourse_ReturnsBadRequest()
     {
          // Arrange
-        var mockDbContext = TestHelper.CreateMockDbContext();
+        var mockDbContext = TestHelper.CreateMockDbContext("DeleteAnotherUsersCourse_ReturnsBadRequest");
         string courseId = Guid.NewGuid().ToString();
         string courseId2 = Guid.NewGuid().ToString();
         var user = new User()

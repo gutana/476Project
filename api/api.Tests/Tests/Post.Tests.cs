@@ -1,6 +1,7 @@
 ﻿using api.Controllers;
 using api.DTO;
 using api.Models;
+using api.Utilities;
 using api.Tests.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Configuration;
+using System.ComponentModel;
 
 namespace api.Tests;
 
@@ -27,7 +29,7 @@ public class PostTests
     public async Task GetApprovedSubs_ReturnsApprovedSubsForUserRegion()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetApprovedSubs_ReturnsApprovedSubsForUserRegion");
 
         var userId = Guid.NewGuid().ToString();
         var currentUser = new User
@@ -89,7 +91,7 @@ public class PostTests
     public async Task GetApprovedSubs_ReturnsUnauthorizedWhenUserIsNull()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetApprovedSubs_ReturnsUnauthorizedWhenUserIsNull");
         var userManager = TestHelper.CreateMockUserManagerWithUsers([]);
 
         var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
@@ -105,7 +107,7 @@ public class PostTests
     public async Task GetApprovedSubs_ReturnsProblemWhenUserNotVerified()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetApprovedSubs_ReturnsProblemWhenUserNotVerified");
 
         var userId = Guid.NewGuid().ToString();
         var unverifiedUser = new User
@@ -137,7 +139,7 @@ public class PostTests
     public async Task GetByUser_ReturnsUnauthorized()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetByUser_ReturnsUnauthorized");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User
@@ -166,7 +168,7 @@ public class PostTests
     public async Task GetByUser_ReturnsPostsByUser()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetByUser_ReturnsPostsByUser");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User
@@ -215,7 +217,7 @@ public class PostTests
     public async Task GetByUser_AdminCanFetchByUserId()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetByUser_AdminCanFetchByUserId");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User
@@ -269,7 +271,7 @@ public class PostTests
     public async Task GetByUser_IgnoresUserIdParameterWhenUserNotAdmin()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetByUser_IgnoresUserIdParameterWhenUserNotAdmin");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User
@@ -322,7 +324,7 @@ public class PostTests
     public async Task GetAvailable_ReturnsUnauthorized()
     {
         // Arrange
-        var mockContext = TestHelper.CreateMockDbContext();
+        var mockContext = TestHelper.CreateMockDbContext("GetAvailable_ReturnsUnauthorized");
 
         var userId = Guid.NewGuid().ToString();
         var user = new User
@@ -345,5 +347,78 @@ public class PostTests
 
         // Assert
         Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task GetAvailable_ReturnsOnlyAvailablePosts()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("GetAvailable_ReturnsOnlyAvailablePosts");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            FirstName = "GetOnlyAvailablePosts",
+            UserType = UserType.Substitute, // adding as sub breaks GetApprovedSubs_ReturnsApprovedSubsForUserRegion()
+            Region = Region.Regina,
+            EmailConfirmed = true
+        };
+
+        var school = new School()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Region = Region.Regina
+        };
+
+        var doa = Time.UtcToSaskTime(DateTime.UtcNow).AddDays(5).Date;
+
+        var postId = Guid.NewGuid().ToString();
+        var post1 = new Post
+        {
+            Id = postId,
+            Poster = new User() { Id = Guid.NewGuid().ToString() },
+            School = school,
+            DateOfAbsence = doa,
+            AcceptedByUser = null
+        };
+
+        var post2 = new Post
+        {
+            Id = Guid.NewGuid().ToString(),
+            Poster = new User() { Id = Guid.NewGuid().ToString() },
+            School = school,
+            DateOfAbsence = doa,
+            AcceptedByUser = new User() { Id = Guid.NewGuid().ToString() }
+        };
+
+        var post3 = new Post
+        {
+            Id = Guid.NewGuid().ToString(),
+            Poster = new User() { Id = Guid.NewGuid().ToString() },
+            School = school,
+            DateOfAbsence = doa.AddDays(-6),
+            AcceptedByUser = null
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Posts.Add(post1);
+        mockContext.Posts.Add(post2);
+        mockContext.Posts.Add(post3);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+
+        // Act
+        var result = await postController.GetAvailable();
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result);
+        List<PostDto> posts = (List<PostDto>)(((OkObjectResult)result).Value);
+        Assert.Single(posts);
+        Assert.Equal(postId, posts[0].Id);
     }
 }
