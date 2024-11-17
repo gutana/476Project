@@ -14,17 +14,17 @@ namespace api.Controllers;
 
 public class AdminController : BaseController
 {
-    private readonly ILogger<AccountController> _logger;
+    private readonly ILogger<AdminController> _logger;
     private readonly ApplicationDbContext _context;
 
-    public AdminController(UserManager<User> userManager, ILogger<AccountController> logger, ApplicationDbContext context, IMemoryCache cache)
+    public AdminController(UserManager<User> userManager, ILogger<AdminController> logger, ApplicationDbContext context, IMemoryCache cache)
         : base(userManager, cache)
     {
         _logger = logger;
         _context = context;
     }
 
-    public class AdminApprovalResponse
+    public class ApproveAccountRequest
     {
         public required bool Approved { get; set; }
         public required string Id { get; set; }
@@ -32,7 +32,7 @@ public class AdminController : BaseController
 
     [HttpPost("approveUser")]
     [Authorize]
-    public async Task<IActionResult> ApproveUser(AdminApprovalResponse resp)
+    public async Task<IActionResult> ApproveUser(ApproveAccountRequest resp)
     {
         CacheInvalidate(resp.Id);
 
@@ -40,11 +40,11 @@ public class AdminController : BaseController
         if (user == null || user.UserType != UserType.Administrator)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator.");
 
-        var accountAcceptance = _userManager.FindByIdAsync(resp.Id).Result;
+        var accountAcceptance = await _userManager.FindByIdAsync(resp.Id);
         if (accountAcceptance == null)
-            return Problem("Account with ID: " + resp.Id + " cannot be found.", statusCode: 500);
+            return BadRequest("Account with ID: " + resp.Id + " cannot be found.");
 
         if (resp.Approved == false)
         {
@@ -72,7 +72,7 @@ public class AdminController : BaseController
         if (user == null || user.UserType != UserType.Administrator) 
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator.");
 
         var unapprovedUsers = _context.Users.Where(u => u.EmailConfirmed == false && u.Region == user.Region).ToList()
                               .ConvertAll(u => UserDto.MapIdentityUserToUserDto(u));

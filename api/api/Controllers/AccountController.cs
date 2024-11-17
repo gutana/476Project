@@ -41,6 +41,14 @@ public class AccountController : BaseController
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegistrationDto registrationDto)
     {
+        if ((registrationDto.UserType != UserType.Administrator && registrationDto.SchoolId == null) ||
+            (registrationDto.Email == null || registrationDto.Email.Length == 0) ||
+            (registrationDto.Password == null || registrationDto.Password.Length < 8))
+        {
+            return BadRequest();
+        }
+
+
         var user = new User();
         user.Email = registrationDto.Email;
         user.FirstName = registrationDto.FirstName;
@@ -58,7 +66,7 @@ public class AccountController : BaseController
         if (result.Succeeded) 
             return Ok();
 
-        return BadRequest(result.Errors);
+        return BadRequest();
     }
 
     [HttpGet("getUser")]
@@ -86,14 +94,16 @@ public class AccountController : BaseController
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Problem("Account has to be verified by an administrator.", statusCode: 500);
+            return Unauthorized("Account has to be verified by an administrator.");
 
         user.FirstName = data.FirstName;
         user.LastName = data.LastName;
         user.Email = data.Email;
         user.PhoneNumber = data.PhoneNumber;
         user.Region = data.Region;
-        user.School = data.SchoolId.Length != 0 ? _context.GetSchoolById(data.SchoolId) : null;
+
+        if (data.SchoolId != null)
+            user.School = data.SchoolId.Length != 0 ? _context.GetSchoolById(data.SchoolId) : null;
 
         var result = await _userManager.UpdateAsync(user);
 
@@ -138,6 +148,6 @@ public class AccountController : BaseController
         if (success)
             return Ok();
 
-        return Problem();
+        return BadRequest();
     }
 }

@@ -8,14 +8,14 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 
-namespace api.Tests.Controllers;
+namespace api.Tests;
 
-public class NewsControllerTests
+public class NewsTests
 {
     private readonly Mock<ILogger<NewsController>> _logger;
     private readonly MemoryCache _cache;
 
-    public NewsControllerTests()
+    public NewsTests()
     {
         _logger = new Mock<ILogger<NewsController>>();
         _cache = new MemoryCache(new MemoryCacheOptions());

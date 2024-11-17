@@ -30,11 +30,16 @@ public static class TestHelper
         return new ApplicationDbContext(options.Options);
     }
 
-    public static UserManager<User> CreateMockUserManagerWithUsers(List<User> users)
+    public static UserManager<User> CreateMockUserManagerWithUsers(List<User> users, User? userManagerFindByIdShouldReturn = null)
     {
         var mockUserStore = new Mock<IQueryableUserStore<User>>();
         var mockUsers = users.AsQueryable().BuildMockDbSet();
         mockUserStore.Setup(s => s.Users).Returns(mockUsers.Object);
+        mockUserStore.Setup(s => s.UpdateAsync(It.IsAny<User?>(), It.IsAny<CancellationToken>())).ReturnsAsync(IdentityResult.Success);
+        mockUserStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>())).ReturnsAsync(IdentityResult.Success);
+        if (userManagerFindByIdShouldReturn != null)
+            mockUserStore.Setup(s => s.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userManagerFindByIdShouldReturn);
+
         return new UserManager<User>(mockUserStore.Object, null, null, null, null, null, null, null, null);
     }
 

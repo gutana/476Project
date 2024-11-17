@@ -24,11 +24,18 @@ public abstract class BaseController : Controller
         if (userId == null)
             return null;
 
-        return await _userManager.Users.
-            Include(user => user.School).
-            Include(user => user.primarySchoolCourses).
-            Include(user => user.secondarySchoolCourses).
-            FirstAsync(user => user.Id == userId);
+        try
+        {
+            return await _userManager.Users.
+                Include(user => user.School).
+                Include(user => user.primarySchoolCourses).
+                Include(user => user.secondarySchoolCourses).
+                FirstAsync(user => user.Id == userId);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     protected async Task<User?> GetCurrentUserCached()
