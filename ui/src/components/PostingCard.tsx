@@ -124,9 +124,11 @@ export const PostingCard = ({ post, setPostings }: Props) => {
                 message={message}
             />
             <Accordion onSelect={handleSelect} activeKey={active ? post.id : null}>
+                
+                
                 <Accordion.Item
                     eventKey={post.id}
-                    style={{ margin: "2vw" }}
+                    style={user?.id === post.posterId ? { margin: "2vw", backgroundColor: "rgba(100, 255, 40, 0.3)" } : { margin: "2vw"}}
                     key={post.id}
                 >
                     <Accordion.Header as="div">

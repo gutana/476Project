@@ -3,17 +3,27 @@ import { GetPostsByUser, GetTakenPosts } from "../../api/queries/postQueries";
 import { PostingCard } from "../../components/PostingCard";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { EmptyPostingsCard } from "../../components/EmptyPostingsCard";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { formatDate } from "../../utils/Time";
 import { Post } from "../../models/postings";
+import { UserContext } from "../../components/UserWrapper";
+import { UserType } from "../../models/user";
 
 export default function ViewMyPostingsPage() {
-  const [postings, setPostings] = useState<Post[]>([]);
+  const [user] = useContext(UserContext);
 
+  const [postings, setPostings] = useState<Post[]>([]);
+  
   const { data, isLoading, isError } = useQuery({
     queryFn: () => GetTakenPosts(),
     queryKey: ["getTakenPosts"],
   });
+
+  const { data: teacherData, isLoading : teacherIsLoading, isError : teacherIsError } = useQuery({
+    queryFn: () => GetPostsByUser(),
+    queryKey: ["getPostsByUser1"],
+    enabled: user?.userType === UserType.Teacher,
+  })
 
   useEffect(() => {
     if (data !== undefined) {
@@ -21,11 +31,18 @@ export default function ViewMyPostingsPage() {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (teacherData !== undefined) {
+      setPostings(previous => [...teacherData, ...previous]);
+    }
+  }, [teacherData]);
+
   if (!isLoading && data?.length === 0) return <EmptyPostingsCard />;
 
   return (
     <>
       {isLoading && <LoadingSpinner />}
+      
       {postings?.map((post) => {
         return (
           <PostingCard post={post} key={post.id} setPostings={setPostings} />
