@@ -75,18 +75,11 @@ export default function ViewPostingsPage() {
     }
 
     const showToast = (success: boolean, title: string, message: string) => {
-        if (success) {
-          setShow(true);
-          setVariant("success");
-          setTitle(title);
-          setMessage(message);
-        } else {
-          setShow(true);
-          setVariant("danger");
-          setTitle(title);
-          setMessage(message);
-        }
-      }
+        setVariant(success ? "success" : "danger");
+        setTitle(title);
+        setMessage(message);
+        setShow(true);
+    }
 
     const checkSchool = (id: string, schools: TypeaheadValue[]) => {
         if (schools.length === 0) return true;
@@ -96,14 +89,14 @@ export default function ViewPostingsPage() {
     const checkCourses = (courses: PrimarySchoolCourse[] | SecondarySchoolCourse[] | null, values: TypeaheadValue[]) => {
         if (values.length === 0) return true;
         if (courses === null) return false;
-        let subjects: string[] = [];
+        let subjects = new Set();
         courses.forEach(course => {
-            subjects.push(course.subject.toString());
+            subjects.add(course.subject.toString());
         })
 
         for (let i = 0; i < values.length; i++) {
             const item = values[i];
-            if (item && subjects.includes(item.match ? item.match : item.name)) {
+            if (item && subjects.has(item.match ? item.match : item.name)) {
                 return true;
             }
         }
@@ -113,21 +106,21 @@ export default function ViewPostingsPage() {
     
     const checkGrades = (primary: PrimarySchoolCourse[] | null, secondary: SecondarySchoolCourse[] | null, grades: TypeaheadValue[]) => {
         if (!grades || grades.length == 0) return true;
-        let courseGrades: string[] = [];
+        let courseGrades = new Set();
         primary?.forEach(course => {
             course.grades.forEach(grade => {
-                courseGrades.push(grade.toString());
+                courseGrades.add(grade.toString());
             })
         })
         secondary?.forEach(course => {
             course.grades.forEach(grade => {
-                courseGrades.push(grade.toString());
+                courseGrades.add(grade.toString());
             })
         })
 
         for (let i = 0; i < grades.length; i++) {
             const gradeValue = grades[i];
-            if (courseGrades && courseGrades.includes(gradeValue.match ? gradeValue.match: gradeValue.name)) {
+            if (gradeValue && courseGrades.has(gradeValue.match ? gradeValue.match: gradeValue.name)) {
                 return true;
             }
         }

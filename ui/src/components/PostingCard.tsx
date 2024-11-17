@@ -188,7 +188,7 @@ export const PostingCard = ({ post, toastMessage, setPostings }: Props) => {
                 <Row>
                   <Col>{post.postDescription}</Col>
                 </Row>
-                <Row className="mt-4">
+                <Row className="mt-2">
                   {post.primarySchoolSubjects &&
                     post.primarySchoolSubjects.map((course) => {
                       return <AccordionCourse key={course.id} course={course} />;

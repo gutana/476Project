@@ -30,17 +30,10 @@ export default function ViewMyPostingsPage() {
   })
 
   const showToast = (success: boolean, title: string, message: string) => {
-    if (success) {
-      setShow(true);
-      setVariant("success");
-      setTitle(title);
-      setMessage(message);
-    } else {
-      setShow(true);
-      setVariant("danger");
-      setTitle(title);
-      setMessage(message);
-    }
+    setVariant(success ? "success" : "danger");
+    setTitle(title);
+    setMessage(message);
+    setShow(true);
   }
   
   useEffect(() => {
