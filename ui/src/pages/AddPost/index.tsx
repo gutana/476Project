@@ -113,8 +113,8 @@ export default function AddPostPage() {
   const [requestedSub, setRequestedSub] = useState<any>([]);
   const [grades, setGrades] = useState<TypeaheadValue[]>([]);
 
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+  const [startDate, setStartDate] = useState<Date>(today);
+  const [endDate, setEndDate] = useState<Date>(today);
   const [absenceType, setAbsenceType] = useState<AbsenceType>(AbsenceType.HalfDay)
   const [ampm, setAmpm] = useState<AMPM | null>("AM");
 
