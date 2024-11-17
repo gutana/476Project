@@ -60,6 +60,9 @@ export default function AddNewsPage() {
             Title: title,
             Content: content
         })
+
+        event.target[0].value = "";
+        event.target[1].value = "";
     }
 
     return (
