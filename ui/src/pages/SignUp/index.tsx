@@ -212,6 +212,11 @@ export default function SignUp() {
 
     return (
         <>
+            <h3 style={{ justifyContent: 'center' }}>
+                <img height="50vh" style={{ marginRight: "4px", marginTop: '-5px' }} src={`${process.env.PUBLIC_URL}/images/icon.png`} alt=""></img>
+                SubSystem
+            </h3>
+
             <div className="container-md">
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="firstName">
@@ -312,6 +317,8 @@ export default function SignUp() {
                     <Button variant="primary" type="submit">
                         Submit
                     </Button>
+
+                    <Button style={{ fontWeight: 'normal', marginLeft: "6px"}} variant="secondary" href="/login">Already have an account?</Button>
                 </Form>
             </div>
 
