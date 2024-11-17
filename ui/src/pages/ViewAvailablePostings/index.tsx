@@ -52,6 +52,9 @@ export default function ViewPostingsPage() {
 
     useEffect(() => {
         if (data !== undefined) {
+            data.sort((a: Post, b: Post) => {
+                return new Date(a.dateOfAbsence) > new Date(b.dateOfAbsence) ? 1 : -1;
+            })
             setAllPostings(data);
             setFilteredPostings(data);
         }
@@ -107,19 +110,32 @@ export default function ViewPostingsPage() {
 
         return false;
     }
+    
+    const checkGrades = (primary: PrimarySchoolCourse[] | null, secondary: SecondarySchoolCourse[] | null, grades: TypeaheadValue[]) => {
+        if (!grades || grades.length == 0) return true;
+        let courseGrades: string[] = [];
+        primary?.forEach(course => {
+            course.grades.forEach(grade => {
+                courseGrades.push(grade.toString());
+            })
+        })
+        secondary?.forEach(course => {
+            course.grades.forEach(grade => {
+                courseGrades.push(grade.toString());
+            })
+        })
 
-    const checkMatch = (val1: any, val2: any, lists=false) => {
-        if (!val2 || val2.length === 0 || val2 === "-1") return true;
-        if (lists) {
-            for (let i = 0; i < val2.length; i++) {
-                const item = val2[i];
-                if (val1 && val1.includes(item.match ? item.match : item.name)) {
-                    return true;
-                }
+        for (let i = 0; i < grades.length; i++) {
+            const gradeValue = grades[i];
+            if (courseGrades && courseGrades.includes(gradeValue.match ? gradeValue.match: gradeValue.name)) {
+                return true;
             }
-            return false;
         }
-        
+        return false;
+    }
+
+    const checkMatch = (val1: any, val2: any) => {
+        if (!val2 || val2.length === 0 || val2 === "-1") return true;
         return val1 === val2;
     }
 
@@ -129,10 +145,10 @@ export default function ViewPostingsPage() {
         let matched = [];
 
         if (changedPostings === undefined) {
-            matched = allPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkMatch(post.grades, grades, true)
+            matched = allPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkGrades(post.primarySchoolSubjects, post.secondarySchoolSubjects, grades)
             && checkCourses(post.primarySchoolSubjects, primary) && checkCourses(post.secondarySchoolSubjects, secondary) && checkMatch(post.school.schoolType, schoolType));
         } else {
-            matched = changedPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkMatch(post.grades, grades, true)
+            matched = changedPostings.filter(post => checkSchool(post.school.id, school) && checkMatch(post.school.region, region) && checkGrades(post.primarySchoolSubjects, post.secondarySchoolSubjects, grades)
             && checkCourses(post.primarySchoolSubjects, primary) && checkCourses(post.secondarySchoolSubjects, secondary) && checkMatch(post.school.schoolType, schoolType));
         }
 
