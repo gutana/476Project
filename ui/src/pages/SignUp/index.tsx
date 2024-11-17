@@ -212,6 +212,11 @@ export default function SignUp() {
 
     return (
         <>
+            <h3 style={{ justifyContent: 'center' }}>
+                <img height="50vh" style={{ marginRight: "4px", marginTop: '-5px' }} src={`${process.env.PUBLIC_URL}/images/icon.png`} alt=""></img>
+                SubSystem
+            </h3>
+
             <div className="container-md">
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="firstName">

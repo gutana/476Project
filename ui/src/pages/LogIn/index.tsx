@@ -42,24 +42,31 @@ export default function LogIn() {
         return (<LoadingSpinner />);
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter email" />
-            </Form.Group>
+        <>
+            <h3 style={{ justifyContent: 'center' }}>
+                <img height="50vh" style={{ marginRight: "4px", marginTop: '-5px' }} src={`${process.env.PUBLIC_URL}/images/icon.png`} alt=""></img>
+                    SubSystem
+                </h3>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" />
-            </Form.Group>
-            {/* <div className="mb-3">Don't have an account?
-                <Link to="/signup">Sign up!</Link></div> */}
-            {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
-            <Button variant="primary" type="submit">
-                Submit
-            </Button>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control type="email" placeholder="Enter email" />
+                </Form.Group>
 
-            <Button style={{ fontWeight: 'normal', marginLeft: "6px" }} variant="secondary" href="/signup">Don't have an account?</Button>
-        </Form>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" placeholder="Password" />
+                </Form.Group>
+                {/* <div className="mb-3">Don't have an account?
+                    <Link to="/signup">Sign up!</Link></div> */}
+                {errorMessage && <Alert variant="warning">{errorMessage}</Alert>}
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+
+                <Button style={{ fontWeight: 'normal', marginLeft: "6px" }} variant="secondary" href="/signup">Don't have an account?</Button>
+                </Form>
+        </>
     )
 }
