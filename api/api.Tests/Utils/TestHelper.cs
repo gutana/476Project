@@ -43,12 +43,6 @@ public static class TestHelper
         return new UserManager<User>(mockUserStore.Object, null, null, null, null, null, null, null, null);
     }
 
-    public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> list) where T : class
-    {
-        var mockStore = new Mock<IQueryable<T>>();
-        return list.AsQueryable().BuildMockDbSet();
-    }
-
     private static ClaimsPrincipal CreateClaimsPrincipal(string userId)
     {
         var claims = new List<Claim>
@@ -57,5 +51,14 @@ public static class TestHelper
         };
 
         return new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthType"));
+    }
+}
+
+public static class MockDbSetFactory<T>
+{
+    public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> list) where T : class
+    {
+        var mockStore = new Mock<IQueryable<T>>();
+        return list.AsQueryable().BuildMockDbSet();
     }
 }
