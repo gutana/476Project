@@ -97,7 +97,9 @@ public class SchoolTests
         mockSchools.Add(new School { Id = Guid.NewGuid().ToString(), Region = Region.Regina, SchoolName = "ReginaSchool" });
         mockSchools.Add(new School { Id = Guid.NewGuid().ToString(), Region = Region.Saskatoon, SchoolName = "SaskatoonSchool" });
 
-        mockDbContext.Schools = TestHelper.CreateMockDbSet(mockSchools).Object;
+
+        mockDbContext.Schools = MockDbSetFactory<List<School>>.CreateMockDbSet(mockSchools).Object;
+
         var schoolController = new SchoolController(userManager, _logger.Object, mockDbContext, _cache);
 
         schoolController.ControllerContext = TestHelper.CreateControllerContextWithUser(uid1.ToString());
@@ -129,7 +131,9 @@ public class SchoolTests
         mockSchools.Add(new School { Id = Guid.NewGuid().ToString(), Region = Region.Regina, SchoolName = "ReginaSchool" });
         mockSchools.Add(new School { Id = Guid.NewGuid().ToString(), Region = Region.Saskatoon, SchoolName = "SaskatoonSchool" });
 
-        mockDbContext.Schools = TestHelper.CreateMockDbSet(mockSchools).Object;
+
+        mockDbContext.Schools = MockDbSetFactory<List<School>>.CreateMockDbSet(mockSchools).Object;
+
         var schoolController = new SchoolController(userManager, _logger.Object, mockDbContext, _cache);
 
         schoolController.ControllerContext = TestHelper.CreateControllerContextWithUser(uid1.ToString());
