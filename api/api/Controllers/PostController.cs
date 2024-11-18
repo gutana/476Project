@@ -92,7 +92,7 @@ public class PostController: BaseController
     {
         User? user = await GetCurrentUserCached();
         if (user == null || user.UserType != UserType.Administrator)
-            return Unauthorized();
+            return Unauthorized("User must be an administrator.");
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator.");
 
@@ -105,8 +105,8 @@ public class PostController: BaseController
     public async Task<IActionResult> Add(CreatePostDto resp)
     {
         User? user = await GetCurrentUserCached();
-        if (user == null)
-            return Unauthorized();
+        if (user == null || user.UserType != UserType.Teacher)
+            return Unauthorized("Only teachers may add postings.");
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator");
 
