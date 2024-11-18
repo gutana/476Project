@@ -200,7 +200,7 @@ export const PostingCard = ({ post, toastMessage, setPostings }: Props) => {
                 </Row>
                 <Row className="mt-4">
                   <Col>
-                  {showTakenByText && (
+                  {showTakenByText && post.acceptedByUserFirstName && post.acceptedByUserLastName && (
                     <div className="p-2">
                       Taken by:{" "}
                       {post.acceptedByUserFirstName +
@@ -248,7 +248,7 @@ export const PostingCard = ({ post, toastMessage, setPostings }: Props) => {
                           {cancelPostMutation.isPending ? (
                             <Spinner />
                           ) : (
-                            "Cancel"
+                            user?.id === post.posterId ? "Delete" : "Cancel"
                           )}
                         </Button>
                       ))}
