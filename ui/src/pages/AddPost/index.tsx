@@ -82,6 +82,12 @@ export function MultipleSelection({
 export default function AddPostPage() {
   const [user] = useContext(UserContext);
 
+  if (!user) {
+    window.location.href = "/login";
+  } else if (user.userType !== UserType.Teacher) {
+    window.location.href = "/";
+  }
+
   const today = new Date();
   today.setHours(0);
 
@@ -358,10 +364,6 @@ export default function AddPostPage() {
 
   if (isLoading || postMutation.isPending) {
     return <LoadingSpinner />;
-  }
-
-  if (!user || (user && user.userType === UserType.Substitute)) {
-    window.location.href = "/";
   }
 
   const showProfileInfoText: boolean =

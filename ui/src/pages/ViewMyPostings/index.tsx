@@ -7,14 +7,17 @@ import { useContext, useEffect, useState } from "react";
 import { Post } from "../../models/postings";
 import { UserContext } from "../../components/UserWrapper";
 import Toasts from "../../components/Toasts";
+import { UserType } from "../../models/user";
 
 export default function ViewMyPostingsPage() {
   const [user] = useContext(UserContext);
   if (user === null) {
     window.location.href = '/login';
+  } else if (user.userType === UserType.Administrator) {
+    window.location.href = '/';
   }
-  const [postings, setPostings] = useState<Post[]>([]);
   
+  const [postings, setPostings] = useState<Post[]>([]); 
   const [show, setShow] = useState(false);
   const [variant, setVariant] = useState("");
   const [title, setTitle] = useState("");

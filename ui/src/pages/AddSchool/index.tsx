@@ -14,6 +14,11 @@ import { stringToRegion, stringToSchoolType } from "../../components/stringToDat
 
 export default function AddSchoolPage() {
     const [user] = useContext(UserContext);
+    if (!user) {
+        window.location.href = "/login";
+    } else if (user.userType !== UserType.Administrator) {
+        window.location.href = "/";
+    }
 
     const [schoolName, setSchoolName] = useState("");
     const [schoolType, setSchoolType] = useState<SchoolType | string>("");
@@ -103,10 +108,6 @@ export default function AddSchoolPage() {
         e.target.value = formatPhoneNumberOnChange(e.target.value, phoneNumber, last);
         setLast(e.target.value.slice(-1) ? e.target.value.slice(-1) : "");
         setPhoneNumber(e.target.value);
-    }
-
-    if (!user || (user && user.userType !== UserType.Administrator)) {
-        window.location.href = "/";
     }
 
     return (

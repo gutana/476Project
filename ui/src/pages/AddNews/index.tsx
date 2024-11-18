@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../../components/UserWrapper";
-import { useNavigate } from "react-router-dom";
 import { UserType } from "../../models/user";
 import { Alert, Button, Form } from "react-bootstrap";
 import { useMutation } from "@tanstack/react-query";
@@ -8,10 +7,10 @@ import { PostNewsMutation } from "../../api/mutations/newsMutations";
 
 export default function AddNewsPage() {
     const [user] = useContext(UserContext);
-    const navigate = useNavigate();
-
-    if (!user || user.userType !== UserType.Administrator) {
-        navigate("/");
+    if (!user) {
+        window.location.href = "/login";
+    } else if (user.userType !== UserType.Administrator) {
+        window.location.href = "/";
     }
 
     const [resultMessage, setResultMessage] = useState<string | null>(null);
