@@ -86,6 +86,23 @@ public class PostController: BaseController
         return Ok(postings);
     }
 
+    [HttpGet("getMyPostings")]
+    [Authorize]
+    public async Task<IActionResult> GetMyPostings()
+    {
+        User? user = await GetCurrentUserCached();
+        if (user == null)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized("Account has to be verified by an administrator.");
+
+        var takenPostings = await _context.GetTakenPostings(user);
+        var createdPostings = user.UserType == UserType.Teacher ? await _context.GetPostingsByUser(user.Id) : [];
+        var totalPostings = createdPostings.Union(takenPostings).ToList();
+
+        return Ok(totalPostings);
+    }
+
     [HttpGet("getAll")]
     [Authorize]
     public async Task<IActionResult> GetAll()
@@ -105,7 +122,7 @@ public class PostController: BaseController
     public async Task<IActionResult> Add(CreatePostDto resp)
     {
         User? user = await GetCurrentUserCached();
-        if (user == null)
+        if (user == null || user.UserType != UserType.Teacher)
             return Unauthorized();
         if (user.EmailConfirmed == false)
             return Unauthorized("Account has to be verified by an administrator");
@@ -148,15 +165,12 @@ public class PostController: BaseController
         if (user == null)
             return Unauthorized();
         if (user.EmailConfirmed == false)
-            return Unauthorized();
+            return Unauthorized("Account has to be verified by an administrator.");
 
         if (_context.CancelPosting(postId, user.Id))
             return Ok();
         else
             return Problem("Unexpected error occured.", statusCode: 500);
-        // Todo: Will potentially want additional error handling here
-        // Cases: Post is already cancelled ?? if sub cancels posting when teacher cancelled prior
-   
     }
 
     private List<PostDto> ConvertToPostDtoList(List<Post> posts)

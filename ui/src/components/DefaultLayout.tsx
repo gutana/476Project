@@ -75,7 +75,7 @@ export function CustomNavbar() {
                             <CustomNavLink linkTo="/viewPostings" text="Available Postings" />
                         }
 
-                        <CustomNavLink linkTo="/viewMyPostings" text="My Postings" />
+                        <CustomNavLink linkTo="/viewMyPostings" text="My Postings" allowedUsers={[UserType.Teacher, UserType.Substitute]} />
                         <CustomNavLink linkTo="/edit" text="Edit Profile" />
                         <CustomNavLink linkTo="/postNews" text="Post News" allowedUsers={[UserType.Administrator]} />
                         <CustomNavLink linkTo="/requestedAccounts" text="Requested Accounts" allowedUsers={[UserType.Administrator]} />

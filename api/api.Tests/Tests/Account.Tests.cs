@@ -49,7 +49,7 @@ public class AccountTests
             SchoolType = SchoolType.Secondary,
         };
 
-        mockDbContext.Schools = TestHelper.CreateMockDbSet([school]).Object;
+        mockDbContext.Schools = MockDbSetFactory<List<School>>.CreateMockDbSet([school]).Object;
 
         RegistrationDto req = new()
         {
@@ -91,7 +91,7 @@ public class AccountTests
             SchoolType = SchoolType.Secondary,
         };
 
-        mockDbContext.Schools = TestHelper.CreateMockDbSet([school]).Object;
+        mockDbContext.Schools = MockDbSetFactory<List<School>>.CreateMockDbSet([school]).Object;
 
         RegistrationDto req = new()
         {
@@ -165,7 +165,8 @@ public class AccountTests
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
+
         var signInManager = new Mock<SignInManager<User>>(userManager, 
             Mock.Of<IHttpContextAccessor>(), 
             Mock.Of<IUserClaimsPrincipalFactory<User>>(),
@@ -197,7 +198,8 @@ public class AccountTests
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = false };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
+
         var signInManager = new Mock<SignInManager<User>>(userManager, 
             Mock.Of<IHttpContextAccessor>(), 
             Mock.Of<IUserClaimsPrincipalFactory<User>>(),
@@ -229,7 +231,7 @@ public class AccountTests
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Administrator, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
         var signInManager = new Mock<SignInManager<User>>(userManager, 
             Mock.Of<IHttpContextAccessor>(), 
             Mock.Of<IUserClaimsPrincipalFactory<User>>(),
@@ -261,7 +263,9 @@ public class AccountTests
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Teacher, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
+
         var signInManager = new Mock<SignInManager<User>>(userManager, 
             Mock.Of<IHttpContextAccessor>(), 
             Mock.Of<IUserClaimsPrincipalFactory<User>>(),
@@ -293,7 +297,9 @@ public class AccountTests
         var user = new User() { Id = Guid.NewGuid().ToString(), UserType = UserType.Teacher, Region = Region.Regina, EmailConfirmed = true };
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
+
         var signInManager = new Mock<SignInManager<User>>(userManager, 
             Mock.Of<IHttpContextAccessor>(), 
             Mock.Of<IUserClaimsPrincipalFactory<User>>(),
@@ -345,9 +351,10 @@ public class AccountTests
 
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
 
-        var mockCoursesDbSet = TestHelper.CreateMockDbSet(new List<PrimarySchoolCourse> { new PrimarySchoolCourse
+
+        var mockCoursesDbSet = MockDbSetFactory<List<PrimarySchoolCourse>>.CreateMockDbSet( new List<PrimarySchoolCourse> { new PrimarySchoolCourse
             {
                 Id = Guid.NewGuid().ToString(),
                 subject = PrimarySchoolSubject.CoreFrench
@@ -405,9 +412,9 @@ public class AccountTests
 
         var userManager = TestHelper.CreateMockUserManagerWithUsers([user, user2]);
 
-        mockDbContext.Users = TestHelper.CreateMockDbSet(userManager.Users.ToList()).Object;
+        mockDbContext.Users = MockDbSetFactory<List<User>>.CreateMockDbSet(userManager.Users.ToList()).Object;
 
-        var mockCoursesDbSet = TestHelper.CreateMockDbSet(new List<PrimarySchoolCourse> { new PrimarySchoolCourse
+        var mockCoursesDbSet = MockDbSetFactory<List<PrimarySchoolCourse>>.CreateMockDbSet( new List<PrimarySchoolCourse> { new PrimarySchoolCourse
             {
                 Id = Guid.NewGuid().ToString(),
                 subject = PrimarySchoolSubject.CoreFrench

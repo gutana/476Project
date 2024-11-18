@@ -119,7 +119,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
                 post.Grades = dto.Grades;
 
                 post.PostDescription = dto.PostDescription;
-                if (post.RequestedSub != null)
+                if (dto.RequestedSub != null && dto.RequestedSub.Length > 0)
                     post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub); 
                 post.Private = dto.Private;
                 post.PostDateTime = DateTime.UtcNow;
@@ -154,7 +154,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
                     post.Grades = dto.Grades;
 
                     post.PostDescription = dto.PostDescription;
-                    if (post.RequestedSub != null)
+                    if (dto.RequestedSub != null && dto.RequestedSub.Length > 0)
                         post.RequestedSub = Users.First(req => req.Id == dto.RequestedSub);
                     post.Private = dto.Private;
                     post.PostDateTime = DateTime.UtcNow;
@@ -319,6 +319,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
     public async Task<List<PostDto>> GetAllPostings()
     {
+        
         var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)

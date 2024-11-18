@@ -109,7 +109,8 @@ public class NewsTests
         var existingPost = new NewsPost() { Title = "ABC", Content = "DEF" };
 
         var mockContext = TestHelper.CreateMockDbContext("GetLatest_ReturnsLatestNews");
-        mockContext.NewsPosts = TestHelper.CreateMockDbSet([existingPost]).Object;
+
+        mockContext.NewsPosts = MockDbSetFactory<List<NewsPost>>.CreateMockDbSet([existingPost]).Object;
 
         var userId = Guid.NewGuid().ToString();
         var user = new User { Id = userId, UserType = UserType.Administrator, EmailConfirmed = true };

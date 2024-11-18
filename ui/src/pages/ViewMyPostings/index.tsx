@@ -1,33 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { GetPostsByUser, GetTakenPosts } from "../../api/queries/postQueries";
+import { GetMyPostings } from "../../api/queries/postQueries";
 import { PostingCard } from "../../components/PostingCard";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { EmptyPostingsCard } from "../../components/EmptyPostingsCard";
 import { useContext, useEffect, useState } from "react";
 import { Post } from "../../models/postings";
 import { UserContext } from "../../components/UserWrapper";
-import { UserType } from "../../models/user";
 import Toasts from "../../components/Toasts";
+import { UserType } from "../../models/user";
 
 export default function ViewMyPostingsPage() {
   const [user] = useContext(UserContext);
-  const [postings, setPostings] = useState<Post[]>([]);
+  if (user === null) {
+    window.location.href = '/login';
+  } else if (user.userType === UserType.Administrator) {
+    window.location.href = '/';
+  }
   
+  const [postings, setPostings] = useState<Post[]>([]); 
   const [show, setShow] = useState(false);
   const [variant, setVariant] = useState("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   
   const { data, isLoading, isError } = useQuery({
-    queryFn: () => GetTakenPosts(),
-    queryKey: ["getTakenPosts"],
+    queryFn: () => GetMyPostings(),
+    queryKey: ["getMyPostings"],
   });
-
-  const { data: teacherData, isLoading : teacherIsLoading, isError : teacherIsError } = useQuery({
-    queryFn: () => GetPostsByUser(),
-    queryKey: ["getPostsByUser1"],
-    enabled: user?.userType === UserType.Teacher,
-  })
 
   const showToast = (success: boolean, title: string, message: string) => {
     setVariant(success ? "success" : "danger");
@@ -38,15 +37,12 @@ export default function ViewMyPostingsPage() {
   
   useEffect(() => {
     if (data !== undefined) {
+      data.sort((a: Post, b: Post) => {
+        return new Date(a.dateOfAbsence) > new Date(b.dateOfAbsence) ? 1 : -1;
+      })
       setPostings(data);
     }
   }, [data]);
-  
-  useEffect(() => {
-    if (teacherData !== undefined) {
-      setPostings(previous => [...teacherData, ...previous]);
-    }
-  }, [teacherData]);
 
   const updatePostings = (id: string) => {
     const filtered = postings.filter(post => post.id !== id);
@@ -63,8 +59,8 @@ export default function ViewMyPostingsPage() {
           message={message}
         />
       
-      {(isLoading || teacherIsLoading) && <LoadingSpinner />}
-      {(postings.length === 0 && !isLoading && !teacherIsLoading) && <EmptyPostingsCard />}
+      {isLoading && <LoadingSpinner />}
+      {postings.length === 0 && !isLoading && <EmptyPostingsCard />}
       
       {postings.map((post) => {
         return (

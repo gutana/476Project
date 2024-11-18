@@ -28,8 +28,7 @@ export const Endpoints = {
         GET_ALL: '/post/getAll',
         GET_APPROVED_SUBS: '/post/getApprovedSubs',
         GET_AVAILABLE: '/post/getAvailable',
-        GET_BY_USER: '/post/getByUser',
-        GET_TAKEN_BY_USER: '/post/getTakenByUser',
+        GET_MY_POSTINGS: '/post/getMyPostings'
     },
     SCHOOL: {
         ADD_SCHOOL: '/school/add',
