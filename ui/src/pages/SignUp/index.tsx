@@ -236,7 +236,7 @@ export default function SignUp() {
                             aria-describedby="emailHelp"
                             required
                             onChange={handleEmailClear}
-                            onBlur={handleEmailSet}                        />
+                            onBlur={handleEmailSet} />
                         <Form.Text id="emailHelp" muted>
                             We'll never share your email with anyone else.
                         </Form.Text>
@@ -269,7 +269,7 @@ export default function SignUp() {
                         <Form.Control
                             type="password"
                             required
-                            //onChange={handlePasswordConfirm}
+                        //onChange={handlePasswordConfirm}
                         />
                     </Form.Group>
                     {errorMessagePassConfirm && <Alert variant="danger">{errorMessagePassConfirm}</Alert>}
@@ -318,7 +318,7 @@ export default function SignUp() {
                         Submit
                     </Button>
 
-                    <Button style={{ fontWeight: 'normal', marginLeft: "6px"}} variant="secondary" href="/login">Already have an account?</Button>
+                    <Button style={{ fontWeight: 'normal', marginLeft: "6px" }} variant="secondary" href="/login">Already have an account?</Button>
                 </Form>
             </div>
 
