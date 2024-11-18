@@ -107,7 +107,7 @@ export const stringToGrades= (grade: string | Grade) => {
         return grade;
     }
     
-    switch (grade.toLowerCase()) {
+    switch (grade) {
         case "PreK":
         case "0":
             return Grade.PreK
@@ -163,29 +163,6 @@ export const translateToSchoolTypeahead = (vals: any[]) => {
     }
     
     return translated;
-}
-
-export const translateGrade = (grades: TypeaheadValue[], primary?: boolean): any => {
-    if (grades.length === 0) return -1;
-    let translatedGrade: Grade[] = [];
-    let gradesValue: string[] = [];
-
-    grades.forEach(grade => {
-        gradesValue.push(grade.value);
-    })
-
-    for (let i = 0; i < gradesValue.length; i++) {
-        let grade = gradesValue[i];
-        let translated = stringToGrades(grade);
-        if (translated === null) return -1;
-        if (primary !== undefined) {
-            if (Number(grade) > 9 && primary) return -2;
-            if (Number(grade) < 10 && !primary) return -3;
-        }
-        translatedGrade.push(translated);
-    }
-
-    return translatedGrade;
 }
 
 export const translatePrimary = (primary: TypeaheadValue[]): any => {
