@@ -31,7 +31,7 @@ import { AlertIcon } from "../../components/Icons";
 import { ButtonGroup, Container, Stack, ToggleButton } from "react-bootstrap";
 import { addDays } from "../../utils/Time";
 import { PrimarySchoolCourse, SecondarySchoolCourse } from "../../models/courseSchedule";
-import { FormatDateForDisplayAsTimeOnly } from "../../utils/miscUtils";
+import { FormatDateForDisplayAsTimeOnly, translateGradeToNumbers } from "../../utils/miscUtils";
 
 export interface TypeaheadValue {
     name: string,
@@ -160,7 +160,7 @@ export default function AddPostPage() {
     for (let i = 0; i < courses.length; i++) {
         let course = courses[i];            
         let val = {
-          name: `${MapSchoolSubjectToString(course.subject.toString())} (${course.grades.join(", ")}) 
+          name: `${MapSchoolSubjectToString(course.subject.toString())} (${translateGradeToNumbers(course.grades)}) 
           - ${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`,
           value: course.id
         };
