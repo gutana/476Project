@@ -124,6 +124,17 @@ export default function EditProfilePage() {
         setPhoneNumber(e.target.value);
     }
 
+    const handleRegionChange = (e: any) => {
+        setRegion(e.target.value);
+        if (!user || !user.school) return;
+        if (stringToRegion(user.region) === stringToRegion(e.target.value)) {
+            setSchool(user.school.id);
+        } else {
+            const regionSchool: School | undefined = allSchools.find(val => stringToRegion(val.region) === stringToRegion(e.target.value));
+            setSchool(regionSchool ? regionSchool.id : school);
+        }
+    }
+
     useEffect(() => {
         if (!user) {
             window.location.href = "/";
@@ -193,7 +204,7 @@ export default function EditProfilePage() {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Region</Form.Label>
-                            <Form.Select onChange={(e) => setRegion(e.target.value)} value={region} required>
+                            <Form.Select onChange={handleRegionChange} value={region} required>
                                 <option value={Region.Regina}>Regina</option>
                                 <option value={Region.Saskatoon}>Saskatoon</option>
                             </Form.Select>
@@ -202,9 +213,9 @@ export default function EditProfilePage() {
                         {user && user.userType === UserType.Teacher && <Form.Group className="mb-3">
                             <Form.Label>School</Form.Label>
                             <Form.Select onChange={(e) => setSchool(e.target.value)} value={school} required>
-                                {allSchools.map((school) => {
-                                    if (stringToRegion(school.region) !== stringToRegion(region)) return null;
-                                    return <option key={school.id} value={school.id}>{school.schoolName}</option>
+                                {allSchools.map((s) => {
+                                    if (stringToRegion(s.region) !== stringToRegion(region)) return null;
+                                    return <option key={s.id} value={s.id}>{s.schoolName}</option>
                                 })}
                             </Form.Select>
                         </Form.Group>}

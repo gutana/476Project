@@ -13,7 +13,7 @@ export interface CreatePostData {
     amPm: AMPM | null,
     primarySchoolSubjects: string[] | null,
     secondarySchoolSubjects: string[] | null,
-    grades: Grade[]
+    grades?: Grade[]
 }
 
 export interface Post {

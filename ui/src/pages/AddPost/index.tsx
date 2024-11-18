@@ -16,7 +16,6 @@ import Toasts from "../../components/Toasts";
 import {
   AbsenceType,
   AMPM,
-  Grade,
   MapAbsenceTypeStringToAbsenceType,
   MapSchoolSubjectToString
 } from "../../models/postings";
@@ -24,11 +23,7 @@ import { subQuery } from "../../api/queries/subQueries";
 import { AddPostingMutation } from "../../api/mutations/postMutations";
 import { School } from "../../models/schools";
 import { Typeahead } from "react-bootstrap-typeahead";
-import { translateCourses, translateGrade } from "../../components/stringToDataType";
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {
-  allGrades
-} from "../../utils/consts";
+import { translateCourses } from "../../components/stringToDataType";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import { GetAllSchools } from "../../api/queries/schoolQueries";
 import { Link } from "react-router-dom";
@@ -110,7 +105,6 @@ export default function AddPostPage() {
 
   const [desc, setDesc] = useState("");
   const [requestedSub, setRequestedSub] = useState<any>([]);
-  const [grades, setGrades] = useState<TypeaheadValue[]>([]);
 
   const [startDate, setStartDate] = useState<Date>(today);
   const [endDate, setEndDate] = useState<Date>(today);
@@ -146,32 +140,6 @@ export default function AddPostPage() {
     return value.slice(0, 1).toUpperCase() + value.slice(1);
   };
 
-  // Pre-populate the grades with info from the user object
-  useEffect(() => {
-    if (user === null || user.userType === UserType.Administrator) return;
-    let grades: Grade[] = []
-
-    for (let i = 0; i < user.primarySchoolCourses.length; i++) {
-      grades = [...grades, ...user.primarySchoolCourses[i].grades];
-    }
-
-    for (let i = 0; i < user.secondarySchoolCourses.length; i++) {
-        grades = [...grades, ...user.secondarySchoolCourses[i].grades]
-    }
-    const existingGrades = grades.map((grade) => {
-        let gra = allGrades.find(gr => {
-            return (gr.name == grade as unknown as string) ||
-                (gr.name === "Pre-K" && grade as unknown as string == "PreK"); // Needed because Pre-K !== PreK
-
-        })
-        if (gra === undefined) throw `Error: Unable to load existing grades: Grade: ${grade}.`;
-        return { name: gra.name, value: gra.value };;
-    });
-    const uniqueGrades = Array.from(new Map(existingGrades.map(item => [item.name, item])).values())
-    setGrades(uniqueGrades.sort((a, b) => parseInt(a.value) - parseInt(b.value)));
-    
-    }, [user])
-
   // Pre-populate the subjects with info from the user object
   useEffect(() => {
     if (
@@ -192,7 +160,8 @@ export default function AddPostPage() {
     for (let i = 0; i < courses.length; i++) {
         let course = courses[i];            
         let val = {
-          name: `${MapSchoolSubjectToString(course.subject.toString())} - ${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`,
+          name: `${MapSchoolSubjectToString(course.subject.toString())} (${course.grades.join(", ")}) 
+          - ${FormatDateForDisplayAsTimeOnly(course.startTime)} to ${FormatDateForDisplayAsTimeOnly(course.endTime)}`,
           value: course.id
         };
 
@@ -288,27 +257,7 @@ export default function AddPostPage() {
       return;
     }
 
-    let sType = school.schoolType.toString();
-    let grade: Grade[] | number = translateGrade(grades, sType === "Primary");
-
-    if (grade === -1) {
-      setErrorMessage(`Select a ${sType} Grade.`);
-      return;
-    }
-    if (grade === -2) {
-      setErrorMessage("Invalid Primary Grade.");
-      return;
-    }
-    if (grade === -3) {
-      setErrorMessage("Invalid Secondary Grade.");
-      return;
-    }
-
-    if (typeof grade === "number") {
-      setErrorMessage("Invalid grade.");
-      return;
-    }
-    
+    let sType = school.schoolType.toString();    
     let realCourses: string[] = translateCourses(courses);
 
     // console.log({
@@ -335,7 +284,6 @@ export default function AddPostPage() {
         schoolId: school.id,
         postDescription: desc,
         private: requestedSub.length !== 0,
-        grades: grade,
         startDateOfAbsence: startDate,
         endDateOfAbsence: endDate,
         absenceType: absenceType,
@@ -366,10 +314,7 @@ export default function AddPostPage() {
     return <LoadingSpinner />;
   }
 
-  const showProfileInfoText: boolean =
-    profileDataLoaded &&
-    (allCourses.length === 0 ||
-    grades.length === 0)
+  const showProfileInfoText: boolean = profileDataLoaded && allCourses.length === 0;
 
   return (
     <>
@@ -416,36 +361,13 @@ export default function AddPostPage() {
           )}
           {school && (
             <MultipleSelection
-              values={
-                school.schoolType.toString() === "Primary"
-                  ? allGrades.slice(0, 10)
-                  : allGrades.slice(10)
-              }
-              title="Grade(s)"
-              placeholder="Search grades..."
-              selection={grades}
-              setSelection={setGrades}
-            />
-          )}
-          {school && school.schoolType.toString() === "Primary" && (
-            <MultipleSelection
               values={allCourses}
-              title="Primary School Subject(s)"
-              placeholder="Search primary subjects..."
+              title={`${school.schoolType} School Subject(s)`}
+              placeholder={`Search ${school.schoolType.toLowerCase()} subjects...`}
               selection={courses}
               setSelection={setCourses}
             />
           )}
-          {school && school.schoolType.toString() === "Secondary" && (
-            <MultipleSelection
-              values={allCourses}
-              title="Secondary School Subject(s)"
-              placeholder="Search secondary subjects..."
-              selection={courses}
-              setSelection={setCourses}
-            />
-          )}
-
           <div style={{ display: "flex" }}>
             <ButtonGroup className="mt-2 mb-2 mx-auto" style={{ width: "60%" }}>
               {dayDurationRadios.map((radio, i) => {
