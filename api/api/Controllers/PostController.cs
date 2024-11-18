@@ -86,6 +86,23 @@ public class PostController: BaseController
         return Ok(postings);
     }
 
+    [HttpGet("getMyPostings")]
+    [Authorize]
+    public async Task<IActionResult> GetMyPostings()
+    {
+        User? user = await GetCurrentUserCached();
+        if (user == null)
+            return Unauthorized();
+        if (user.EmailConfirmed == false)
+            return Unauthorized("Account has to be verified by an administrator.");
+
+        var takenPostings = await _context.GetTakenPostings(user);
+        var createdPostings = user.UserType == UserType.Teacher ? await _context.GetPostingsByUser(user.Id) : [];
+        var totalPostings = createdPostings.Union(takenPostings).ToList();
+
+        return Ok(totalPostings);
+    }
+
     [HttpGet("getAll")]
     [Authorize]
     public async Task<IActionResult> GetAll()
