@@ -362,7 +362,7 @@ public class PostTests
         {
             Id = userId,
             FirstName = "GetOnlyAvailablePosts",
-            UserType = UserType.Substitute, 
+            UserType = UserType.Substitute,
             Region = Region.Regina,
             EmailConfirmed = true
         };
@@ -464,7 +464,7 @@ public class PostTests
         var user = new User
         {
             Id = userId,
-            UserType = UserType.Substitute, 
+            UserType = UserType.Substitute,
             Region = Region.Regina,
             EmailConfirmed = true
         };
@@ -576,8 +576,8 @@ public class PostTests
         Assert.Single(posts);
         Assert.Equal(postId, posts[0].Id);
 
-        Assert.IsType<UnauthorizedObjectResult>(teacherResult);
-        Assert.IsType<UnauthorizedObjectResult>(subResult);
+        Assert.IsType<UnauthorizedResult>(teacherResult);
+        Assert.IsType<UnauthorizedResult>(subResult);
     }
 
     [Fact]
@@ -634,7 +634,7 @@ public class PostTests
     public async Task Add_OnlyTeachersCanAddPosts()
     {
         // Arrange 
-        var mockContext = TestHelper.CreateMockDbContext("Add_TeachersCanAddPosts");
+        var mockContext = TestHelper.CreateMockDbContext("Add_OnlyTeachersCanAddPosts");
 
         var teacherId = Guid.NewGuid().ToString();
         var teacher = new User
@@ -653,8 +653,8 @@ public class PostTests
         };
 
         var adminId = Guid.NewGuid().ToString();
-        var admin = new User() 
-        { 
+        var admin = new User()
+        {
             Id = adminId,
             UserType = UserType.Administrator,
             EmailConfirmed = true
@@ -687,7 +687,7 @@ public class PostTests
         var userManager = TestHelper.CreateMockUserManagerWithUsers([teacher, sub, admin]);
 
         var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
-        
+
         postController.ControllerContext = TestHelper.CreateControllerContextWithUser(teacherId);
         var teacherResult = await postController.Add(dto);
 
@@ -699,7 +699,199 @@ public class PostTests
 
         // Assert
         Assert.IsType<OkObjectResult>(teacherResult);
-        Assert.IsType<UnauthorizedObjectResult>(subResult);
-        Assert.IsType<UnauthorizedObjectResult>(adminResult);
+        Assert.IsType<UnauthorizedResult>(subResult);
+        Assert.IsType<UnauthorizedResult>(adminResult);
+    }
+
+    [Fact]
+    public async Task Accept_ReturnsUnauthorized()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("Accept_ReturnsUnauthorized");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            UserType = UserType.Teacher,
+            EmailConfirmed = false
+        };
+
+        var postId = Guid.NewGuid().ToString();
+        var post = new Post()
+        {
+            Id = postId
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Posts.Add(post);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+
+        // Act
+        var result = await postController.Accept(postId);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task Accept_ReturnsUnauthorizedWhenAdminAcceptsPost()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("Accept_ReturnsUnauthorizedWhenAdminAcceptsPost");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            UserType = UserType.Administrator,
+            EmailConfirmed = true
+        };
+
+        var postId = Guid.NewGuid().ToString();
+        var post = new Post()
+        {
+            Id = postId
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Posts.Add(post);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+
+        // Act
+        var result = await postController.Accept(postId);
+
+        // Assert
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public async Task Accept_ReturnsOkWhenPostAccepted()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("Accept_ReturnsUnauthorizedWhenAdminAcceptsPost");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            UserType = UserType.Substitute,
+            EmailConfirmed = true
+        };
+
+        var postId = Guid.NewGuid().ToString();
+        var post = new Post()
+        {
+            Id = postId
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Posts.Add(post);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+
+        // Act
+        var result = await postController.Accept(postId);
+
+        // Assert
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task Accept_ReturnsProblemWhenMultipleUsersAcceptPost()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("Accept_ReturnsProblemWhenMultipleUsersAcceptPost");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            UserType = UserType.Substitute,
+            EmailConfirmed = true
+        };
+
+        var lateAcceptorId = Guid.NewGuid().ToString();
+        var lateAcceptor = new User
+        {
+            Id = lateAcceptorId,
+            UserType = UserType.Teacher,
+            EmailConfirmed = true
+        };
+
+        var postId = Guid.NewGuid().ToString();
+        var post = new Post()
+        {
+            Id = postId
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Users.Add(lateAcceptor);
+        mockContext.Posts.Add(post);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user, lateAcceptor]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+        var okResult = await postController.Accept(postId);
+
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(lateAcceptorId);
+        var problemResult = await postController.Accept(postId);
+
+        // Assert
+        Assert.IsType<OkResult>(okResult);
+        Assert.IsType<ObjectResult>(problemResult);
+        Assert.Equal(((ObjectResult)problemResult).StatusCode, 420);
+    }
+
+    [Fact]
+    public async Task Cancel_ReturnsUnauthorizedIfEmailNotVerified()
+    {
+        // Arrange 
+        var mockContext = TestHelper.CreateMockDbContext("Cancel_ReturnsUnauthorizedIfEmailNotVerified");
+
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            UserType = UserType.Substitute,
+            EmailConfirmed = false
+        };
+
+        var postId = Guid.NewGuid().ToString();
+        var post = new Post()
+        {
+            Id = postId
+        };
+
+        mockContext.Users.Add(user);
+        mockContext.Posts.Add(post);
+        mockContext.SaveChanges();
+
+        var userManager = TestHelper.CreateMockUserManagerWithUsers([user]);
+
+        var postController = new PostController(userManager, _logger.Object, mockContext, _cache);
+
+        postController.ControllerContext = TestHelper.CreateControllerContextWithUser(userId);
+        var result = await postController.Cancel(postId);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
     }
 }

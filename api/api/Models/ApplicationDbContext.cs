@@ -319,6 +319,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
     public async Task<List<PostDto>> GetAllPostings()
     {
+        
         var posts = await Posts
             .Include(post => post.School)
             .Include(post => post.Poster)
