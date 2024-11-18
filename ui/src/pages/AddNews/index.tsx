@@ -77,6 +77,9 @@ export default function AddNewsPage() {
 
         //event.target[0].value = "";
         //event.target[1].value = "";
+
+        console.log(title);
+        console.log(content);
     }
 
     return (
